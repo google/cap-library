@@ -1,0 +1,441 @@
+/*
+ * Copyright (C) 2011 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
+
+option java_package = "com.google.publicalerts.cap";
+option java_outer_classname = "Cap";
+option java_multiple_files = true;
+option java_generate_equals_and_hash = true;
+
+package alerts.cap;
+
+// Protocol buffer representation of the CAP spec.
+// Supports versions 1.0, 1.1, and 1.2.
+
+
+// Represents a group field in the CAP spec, stored to XML as a
+// space-delimited string.
+message Group {
+  repeated string value = 1;
+}
+
+// A (valueName, value) pair within a CAP message.
+// Used for alert/info/eventCode, alert/info/parameter,
+// alert/info/area/geocode.
+message ValuePair {
+  required string value_name = 1;
+  required string value = 2;
+}
+
+// WGS-84 coordinate pair
+message Point {
+  required double latitude = 1;
+  required double longitude = 2;
+}
+
+// The paired values of points defining a polygon that delineates the affected
+// area of the alert message.  A minimum of 4 coordinate pairs MUST be present
+// and the first and last pairs of coordinates MUST be the same.
+message Polygon {
+  repeated Point point = 1;
+}
+
+// The paired values of a point and radius delineating the affected area of
+// the alert message.
+message Circle {
+  required Point point = 1;
+  // Radius is expressed in kilometers.
+  required double radius = 2;
+}
+
+// The container for all component parts of the area sub-element of the
+// info sub-element of the alert message.
+message Area {
+  // A text description of the affected area.
+  required string area_desc = 1;
+
+  // The paired values of points defining a polygon that delineates the affected
+  // area of the alert message.
+  repeated Polygon polygon = 2;
+
+  // The paired values of a point and radius delineating the affected area of
+  // the alert message.
+  repeated Circle circle = 3;
+
+  // The geographic code delineating the affected area of the alert message,
+  // where the content of ?valueName? is a user-assigned string designating
+  // the domain of the code, and the content of ?value? is a string (which
+  // may represent a number) denoting the value itself
+  // (e.g., valueName="SAME" and value="006113").
+  // This element is primarily for compatibility with other systems. Use of
+  // this element presumes knowledge of the coding system on the part of
+  // recipients; therefore, for interoperability, it SHOULD be used in
+  // concert with an equivalent description in the more universally understood
+  // <polygon> and <circle> forms whenever possible.
+  repeated ValuePair geocode = 4;
+
+  // The specific or minimum altitude of the affected area of the alert
+  // message. If used with the <ceiling> element this value is the lower limit
+  // of a range. Otherwise, this value specifies a specific altitude.
+  // The altitude measure is in feet above mean sea level per the [WGS-84]
+  // datum.
+  optional double altitude = 5;
+
+  // The maximum altitude of the affected area of the alert message.
+  // MUST NOT be used except in combination with the <altitude> element.
+  // The ceiling measure is in feet above mean sea level per the [WGS-84]
+  // datum.
+  optional double ceiling = 6;
+}
+
+// The container for all component parts of the resource sub-element of
+// the info sub-element of the alert message.
+message Resource {
+  // The human-readable text describing the content and kind, such as
+  // "map" or "photo", of the resource file
+  required string resource_desc = 1;
+
+  // MIME content type and sub-type as described in [RFC 2046].
+  // (As of this document, the current IANA registered MIME types are
+  // listed at http://www.iana.org/assignments/media-types/)
+  // Required as of CAP 1.2
+  optional string mime_type = 2;
+
+  // Approximate size of the resource file in bytes.
+  optional int64 size = 3;
+
+  // A full absolute URI, typically a Uniform Resource Locator that can
+  // be used to retrieve the resource over the Internet
+  // OR
+  // a relative URI to name the content of a <derefUri> element if one is
+  // present in this resource block.
+  optional string uri = 4;
+
+  // The base-64 encoded data content of the resource file.
+  // MAY be used either with or instead of the <uri> element in messages
+  // transmitted over one-way (e.g., broadcast) data links where retrieval
+  // of a resource via a URI is not feasible.
+  // Clients intended for use with one-way data links MUST support this
+  // element.
+  // This element MUST NOT be used unless the sender is certain that all
+  // direct clients are capable of processing it.
+  // If messages including this element are forwarded onto a two-way
+  // network, the forwarder MUST strip the <derefUri> element and SHOULD
+  // extract the file contents and provide a <uri> link to a
+  // retrievable version of the file.
+  // Providers of one-way data links MAY enforce additional restrictions
+  // on the use of this element, including message-size limits and
+  // restrictions regarding file types.
+  // Added in CAP 1.1
+  optional string deref_uri = 5;
+
+  // The code representing the digital digest (?hash?) computed from the
+  // resource from the resource file. Calculated using the Secure Hash
+  // Algorithm (SHA-1) per [FIPS 180-2]
+  optional string digest = 6;
+}
+
+// The container for all component parts of the info sub-element of the
+// alert message.
+message Info {
+  // RFC 3066 language code.
+  optional string language = 1 [default="en-US"];
+
+  enum Category {
+    Geo = 0;       // Geophysical (inc. landslide)
+    Met = 1;       // Meteorological (inc. flood)
+    Safety = 2;    // General emergency and public safety
+    Security = 3;  // Law enforcement, military, homeland and local/private
+                   // security
+    Rescue = 4;    // Rescue and recovery
+    Fire = 5;      // Fire suppression and rescue
+    Health = 6;    // Medical and public health
+    Env = 7;       // Pollution and other environmental
+    Transport = 8; // Public and private transportation
+    Infra = 9;     // Utility, telecommunication, other non-transport
+                   // infrastructure
+    CBRNE = 10;    // Chemical, Biological, Radiological, Nuclear or
+                   // High-Yield Explosive threat or attack
+                   // Added in CAP 1.1
+    Other = 11;    // Other events
+  }
+
+  // The code denoting the category of the subject event of the alert
+  // message. Required as of CAP 1.1.
+  repeated Category category = 2;
+
+  // The text denoting the type of the subject event of the alert message.
+  required string event = 3;
+
+  enum ResponseType {
+    Shelter = 0;  // Take shelter in place or per <instruction>
+    Evacuate = 1; // Relocate as instructed in the <instruction>
+    Prepare = 2;  // Make preparations per the <instruction>
+    Execute = 3;  // Execute a pre-planned activity identified in
+                  // <instruction>
+    Avoid = 4;    // Avoid the subject event as per the <instruction>
+                  // Added in CAP 1.2.
+    Monitor = 5;  // Attend to information sources as described in
+                  // <instruction>
+    Assess = 6;   // Evaluate the information in this message. (This value
+                  // SHOULD NOT be used in public warning applications.)
+    AllClear = 7; // The subject event no longer poses a thread or concern
+                  // and any follow on action is described in <instruction>.
+                  // Added in CAP 1.2.
+    None = 8;     // No action recommended.
+  }
+
+  // The code denoting the type of action recommended for the target
+  // audience. Added in CAP 1.1
+  repeated ResponseType response_type = 4;
+
+  enum Urgency {
+    Immediate = 0;       // Responsive action SHOULD be taken immediately
+    Expected = 1;        // Responsive action SHOULD be taken soon
+                         // (within next hour)
+    Future = 2;          // Responsive action SHOULD be taken in the near future
+    Past = 3;            // Responsive action is no longer required
+    Unknown_Urgency = 4; // Urgency not known
+                         // Not named "Unknown" because enum values use C++
+                         // scoping rules, which would conflict with
+                         // Severity.Unknown and Certainty.Unknown
+  }
+
+  // The code denoting the urgency of the subject event of the alert message.
+  required Urgency urgency = 5;
+
+  enum Severity {
+    Extreme = 0;          // Extraordinary threat to life or property
+    Severe = 1;           // Significant threat to life or property
+    Moderate = 2;         // Possible threat to life or property
+    Minor = 3;            // Minimal threat to life or property
+    Unknown_Severity = 4; // Severity unknown
+                          // Not named "Unknown" because enum values use C++
+                          // scoping rules, which would conflict with
+                          // Urgency.Unknown and Certainty.Unknown
+  }
+
+  // The code denoting the severity of the subject event of the alert
+  // message.
+  required Severity severity = 6;
+
+  enum Certainty {
+    Observed = 0;          // Determined to have occurred or to be ongoing.
+    VeryLikely = 1;        // DEPRECATED as of CAP 1.1, use Likely instead
+    Likely = 2;            // Likely (p > ~50%)
+    Possible = 3;          // Possible but not likely (p <= ~50%)
+    Unlikely = 4;          // Not expected to occur (p ~ 0)
+    Unknown_Certainty = 5; // Certainty unknown
+                           // Not named "Unknown" because enum values use C++
+                           // scoping rules, which would conflict with
+                           // Urgency.Unknown and Severity.Unknown 
+  }
+
+  // The code denoting the certainty of the subject event of the alert
+  // message.
+  required Certainty certainty = 7;
+
+  // The text describing the intended audience of the alert message.
+  optional string audience = 8;
+
+  // A system-specific code identifying the event type of the alert message,
+  // where the content of ?valueName? is a user-assigned string designating
+  // the domain of the code, and the content of ?value? is a string (which
+  // may represent a number) denoting the value itself
+  // (e.g., valueName="SAME" and value="CEM")
+  repeated ValuePair event_code = 9;
+
+  // The effective time of the information of the alert message.
+  // If this item is not included, the effective time SHALL be assumed to be
+  // the same as in Alert#sent.
+  // The date and time is represented in [dateTime] format
+  // (e. g., "2002-05-24T16:49:00-07:00" for 24 May 2002 at
+  // 16: 49 PDT).  Alphabetic timezone designators such as "Z"
+  // MUST NOT be used.  The timezone for UTC MUST be represented
+  // as "-00:00" or "+00:00".
+  optional string effective = 10;
+
+  // The expected time of the beginning of the subject event of alert message
+  // The date and time is represented in [dateTime] format
+  // (e. g., "2002-05-24T16:49:00-07:00" for 24 May 2002 at
+  // 16: 49 PDT).  Alphabetic timezone designators such as "Z"
+  // MUST NOT be used.  The timezone for UTC MUST be represented
+  // as "-00:00" or "+00:00".
+  optional string onset = 11;
+
+  // The expiry time of the information of the alert message.
+  // If this item is not provided, each recipient is free to set its own
+  // policy as to when the message is no longer in effect.
+  // The date and time is represented in [dateTime] format
+  // (e. g., "2002-05-24T16:49:00-07:00" for 24 May 2002 at
+  // 16: 49 PDT).  Alphabetic timezone designators such as "Z"
+  // MUST NOT be used.  The timezone for UTC MUST be represented
+  // as "-00:00" or "+00:00".
+  optional string expires = 12;
+
+  // The human-readable name of the agency or authority issuing this alert.
+  optional string sender_name = 13;
+
+  // A brief human-readable headline.  Note that some displays (for example,
+  // short messaging service devices) may only present this headline; it
+  // SHOULD be made as direct and actionable as possible while remaining
+  // short.  160 characters MAY be a useful target limit for headline length.
+  optional string headline = 14;
+
+  // An extended human readable description of the hazard or event that
+  // occasioned this message.
+  optional string description = 15;
+
+  // An extended human readable instruction to targeted recipients.  (If
+  // different instructions are intended for different recipients, they
+  // should be represented by use of multiple <info> blocks.
+  optional string instruction = 16;
+
+  // A full, absolute URI for an HTML page or other text resource with
+  // additional or reference information regarding this alert.
+  optional string web = 17;
+
+  // The text describing the contact for follow-up and confirmation of
+  // the alert message.
+  optional string contact = 18;
+
+  // A system-specific additional parameter associated with the alert
+  // message, where the content of ?valueName? is a user-assigned string
+  // designating the domain of the code, and the content of ?value? is a
+  // string (which may represent a number) denoting the value itself
+  // (e.g., valueName="SAME" and value="CEM")
+  repeated ValuePair parameter = 19;
+
+  // Refers to an additional file with supplemental information related to
+  // this <info> element; e.g. an image or audio file
+  repeated Resource resource = 20;
+
+  // Multiple occurrences permitted, in which case the target area for the
+  // <info> block is the union of all the included <area> blocks
+  // If multiple <polygon>, <circle> or <geocode> elements are included, the
+  // area described by this <area> is the union of those represented by the
+  // included elements.
+  repeated Area area = 21;
+}
+
+message Alert {
+  // XML Namespace of the alert.
+  // 1.0: xmlns="http://www.incident.com/cap/1.0"
+  // 1.1: xmlns="urn:oasis:names:tc:emergency:cap:1.1"
+  // 1.2: xmlns="urn:oasis:names:tc:emergency:cap:1.2"
+  required string xmlns = 1;
+
+  // A number or string uniquely identifying this message, assigned by the
+  // sender. MUST NOT include spaces, commas or restricted characters (< and &)
+  required string identifier = 2;
+
+  // Identifies the originator of this alert. Guaranteed by assigner to be
+  // unique globally; e.g., may be based on an Internet domain name.
+  // MUST NOT include spaces, commas or restricted characters (< and &)
+  required string sender = 3;
+
+  // DEPRECATED as of CAP 1.1 and a security risk in CAP 1.0
+  optional string password = 4 [deprecated=true];
+
+  // The time and date of the origination of the alert message.
+  // The date and time is represented in [dateTime] format
+  // (e. g., "2002-05-24T16:49:00-07:00" for 24 May 2002 at
+  // 16: 49 PDT).  Alphabetic timezone designators such as "Z"
+  // MUST NOT be used.  The timezone for UTC MUST be represented
+  // as "-00:00" or "+00:00".
+  required string sent = 5;
+
+  enum Status {
+    Actual = 0;   // Actionable by all targeted recipients
+    Exercise = 1; // Actionable only by designated exercise participants;
+                  // exercise identifier SHOULD appear in <note>
+    System = 2;   // For messages that support alert network internal functions.
+    Test = 3;     // Technical testing only, all recipients disregard.
+    Draft = 4;    // A preliminary template or draft, not actionable in its
+                  // current form. Added in CAP 1.1
+  }
+
+  // The code denoting the appropriate handling of the alert message.
+  required Status status = 6;
+
+  enum MsgType {
+    Alert = 0;  // Initial information requiring attention by targeted
+                // recipients
+    Update = 1; // Updates and supercedes the earlier message(s) identified in
+                // <references>
+    Cancel = 2; // Cancels the earlier message(s) identified in <references>
+    Ack = 3;    // Acknowledges receipt and acceptance of the message(s))
+                // identified in <references>
+    Error = 4;  // Indicates rejection of the message(s) identified in
+                // <references>
+  }
+
+  // The code denoting the nature of the alert message.
+  required MsgType msg_type = 7;
+
+  // The text identifying the source of the alert message.
+  optional string source = 8;
+
+  enum Scope {
+    Public = 0;     // For general dissemination to unrestricted audiences
+    Restricted = 1; // For dissemination only to users with a known operational
+                    // requirement (see <restriction>, below)
+    Private = 2;    // For dissemination only to specified addresses
+                    // (see <address> below)
+  }
+
+  // The code denoting the intended distribution of the alert message.
+  // Mandatory as of CAP 1.1.
+  optional Scope scope = 9;
+
+  // The text describing the rule for limiting distribution of the restricted
+  // alert message.
+  // Used when <scope> value is "Restricted"
+  optional string restriction = 10;
+
+  // The group listing of intended recipients of the private alert message.
+  // Used when <scope> value is "Private". Each recipient SHALL be identified
+  // by an identifier or an address.
+  optional Group addresses = 11;
+
+  // Any user-defined flag or special code used to flag the alert message for
+  // special handling.
+  repeated string code = 12;
+
+  // The message note is primarily intended for use with <status> "Exercise"
+  // and <msgtype> "Error".
+  optional string note = 13;
+
+  // The group listing identifying earlier message(s) referenced by the alert
+  // message. The extended message identifier(s) (in the form
+  // sender,identifier,sent) of an earlier CAP message or messages referenced
+  // by this one. If multiple messages are referenced, they SHALL be separated
+  // by whitespace.
+  optional Group references = 14;
+
+  // The group listing naming the referent incident(s) of the alert message.
+  // Used to collate multiple messages referring to different aspects of the
+  // same incident.
+  optional Group incidents = 15;
+
+  // The container for all component parts of the info sub-element of the
+  // alert message.
+  // If targeting of multiple "info" blocks in the same language overlaps,
+  // information in later blocks may expand but may not override the
+  // corresponding values in earlier ones. Each set of "info" blocks
+  // containing the same language identifier SHALL be treated as a separate
+  // sequence.
+  repeated Info info = 16;
+}

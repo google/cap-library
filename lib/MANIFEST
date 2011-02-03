@@ -1,0 +1,20 @@
+jar: protobuf.jar
+    URL: http://protobuf.googlecode.com/files/protobuf-2.4.0a.tar.bz2
+    Version: 2.4.0a
+    License: New BSD License
+    Local Modifications: No changes have been made to the released files, they have been compiled and packaged into a jar.
+    Download date: 2011-02-02
+
+jar: json.jar
+    URL: http://json.org/java/index.html
+    Version: JSON version 2
+    License: MIT license
+    Local Modifications: No changes have been made to the released files, they have been compiled and packaged into a jar.
+    Download date: 2008-03-12
+
+jar: junit.jar
+    URL: https://github.com/downloads/KentBeck/junit/junit-4.8.2.jar
+    Version: 4.8.2
+    License: Common Public License 1.0
+    Local Modifications: None.
+    Download date: 2011-02-02

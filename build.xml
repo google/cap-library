@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="." default="all">
+  <property environment="env"/>
+  <property name="build" value="build"/>
+  <property name="build.lib" value="${build}/lib"/>
+  <property name="build.java" value="${build}/java"/>
+  <property name="build.javatests" value="${build}/javatests"/>
+
+  <!-- To run this target, you must first download and install the protoc
+       compiler from http://code.google.com/p/protobuf/downloads/list -->
+  <target name="protoc">
+    <exec executable="protoc">
+      <arg value="--java_out=java/"/>
+      <arg value="proto/cap.proto"/>
+    </exec>
+  </target>
+
+  <path id="classpath">
+    <fileset dir=".">
+      <include name="lib/*.jar"/>
+      <exclude name="lib/junit.jar"/>
+    </fileset>
+  </path>
+
+  <target name="init">
+    <mkdir dir="${build.java}"/>
+    <mkdir dir="${build.lib}"/>
+  </target>
+
+  <target name="clean">
+    <delete dir="build"/>
+  </target>
+
+  <target name="compile" depends="init">
+    <javac debug="on" memoryMaximumSize="256m" memoryInitialSize="256m"
+           fork="true" destdir="${build.java}">
+      <!--compilerarg value="-Xlint"/-->
+      <classpath refid="classpath"/>
+      <src path="java"/>
+    </javac>
+    <copy toDir="${build.java}/com/google/publicalerts/cap/schemas"
+	  failonerror="true">
+      <fileset dir="java/com/google/publicalerts/cap/schemas"/>
+    </copy>
+  </target>
+
+  <target name="package" depends="compile">
+    <jar destfile="${build.lib}/cap-library.jar" basedir="${build.java}">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Implementation-Vendor" value="Google"/>
+        <attribute name="Implementation-Title" value="cap-library"/>
+        <attribute name="Implementation-Version" value="0.1"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <path id="classpath_javatests">
+    <path refid="classpath"/>
+    <fileset dir=".">
+      <include name="lib/junit.jar"/>
+    </fileset>
+  </path>
+
+  <target name="init_javatests" depends="compile">
+    <mkdir dir="${build.javatests}"/>
+  </target>
+
+  <target name="compile_javatests" depends="init_javatests">
+    <javac debug="on" memoryMaximumSize="256m" memoryInitialSize="256m"
+           fork="true" destdir="${build.javatests}">
+      <!--compilerarg value="-Xlint"/-->
+      <classpath refid="classpath_javatests"/>
+      <src path="java"/>
+      <src path="javatests"/>
+    </javac>
+    <copy toDir="${build.javatests}/com/google/publicalerts/cap/schemas"
+	  failonerror="true">
+      <fileset dir="java/com/google/publicalerts/cap/schemas"/>
+    </copy>
+  </target>
+
+  <target name="test" description="Runs the test you specify on the command
+      line with -Dtest=" depends="compile_javatests">
+      <junit printsummary="true" fork="yes" failureproperty="junit.failure">
+        <sysproperty key="test" value="${test}"/>
+        <sysproperty key="tests" value="${tests}"/>
+        <classpath>
+          <path refid="classpath_javatests"/>
+          <pathelement location="${build.javatests}"/>
+        </classpath>
+        <formatter type="plain" usefile="false"/>
+        <batchtest>
+          <fileset dir="${build.javatests}" includes="**/AllTests.class" />
+        </batchtest>
+      </junit>
+     <fail if="junit.failure" message="Unit test(s) failed."/>
+  </target>
+
+  <target name="testdebug" description="Runs the test you specify on the command
+      line with -Dtest=" depends="compile_javatests">
+    <junit printsummary="true" fork="yes" failureproperty="junit.failure">
+      <sysproperty key="test" value="${test}"/>
+      <sysproperty key="tests" value="${tests}"/>
+      <jvmarg value="-Xdebug"/>
+      <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/>
+      <classpath>
+        <path refid="classpath_javatests"/>
+        <pathelement location="${build.javatests}"/>
+      </classpath>
+      <formatter type="plain" usefile="false"/>
+      <batchtest>
+        <fileset dir="${build.javatests}" includes="**/AllTests.class" />
+      </batchtest>
+    </junit>
+    <fail if="junit.failure" message="Unit test(s) failed."/>
+  </target>
+
+  <target name="all" depends="test" />
+
+</project>
