@@ -1,0 +1,6 @@
+syntax: glob
+*.class
+*.pyc
+
+syntax: regexp
+build/.*
