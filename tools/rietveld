@@ -12,6 +12,9 @@
 # To use this script, specify at least one reviewer's address and optionally
 # a comma-separated list of CC addresses.  For example:
 #     tools/rietveld alice@google.com bob@google.com
+#
+# This script was taken from http://code.google.com/p/googlepersonfinder/source/browse/tools/rietveld
+# The original author is Ka-Ping Yee <ping@zesty.ca>
 
 pushd "$(dirname $0)" >/dev/null && source common.sh && popd >/dev/null
 
@@ -68,14 +71,14 @@ if [ -n "$ISSUE" ]; then
 fi
 
 # Ensure that we're on a feature branch.
-#if [ "$BRANCH" == default ]; then
-#  echo
-#  echo "You're on the default branch; don't commit changes here until they"
-#  echo "have been reviewed.  Instead, create a branch for your changes with"
-#  echo "'hg branch', commit them, and request a review there."
-#  echo
-#  exit 1
-#fi
+if [ "$BRANCH" == default ]; then
+  echo
+  echo "You're on the default branch; don't commit changes here until they"
+  echo "have been reviewed.  Instead, create a branch for your changes with"
+  echo "'hg branch', commit them, and request a review there."
+  echo
+  exit 1
+fi
 
 # Ensure that we're at the head of the branch (or the branch is new).
 if [ "$BRANCH_CS" -a "$BRANCH_CS" != "$PARENT_CS" ]; then
@@ -118,7 +121,7 @@ if [ "$(hg merge -P default)" != "" ]; then
 fi
 
 # Push the changes in this branch to the repository.
-#hg push -f
+hg push -f
 
 # Prepare the command-line options for the upload.py script.
 OPTIONS="--rev=default -e $EMAIL --send_mail"

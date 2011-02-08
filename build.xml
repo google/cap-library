@@ -2,7 +2,7 @@
 <project basedir="." default="all">
   <property environment="env"/>
   <property name="build" value="build"/>
-  <property name="build.lib" value="${build}/lib"/>
+  <property name="build.javalib" value="${build}/lib/java"/>
   <property name="build.java" value="${build}/java"/>
   <property name="build.javatests" value="${build}/javatests"/>
 
@@ -15,37 +15,38 @@
     </exec>
   </target>
 
-  <path id="classpath">
-    <fileset dir=".">
-      <include name="lib/*.jar"/>
-      <exclude name="lib/junit.jar"/>
-    </fileset>
-  </path>
-
-  <target name="init">
-    <mkdir dir="${build.java}"/>
-    <mkdir dir="${build.lib}"/>
-  </target>
-
   <target name="clean">
     <delete dir="build"/>
   </target>
 
-  <target name="compile" depends="init">
+  <path id="java_classpath">
+    <fileset dir=".">
+      <include name="lib/java/*.jar"/>
+      <exclude name="lib/java/junit.jar"/>
+    </fileset>
+  </path>
+
+  <target name="java_init">
+    <mkdir dir="${build.java}"/>
+    <mkdir dir="${build.javalib}"/>
+  </target>
+
+  <target name="java_compile" depends="java_init">
     <javac debug="on" memoryMaximumSize="256m" memoryInitialSize="256m"
            fork="true" destdir="${build.java}">
       <!--compilerarg value="-Xlint"/-->
-      <classpath refid="classpath"/>
+      <classpath refid="java_classpath"/>
       <src path="java"/>
     </javac>
-    <copy toDir="${build.java}/com/google/publicalerts/cap/schemas"
+    <copy toDir="${build.java}/com/google/publicalerts/cap/schema"
 	  failonerror="true">
-      <fileset dir="java/com/google/publicalerts/cap/schemas"/>
+      <fileset dir="java/com/google/publicalerts/cap/schema"/>
     </copy>
   </target>
 
-  <target name="package" depends="compile">
-    <jar destfile="${build.lib}/cap-library.jar" basedir="${build.java}">
+  <target name="jar" depends="java_compile">
+    <!-- TODO(shakusa) Compile a jar that bundles the required dep jars. -->
+    <jar destfile="${build.javalib}/cap-library.jar" basedir="${build.java}">
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
         <attribute name="Implementation-Vendor" value="Google"/>
@@ -55,38 +56,41 @@
     </jar>
   </target>
 
-  <path id="classpath_javatests">
-    <path refid="classpath"/>
+
+<!-- Test Rules -->
+
+  <path id="javatests_classpath">
+    <path refid="java_classpath"/>
     <fileset dir=".">
-      <include name="lib/junit.jar"/>
+      <include name="lib/java/junit.jar"/>
     </fileset>
   </path>
 
-  <target name="init_javatests" depends="compile">
+  <target name="javatests_init" depends="java_compile">
     <mkdir dir="${build.javatests}"/>
   </target>
 
-  <target name="compile_javatests" depends="init_javatests">
+  <target name="javatests_compile" depends="javatests_init">
     <javac debug="on" memoryMaximumSize="256m" memoryInitialSize="256m"
            fork="true" destdir="${build.javatests}">
       <!--compilerarg value="-Xlint"/-->
-      <classpath refid="classpath_javatests"/>
+      <classpath refid="javatests_classpath"/>
       <src path="java"/>
       <src path="javatests"/>
     </javac>
-    <copy toDir="${build.javatests}/com/google/publicalerts/cap/schemas"
+    <copy toDir="${build.javatests}/com/google/publicalerts/cap/schema"
 	  failonerror="true">
-      <fileset dir="java/com/google/publicalerts/cap/schemas"/>
+      <fileset dir="java/com/google/publicalerts/cap/schema"/>
     </copy>
   </target>
 
-  <target name="test" description="Runs the test you specify on the command
-      line with -Dtest=" depends="compile_javatests">
+  <target name="javatests" description="Runs the test you specify on the
+      command line with -Dtest=" depends="javatests_compile">
       <junit printsummary="true" fork="yes" failureproperty="junit.failure">
         <sysproperty key="test" value="${test}"/>
         <sysproperty key="tests" value="${tests}"/>
         <classpath>
-          <path refid="classpath_javatests"/>
+          <path refid="javatests_classpath"/>
           <pathelement location="${build.javatests}"/>
         </classpath>
         <formatter type="plain" usefile="false"/>
@@ -97,15 +101,15 @@
      <fail if="junit.failure" message="Unit test(s) failed."/>
   </target>
 
-  <target name="testdebug" description="Runs the test you specify on the command
-      line with -Dtest=" depends="compile_javatests">
+  <target name="javatestsdebug" description="Runs the test you specify on the
+      command line with -Dtest=" depends="javatests_compile">
     <junit printsummary="true" fork="yes" failureproperty="junit.failure">
       <sysproperty key="test" value="${test}"/>
       <sysproperty key="tests" value="${tests}"/>
       <jvmarg value="-Xdebug"/>
       <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/>
       <classpath>
-        <path refid="classpath_javatests"/>
+        <path refid="javatests_classpath"/>
         <pathelement location="${build.javatests}"/>
       </classpath>
       <formatter type="plain" usefile="false"/>
@@ -115,6 +119,9 @@
     </junit>
     <fail if="junit.failure" message="Unit test(s) failed."/>
   </target>
+
+  <target name="test" depends="javatests"/>
+  <target name="testdebug" depends="javatestsdebug"/>
 
   <target name="all" depends="test" />
 
