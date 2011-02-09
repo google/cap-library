@@ -29,7 +29,7 @@ import java.util.Locale;
  * @author shakusa@google.com (Steve Hakusa)
  */
 public class CapException extends Exception {
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = -8060028892021203660L;
 
   /** List of reasons for the exception */
   private final List<Reason> reasons;
@@ -264,9 +264,6 @@ public class CapException extends Exception {
     SENDER_IS_REQUIRED("<sender> is required"),
     SENT_IS_REQUIRED("<sent> is required"),
     STATUS_IS_REQUIRED("<status> is required"),
-    XMLNS_IS_REQUIRED("<alert> tag must include the xmlns attribute " +
-    		"referencing the CAP URL as the namespace, e.g."
-        + "xmlns:cap=\"urn:oasis:names:tc:emergency:cap:1.2\""),
     UNSUPPORTED_ELEMENT("Unsupported element <{0}>"),
     UNSUPPORTED_VALUE("Unsupported value <{0}> = \"{1}\""),
     ;

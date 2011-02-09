@@ -16,22 +16,6 @@
 
 package com.google.publicalerts.cap;
 
-import com.google.protobuf.ByteString;
-import com.google.protobuf.Descriptors;
-import com.google.protobuf.Descriptors.FieldDescriptor;
-import com.google.protobuf.Message.Builder;
-import com.google.protobuf.MessageOrBuilder;
-import com.google.publicalerts.cap.CapException.Reason;
-import com.google.publicalerts.cap.CapException.Type;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -41,8 +25,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Stack;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
@@ -52,6 +34,23 @@ import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+
+import com.google.protobuf.ByteString;
+import com.google.protobuf.Descriptors;
+import com.google.protobuf.Descriptors.FieldDescriptor;
+import com.google.protobuf.Message.Builder;
+import com.google.protobuf.MessageOrBuilder;
+import com.google.publicalerts.cap.CapException.Reason;
+import com.google.publicalerts.cap.CapException.Type;
+
+
 /**
  * Parses CAP XML, optionally validating.
  * Supports CAP 1.0, 1.1, and 1.2, but all alerts in the same document
@@ -59,18 +58,22 @@ import javax.xml.validation.SchemaFactory;
  *
  * Ignores enveloped digital signature.  To validate the signature, use
  * {@link XmlSignatureValidator}.
- *
+ * 
  * TODO(shakusa) Support input from javax.xml.transform.Source ?
  *
  * @author shakusa@google.com (Steve Hakusa)
  */
 public class CapXmlParser {
-  private static final Map<String, Schema> SCHEMA_MAP = initSchemaMap();
+  private static final Map<String, Schema> EXTENDED_SCHEMA_MAP = initSchemaMap(
+      new String[] {"cap10_extended.xsd", "cap11_extended.xsd",
+          "cap12_extended.xsd"});
 
-  private static Map<String, Schema> initSchemaMap() {
+  private static final Map<String, Schema> STRICT_SCHEMA_MAP = initSchemaMap(
+      new String[] {"cap10.xsd", "cap11.xsd", "cap12.xsd"});
+
+  private static Map<String, Schema> initSchemaMap(String[] xsds) {
     SchemaFactory schemaFactory = SchemaFactory.newInstance(
         XMLConstants.W3C_XML_SCHEMA_NS_URI);
-    String[] xsds = new String[] {"cap10.xsd", "cap11.xsd", "cap12.xsd"};
     String[] xmlns = new String[] {CapValidator.CAP10_XMLNS,
         CapValidator.CAP11_XMLNS, CapValidator.CAP12_XMLNS};
 
@@ -88,6 +91,7 @@ public class CapXmlParser {
   }
 
   private final boolean validate;
+  private final Map<String, Schema> schemaMap;
 
   /**
    * Creates a new parser.
@@ -100,9 +104,29 @@ public class CapXmlParser {
    * it is left as null.
    */
   public CapXmlParser(boolean validate) {
-    this.validate = validate;
+    this(validate, false);
   }
-
+  
+  /**
+   * Creates a new parser.
+   *
+   * @param validate if true, the {$code parseFrom} methods throw a
+   * {@link CapException} if given invalid CAP XML. If false, no
+   * {@link CapException} will be thrown, though a {@link SAXParseException}
+   * or {@link NotCapException} could still be thrown if the XML is not
+   * valid or not CAP. Instead, if there are errors parsing a field,
+   * it is left as null.
+   * @param strictXsdValidation if true, perform by-the-spec xsd schema
+   * validation, which does not check a number of properties specified 
+   * elsewhere in the spec. If false (the default), attempt to do extra
+   * validation to conform to the text of the spec.
+   */
+  public CapXmlParser(boolean validate, boolean strictXsdValidation) {
+    this.validate = validate;
+    this.schemaMap = strictXsdValidation
+        ? STRICT_SCHEMA_MAP : EXTENDED_SCHEMA_MAP;
+  }
+  
   /**
    * Parse the given alert.
    *
@@ -151,10 +175,10 @@ public class CapXmlParser {
     CapXmlHandler handler = new CapXmlHandler();
     try {
       String xmlns = getXmlns(is);
-      if (!SCHEMA_MAP.containsKey(xmlns)) {
+      if (!schemaMap.containsKey(xmlns)) {
         throw new NotCapException("Unsupported xmlns:" + xmlns);
       }
-      factory.setSchema(SCHEMA_MAP.get(xmlns));
+      factory.setSchema(schemaMap.get(xmlns));
       XMLReader reader = factory.newSAXParser().getXMLReader();
       reader.setContentHandler(handler);
       reader.setErrorHandler(handler);
@@ -199,7 +223,7 @@ public class CapXmlParser {
    * namespace of the message.
    */
   static class AbortXmlnsParseException extends RuntimeException {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 6359526632284475695L;
 
     private final String xmlns;
 
@@ -262,10 +286,8 @@ public class CapXmlParser {
 
     @Override
     public void error(SAXParseException e) throws SAXException {
-      Reason reason = translate(e);
-      if (reason != null) {
-        parseErrors.add(translate(e));
-      }
+      parseErrors.add(new Reason(e.getLineNumber(), e.getColumnNumber(),
+          Type.OTHER, e.getMessage(), localName));
     }
 
     @Override
@@ -388,10 +410,7 @@ public class CapXmlParser {
       if (fd.isRepeated()) {
         builder.addRepeatedField(fd, value);
       } else {
-        if (builder.hasField(fd)) {
-          parseErrors.add(newReason(
-              Type.DUPLICATE_ELEMENT, fd.getName(), value));
-        } else {
+        if (!builder.hasField(fd)) {
           builder.setField(fd, value);
         }
       }
@@ -484,7 +503,6 @@ public class CapXmlParser {
           throw new IllegalArgumentException(
               fd.getName() + " has unsupported type " + fd.getType());
       }
-      parseErrors.add(newReason(Type.UNSUPPORTED_VALUE, fd.getName(), val));
       return null;
     }
 
@@ -525,8 +543,6 @@ public class CapXmlParser {
       for (String pointStr : pointStrs) {
         Point point = toPoint(pointStr);
         if (point == null) {
-          parseErrors.add(newReason(
-              Type.AREA_INVALID_POLYGON_POINT, infoSeqNum, pointStr, str));
           return null;
         } else {
           polygon.addPoint(point);
@@ -541,13 +557,10 @@ public class CapXmlParser {
         return null;
       }
       if (pointRadius.length != 2) {
-        parseErrors.add(newReason(Type.AREA_INVALID_CIRCLE, infoSeqNum, str));
         return null;
       }
       Point point = toPoint(pointRadius[0]);
       if (point == null) {
-        parseErrors.add(
-            newReason(Type.AREA_INVALID_CIRCLE_POINT, infoSeqNum, str));
         return null;
       }
 
@@ -555,8 +568,6 @@ public class CapXmlParser {
       try {
         radius = Float.parseFloat(pointRadius[1]);
       } catch (NumberFormatException e) {
-        parseErrors.add(
-            newReason(Type.AREA_INVALID_CIRCLE_RADIUS, infoSeqNum, str));
         return null;
       }
 
@@ -623,61 +634,10 @@ public class CapXmlParser {
     ValuePair toCap10ValuePair(String name, String str) {
       String[] nameValue = str.split("=");
       if (nameValue.length != 2) {
-        parseErrors.add(newReason(Type.UNSUPPORTED_VALUE, name, str));
         return null;
       }
       return ValuePair.newBuilder().setValueName(nameValue[0].trim())
           .setValue(nameValue[1].trim()).build();
-    }
-
-    private static final Pattern SAX_PARSE_REGEXP = Pattern.compile(
-        ".* '(.*)'..*'(.*)'.*");
-
-    /**
-     * Translates a {@link SAXParseException} to an equivalent {@link Reason}.
-     *
-     * @param e the exception to translate
-     */
-    private Reason translate(SAXParseException e) {
-      Type type = Type.OTHER;
-      String[] args = new String[] { e.getLocalizedMessage() };
-      String message = e.getMessage();
-      if (message.startsWith("cvc-complex-type.2.4.a")) {
-        // invalid order
-        Matcher matcher = SAX_PARSE_REGEXP.matcher(message);
-        if (matcher.matches() && matcher.groupCount() > 1) {
-          FieldDescriptor fd = getField(matcher.group(1));
-          if (fd == null) {
-            type = Type.UNSUPPORTED_ELEMENT;
-            args = new String[] { matcher.group(1) };
-          } else {
-            type = Type.INVALID_SEQUENCE;
-            args = new String[] { matcher.group(2), matcher.group(1) };
-          }
-        }
-      } else if (message.startsWith("cvc-enumeration-valid")) {
-        // invalid enum
-        Matcher m = SAX_PARSE_REGEXP.matcher(message);
-        if (m.matches() && m.groupCount() > 1) {
-          type = Type.INVALID_ENUM_VALUE;
-          args = new String[] {localName, m.group(1), m.group(2)};
-        }
-      } else if (message.startsWith("cvc-complex-type.2.4.b")) {
-        // missing required element, error is already handled by CapValidator
-        return null;
-      } else if (message.startsWith("cvc-type.3.1.3")) {
-        // invalid value, error is already handled by getPrimitiveValue above
-        return null;
-      }
-      return new Reason(e.getLineNumber(), e.getColumnNumber(), type,
-          (Object[]) args);
-    }
-
-    private Reason newReason(Type type, Object...params) {
-      // Null checks required by tests
-      int line = locator != null ? locator.getLineNumber() : -1;
-      int col = locator != null ? locator.getColumnNumber() : -1;
-      return new Reason(line, col, type, params);
     }
   }
 }

@@ -16,10 +16,9 @@
 
 package com.google.publicalerts.cap;
 
+import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import junit.framework.Assert;
 
@@ -105,8 +104,8 @@ public class TestUtil {
 
   public static void assertErrorTypes(
       List<Reason> reasons, ReasonType...types) {
-    Set<ReasonType> actual = new HashSet<ReasonType>();
-    Set<ReasonType> expected = new HashSet<ReasonType>();
+    List<ReasonType> actual = new ArrayList<ReasonType>();
+    List<ReasonType> expected = new ArrayList<ReasonType>();
     expected.addAll(Arrays.asList(types));
     for (Reason reason : reasons) {
       if (!expected.remove(reason.getType())) {

@@ -40,7 +40,7 @@
     </javac>
     <copy toDir="${build.java}/com/google/publicalerts/cap/schema"
 	  failonerror="true">
-      <fileset dir="java/com/google/publicalerts/cap/schema"/>
+      <fileset dir="schema"/>
     </copy>
   </target>
 
@@ -80,7 +80,7 @@
     </javac>
     <copy toDir="${build.javatests}/com/google/publicalerts/cap/schema"
 	  failonerror="true">
-      <fileset dir="java/com/google/publicalerts/cap/schema"/>
+      <fileset dir="schema"/>
     </copy>
   </target>
 

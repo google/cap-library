@@ -38,27 +38,27 @@ import java.text.ParseException;
  */
 public class CapUtil {
 
-  // From the CAP spec:
-  //
-  // The date and time is represented in [dateTime] format
-  // (e. g., "2002-05-24T16:49:00-07:00" for 24 May 2002 at
-  // 16: 49 PDT).  Alphabetic timezone designators such as "Z"
-  // MUST NOT be used.  The timezone for UTC MUST be represented
-  // as "-00:00" or "+00:00"
-  //
-  // DATE_FORMATS format below do most of the work of validating this format,
-  // but do not support handling the colon in the time zone format
-  // and are more lenient in parsing months and dates than the spec specifies.
-  //
-  // TODO(andriy): We handle fractional seconds (hundredths or thousands), but
-  // because [dateTime] allows an arbitrary number of decimals, it would be
-  // better to devise a more robust and flexible solution here.
+  /**
+   * From the CAP spec:
+   *
+   * The date and time is represented in [dateTime] format
+   * (e. g., "2002-05-24T16:49:00-07:00" for 24 May 2002 at
+   * 16: 49 PDT).  Alphabetic timezone designators such as "Z"
+   * MUST NOT be used.  The timezone for UTC MUST be represented
+   * as "-00:00" or "+00:00"
+   *
+   * {@link #DATE_FORMATS} below do most of the work of validating this format,
+   * but do not support handling the colon in the time zone format
+   * and are more lenient in parsing months and dates than the spec specifies.
+   */
+  // TODO (andriy): We handle fractional seconds (hundredths or thousands), but
+  // because [dateTime] allows an arbitrary number of decimals, it would be better
+  // to devise a more robust and flexible solution here.
   private static final Pattern DATE_PATTERN = Pattern.compile(
-      "[0-9]{4}-[01][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]" +
-      "(\\.[0-9]{2}([0-9])?)?[\\+|-][01][0-9]:[0-5][0-9]");
+      "[0-9]{4}-[01][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](\\.[0-9]{2}([0-9])?)?"
+          + "[\\+|-][01][0-9]:[0-5][0-9]");
 
-  // These are the (only) supported date formats; they must be covered by
-  // DATE_PATTERN.
+  // These are the (only) supported date formats; they must be covered by DATE_PATTERN.
   private static final String [] DATE_FORMATS = {"yyyy-MM-dd'T'HH:mm:ssZ",
                                                  "yyyy-MM-dd'T'HH:mm:ss.SSZ",
                                                  "yyyy-MM-dd'T'HH:mm:ss.SSSZ"};
@@ -79,6 +79,8 @@ public class CapUtil {
     if (value.endsWith(suffixWorkaround)) {
       return value.substring(0, value.length() - suffixWorkaround.length());
     } else if ("VeryLikely".equals(value)) {
+      // Special-case for the deprecated CAP 1.0 enum value for <certainty>
+      // The proto enum does not support a space, but the CAP XML enum has one.
       return "Very Likely";
     }
     return value;

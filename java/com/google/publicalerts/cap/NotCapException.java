@@ -22,7 +22,7 @@ package com.google.publicalerts.cap;
  * @author shakusa@google.com (Steve Hakusa)
  */
 public class NotCapException extends RuntimeException {
-  private static final long serialVersionUID = 1L;
+  private static final long serialVersionUID = 5192142568310923665L;
 
   public NotCapException() {
   }

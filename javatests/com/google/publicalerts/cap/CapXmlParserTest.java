@@ -18,6 +18,7 @@ package com.google.publicalerts.cap;
 
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.FieldDescriptor;
+import com.google.publicalerts.cap.CapException.ReasonType;
 import com.google.publicalerts.cap.CapException.Type;
 import com.google.publicalerts.cap.CapXmlParser.CapXmlHandler;
 
@@ -29,7 +30,7 @@ import org.xml.sax.SAXParseException;
 /**
  * Tests for {@link CapXmlParser}.
  *
-* @author shakusa@google.com (Steve Hakusa)
+ * @author shakusa@google.com (Steve Hakusa)
  */
 public class CapXmlParserTest extends TestCase {
 
@@ -165,7 +166,7 @@ public class CapXmlParserTest extends TestCase {
         + "<area>"
         + "<areaDesc>U.S. nationwide</areaDesc>"
         + "<polygon>1,2 3,4 5,6 1,2</polygon>"
-        + "<polygon>11,12 13,14 15,16 11,12</polygon>"
+        + "<polygon>-11.,-12.1 13.2,14. 15,16 -11,-12.1</polygon>"
         + "<circle>1,2 3</circle>"
         + "<circle>4,5 6</circle>"
         + "<geocode><valueName>G1</valueName><value>v1</value></geocode>"
@@ -191,10 +192,10 @@ public class CapXmlParserTest extends TestCase {
         .build(),
         area1.getPolygon(0));
     assertEquals(Polygon.newBuilder()
-        .addPoint(Point.newBuilder().setLatitude(11).setLongitude(12).build())
-        .addPoint(Point.newBuilder().setLatitude(13).setLongitude(14).build())
+        .addPoint(Point.newBuilder().setLatitude(-11).setLongitude(-12.1).build())
+        .addPoint(Point.newBuilder().setLatitude(13.2).setLongitude(14).build())
         .addPoint(Point.newBuilder().setLatitude(15).setLongitude(16).build())
-        .addPoint(Point.newBuilder().setLatitude(11).setLongitude(12).build())
+        .addPoint(Point.newBuilder().setLatitude(-11).setLongitude(-12.1).build())
         .build(),
         area1.getPolygon(1));
     assertEquals(Circle.newBuilder()
@@ -404,7 +405,52 @@ public class CapXmlParserTest extends TestCase {
       // expected
     }
   }
+  
+  public void testParseInvalidIdentifier() throws Exception {
+    String alertStr = getValidAlertPre(CapValidator.CAP_LATEST_XMLNS)
+        + "</alert>";
+    // Comma is not allowed in an identifier
+    alertStr = alertStr.replace("</identifier>", ",</identifier>");
+    CapXmlParser parser = new CapXmlParser(true);
+    assertCapException(parser, alertStr, Type.OTHER, Type.OTHER);
+  }
+  
+  private String getPolygonAlert(String xmlns, String polygon) {
+    return getValidAlertPre(CapValidator.CAP_LATEST_XMLNS)
+        + getValidInfoPre()
+        + "<area>"
+        + "<areaDesc>U.S. nationwide</areaDesc>"
+        + "<polygon>" + polygon + "</polygon>"
+        + "</area>"
+        + "</info>"
+        + "</alert>";    
+  }
+  
+  public void testParseInvalidPolygon() throws Exception {
+    for (String xmlns : CapValidator.CAP_XML_NAMESPACES) {
+      String alertStr = getPolygonAlert(xmlns, "1,2 3,4 1,2");
+      CapXmlParser parser = new CapXmlParser(true);
+      assertCapException(parser, alertStr, Type.OTHER, Type.OTHER);      
+    }
+  }
 
+  public void testParseInvalidPolygon2() throws Exception {
+    for (String xmlns : CapValidator.CAP_XML_NAMESPACES) {
+      String alertStr = getPolygonAlert(xmlns, "a,b 3,4 5,6");
+      CapXmlParser parser = new CapXmlParser(true);
+      assertCapException(parser, alertStr, Type.OTHER, Type.OTHER);
+    }
+  }
+  
+  public void testParseInvalidPolygon3() throws Exception {
+    for (String xmlns : CapValidator.CAP_XML_NAMESPACES) {
+      String alertStr = getPolygonAlert(xmlns, "300,200 3,4 5,6 7,8");    
+      CapXmlParser parser = new CapXmlParser(true);
+      assertCapException(parser, alertStr, Type.OTHER);
+    }
+  }
+  
+  
   public void testParseValidationError() throws Exception {
     String alertStr = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
         + "<alert xmlns=\"" + CapValidator.CAP_LATEST_XMLNS + "\">"
@@ -416,14 +462,8 @@ public class CapXmlParserTest extends TestCase {
         + "<scope>Invalid</scope>"
         + "</alert>";
     CapXmlParser parser = new CapXmlParser(true);
-    try {
-      parser.parseFrom(alertStr);
-      fail("Expected a CapException");
-    } catch (CapException e) {
-      assertEquals(2, e.getReasons().size());
-      assertEquals(Type.INVALID_ENUM_VALUE, e.getReasons().get(0).getType());
-      assertEquals(Type.SCOPE_IS_REQUIRED, e.getReasons().get(1).getType());
-    }
+    assertCapException(parser, alertStr,
+        Type.INVALID_ENUM_VALUE, Type.SCOPE_IS_REQUIRED);
   }
 
   public void testParseRequiredTagError() throws Exception {
@@ -437,14 +477,8 @@ public class CapXmlParserTest extends TestCase {
         + "<scoep>Public</scoep>\n"
         + "</alert>";
     CapXmlParser parser = new CapXmlParser(true);
-    try {
-      parser.parseFrom(alertStr);
-      fail("Expected a CapException");
-    } catch (CapException e) {
-      assertEquals(2, e.getReasons().size());
-      assertEquals(Type.UNSUPPORTED_ELEMENT, e.getReasons().get(0).getType());
-      assertEquals(Type.SCOPE_IS_REQUIRED, e.getReasons().get(1).getType());
-    }
+    assertCapException(parser, alertStr,
+        Type.UNSUPPORTED_ELEMENT, Type.SCOPE_IS_REQUIRED);
   }
 
   public void testParseOptionalTagError() throws Exception {
@@ -459,13 +493,7 @@ public class CapXmlParserTest extends TestCase {
         + "<address>blah</address>\n" // should be addresses
         + "</alert>";
     CapXmlParser parser = new CapXmlParser(true);
-    try {
-      parser.parseFrom(alertStr);
-      fail("Expected a CapException");
-    } catch (CapException e) {
-      assertEquals(1, e.getReasons().size());
-      assertEquals(Type.UNSUPPORTED_ELEMENT, e.getReasons().get(0).getType());
-    }
+    assertCapException(parser, alertStr, Type.UNSUPPORTED_ELEMENT);
   }
 
   public void testParseInfoOutOfOrderIsInvalid() throws Exception {
@@ -488,14 +516,7 @@ public class CapXmlParserTest extends TestCase {
         + "</alert>";
 
     CapXmlParser parser = new CapXmlParser(true);
-
-    try {
-      parser.parseFrom(alertStr);
-      fail("Expected a CapException");
-    } catch (CapException e) {
-      assertEquals(1, e.getReasons().size());
-      assertEquals(Type.INVALID_SEQUENCE, e.getReasons().get(0).getType());
-    }
+    assertCapException(parser, alertStr, Type.INVALID_SEQUENCE);
   }
 
   public void testParseNotCap() throws Exception {
@@ -716,4 +737,15 @@ public class CapXmlParserTest extends TestCase {
     assertNull(handler.toGroup("     \t         "));
     assertNull(handler.toGroup(""));
   }
+  
+  private void assertCapException(CapXmlParser parser, String alertStr, ReasonType... types)
+      throws Exception {
+    try {
+      parser.parseFrom(alertStr);
+      fail("Expected CapException");
+    } catch (CapException e) {
+      TestUtil.assertErrorTypes(e.getReasons(), types);
+    }    
+  }
+
 }
