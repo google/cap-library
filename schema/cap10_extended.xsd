@@ -1,25 +1,30 @@
 <?xml version = "1.0" encoding = "UTF-8"?>
 <!-- 
-This is an extended version of the CAP 1.1 specification that
+This is an extended version of the CAP 1.0 specification that
 adds additional validation rules.
+
+TODO(shakusa): Pattern for restriction
 
 Changes:
 - added version to schema
 - Added pattern restriction to identifier
 - Added pattern restriction to sender
+- Added pattern restriction to eventCode
 - Updated sent to 1.2 schema
 - Updated effective to 1.2 schema
 - Updated onset to 1.2 schema
 - Updated expires to 1.2 schema
+- Added pattern restriction to parameter
 - Added pattern restriction to polygon
 - Added pattern restriction to circle
+- Added pattern restriction to geocode
 - Added pattern restriction to altitude
 - Added pattern restriction to ceiling
 - Added ignore of xml signature schema
 -->
 <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.incident.com/cap/1.0"
   xmlns:cap="http://www.incident.com/cap/1.0" xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  elementFormDefault="qualified" attributeFormDefault="unqualified">
+  elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
   <element name="alert">
     <annotation>
       <documentation>CAP Alert Message (version 1.0)</documentation>
@@ -29,6 +34,7 @@ Changes:
         <element name="identifier">
           <simpleType>
             <restriction base="xs:string">
+              <!--  MUST NOT include spaces, commas or restricted characters (< and &). -->
               <pattern value="[^\s,&amp;&lt;]+"/>
             </restriction>
           </simpleType>
@@ -36,6 +42,7 @@ Changes:
         <element name="sender">
           <simpleType>
             <restriction base="xs:string">
+              <!--  MUST NOT include spaces, commas or restricted characters (< and &). -->
               <pattern value="[^\s,&amp;&lt;]+"/>
             </restriction>
           </simpleType>
@@ -150,8 +157,14 @@ Changes:
                 </simpleType>
               </element>
               <element name="audience" type="string" minOccurs="0" />
-              <element name="eventCode" type="string" minOccurs="0"
-                maxOccurs="unbounded" />
+              <element name="eventCode" minOccurs="0" maxOccurs="unbounded">
+                <simpleType>
+                  <restriction base="xs:string">
+                    <!-- Form code_type=code -->
+                    <pattern value="\s*[^\s]+=[^\s]+\s*"/>
+                  </restriction>
+                </simpleType>
+              </element>
               <element name="effective" minOccurs="0">
                 <simpleType>
                   <restriction base="xs:dateTime">
@@ -179,8 +192,14 @@ Changes:
               <element name="instruction" type="string" minOccurs="0" />
               <element name="web" type="anyURI" minOccurs="0" />
               <element name="contact" type="string" minOccurs="0" />
-              <element name="parameter" type="string" minOccurs="0"
-                maxOccurs="unbounded" />
+              <element name="parameter" minOccurs="0" maxOccurs="unbounded">
+                <simpleType>
+                  <restriction base="xs:string">
+                    <!-- Form label=value -->
+                    <pattern value="\s*[^\s]+=[^\s]+\s*"/>
+                  </restriction>
+                </simpleType>
+              </element>
               <element name="resource" minOccurs="0" maxOccurs="unbounded">
                 <complexType>
                   <sequence>
@@ -199,22 +218,31 @@ Changes:
                     <element name="polygon" minOccurs="0" maxOccurs="unbounded">
                       <simpleType>
                         <restriction base="xs:string">
-                          <pattern value="([+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*\s+){3,}([+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*)"/>
+                          <!--  A minimum of 4 whitespace-delimited [WGS 84] coordinate pairs-->
+                          <pattern value="\s*([+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*\s+){3,}([+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*)\s*"/>
                         </restriction>
                       </simpleType>
                     </element>
                     <element name="circle" minOccurs="0" maxOccurs="unbounded">
                       <simpleType>
                         <restriction base="xs:string">
-                          <pattern value="[+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*\s[+]?\d*[.]?\d*"/>
+                          <!-- A [WGS 84] coordinate pair followed by a space character and a radius value in kilometers -->
+                          <pattern value="\s*[+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*\s[+]?\d*[.]?\d*\s*"/>
                         </restriction>
                       </simpleType>
                     </element>
-                    <element name="geocode" type="string" minOccurs="0"
-                      maxOccurs="unbounded" />
+                    <element name="geocode" minOccurs="0" maxOccurs="unbounded">
+                      <simpleType>
+                        <restriction base="xs:string">
+                          <!-- Form code_type=code -->
+                          <pattern value="\s*[^\s]+=[^\s]+\s*"/>
+                        </restriction>
+                      </simpleType>
+                    </element>
                     <element name="altitude" minOccurs="0">
                       <simpleType>
                         <restriction base="xs:decimal">
+                          <!--  Non-negative -->
                           <pattern value="[+]?\d*[.]?\d*"/>
                         </restriction>
                       </simpleType>
@@ -222,6 +250,7 @@ Changes:
                     <element name="ceiling"  minOccurs="0">
                       <simpleType>
                         <restriction base="xs:decimal">
+                          <!--  Non-negative -->
                           <pattern value="[+]?\d*[.]?\d*"/>
                         </restriction>
                       </simpleType>

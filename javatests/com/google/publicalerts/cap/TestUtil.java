@@ -44,7 +44,8 @@ public class TestUtil {
         .addCode("abcde")
         .setNote("a note")
         .setReferences(Group.newBuilder()
-            .addValue("reference1").addValue("reference 2").build())
+            .addValue("hsas@dhs.gov,123,2003-02-02T14:39:01-05:00")
+            .addValue("hsas@dhs.gov,456,2003-03-02T14:39:01-05:00").build())
         .setIncidents(Group.newBuilder()
             .addValue("incident1").addValue("incident2").build())
         .addInfo(getValidInfoBuilder());

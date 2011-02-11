@@ -50,7 +50,6 @@ import com.google.protobuf.MessageOrBuilder;
 import com.google.publicalerts.cap.CapException.Reason;
 import com.google.publicalerts.cap.CapException.Type;
 
-
 /**
  * Parses CAP XML, optionally validating.
  * Supports CAP 1.0, 1.1, and 1.2, but all alerts in the same document
@@ -287,7 +286,7 @@ public class CapXmlParser {
     @Override
     public void error(SAXParseException e) throws SAXException {
       parseErrors.add(new Reason(e.getLineNumber(), e.getColumnNumber(),
-          Type.OTHER, e.getMessage(), localName));
+          Type.OTHER, e.getMessage(), localName, characters.toString()));
     }
 
     @Override
@@ -364,7 +363,8 @@ public class CapXmlParser {
               List<Reason> reasons = validator.validate(
                   alert, alert.getXmlns(), infoSeqNum, false);
               for (Reason reason : reasons) {
-                reason.setLineNumber(builderLineStack.peek());
+                parseErrors.add(Reason.withNewLineNumber(
+                    reason, builderLineStack.peek()));
               }
               parseErrors.addAll(reasons);
             }
@@ -526,10 +526,10 @@ public class CapXmlParser {
             infoSeqNum, false);
         if (!builderLineStack.isEmpty()) {
           for (Reason reason : reasons) {
-            reason.setLineNumber(builderLineStack.peek());
+            parseErrors.add(Reason.withNewLineNumber(
+                reason, builderLineStack.peek()));
           }
         }
-        parseErrors.addAll(reasons);
       }
       return message;
     }

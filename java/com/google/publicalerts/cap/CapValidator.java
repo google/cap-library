@@ -150,13 +150,12 @@ class CapValidator {
     }
 
     if (area.hasCeiling() && !area.hasAltitude()) {
-      reasons.add(new Reason(Type.AREA_INVALID_CEILING, infoSeqNum));
+      reasons.add(new Reason(Type.INVALID_AREA));
     }
 
     if (area.hasAltitude() && area.hasCeiling()) {
       if (area.getAltitude() > area.getCeiling()) {
-        reasons.add(new Reason(
-            Type.AREA_INVALID_ALTITUDE_CEILING_RANGE, infoSeqNum));
+        reasons.add(new Reason(Type.INVALID_ALTITUDE_CEILING_RANGE));
       }
     }
 
@@ -167,7 +166,7 @@ class CapValidator {
     List<Reason> reasons = new ArrayList<Reason>();
     if (!polygon.getPoint(0).equals(
         polygon.getPoint(polygon.getPointCount() - 1))) {
-      reasons.add(new Reason(Type.AREA_INVALID_POLYGON_START_END, infoSeqNum));
+      reasons.add(new Reason(Type.INVALID_POLYGON));
     }
     return reasons;
   }

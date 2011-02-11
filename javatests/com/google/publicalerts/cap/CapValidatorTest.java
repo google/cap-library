@@ -53,7 +53,8 @@ public class CapValidatorTest extends TestCase {
 
     alert.getInfoBuilder(0).getAreaBuilder(0).clearCircle();
     alert.getInfoBuilder(0).getAreaBuilder(0).clearAltitude();
-    assertValidateErrors(alert, Type.AREA_INVALID_CEILING);
+    assertValidateErrors(alert, Type.ADDRESSES_SCOPE_MISMATCH, 
+        Type.INVALID_AREA);
   }
 
   public void testInfoParseErrors() {
@@ -61,7 +62,7 @@ public class CapValidatorTest extends TestCase {
 
     info.getAreaBuilder(0).clearCircle();
     info.getAreaBuilder(0).clearAltitude();
-    assertValidateErrors(info, Type.AREA_INVALID_CEILING);
+    assertValidateErrors(info, Type.INVALID_AREA);
   }
 
   public void testParseAreaParseErrors() {
@@ -74,14 +75,15 @@ public class CapValidatorTest extends TestCase {
         .addPoint(Point.newBuilder().setLatitude(5).setLongitude(6).build())
         .addPoint(Point.newBuilder().setLatitude(7).setLongitude(8).build())
         .build());
-    assertValidateErrors(area, Type.AREA_INVALID_POLYGON_START_END);
+    assertValidateErrors(area, Type.INVALID_POLYGON);
 
-    area.clearCircle();
-    area.clearAltitude();
-    assertValidateErrors(area, Type.AREA_INVALID_CEILING);
+    area.clearPolygon()
+        .clearCircle()
+        .clearAltitude();
+    assertValidateErrors(area, Type.INVALID_AREA);
 
     area.setAltitude(area.getCeiling() + 1);
-    assertValidateErrors(area, Type.AREA_INVALID_ALTITUDE_CEILING_RANGE);
+    assertValidateErrors(area, Type.INVALID_ALTITUDE_CEILING_RANGE);
   }
 
   public void testGetVersion() {

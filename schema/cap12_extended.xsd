@@ -6,6 +6,7 @@ adds additional validation rules.
 Changes:
 - Added pattern restriction to identifier
 - Added pattern restriction to sender
+- Added pattern restriction to references
 - Added pattern restriction to polygon
 - Added pattern restriction to circle
 - Added pattern restriction to altitude
@@ -25,6 +26,7 @@ Original schema is Copyright OASIS Open 2010 All Rights Reserved
         <element name="identifier">
           <simpleType>
             <restriction base="xs:string">
+              <!--  MUST NOT include spaces, commas or restricted characters (< and &). -->
               <pattern value="[^\s,&amp;&lt;]+"/>
             </restriction>
           </simpleType>
@@ -32,6 +34,7 @@ Original schema is Copyright OASIS Open 2010 All Rights Reserved
         <element name="sender">
           <simpleType>
             <restriction base="xs:string">
+              <!--  MUST NOT include spaces, commas or restricted characters (< and &). -->
               <pattern value="[^\s,&amp;&lt;]+"/>
             </restriction>
           </simpleType>
@@ -79,7 +82,14 @@ Original schema is Copyright OASIS Open 2010 All Rights Reserved
         <element name="addresses" type="xs:string" minOccurs="0" />
         <element name="code" type="xs:string" minOccurs="0" maxOccurs="unbounded" />
         <element name="note" type="xs:string" minOccurs="0" />
-        <element name="references" type="xs:string" minOccurs="0" />
+        <element name="references" minOccurs="0">
+          <simpleType>
+            <restriction base="xs:string">
+              <!-- Form of sender,identifier,sent -->
+              <pattern value="\s*[^\s,&amp;&lt;]+,[^\s,&amp;&lt;]+,\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d[-,+]\d\d:\d\d(\s+[^\s,&amp;&lt;]+,[^\s,&amp;&lt;]+,\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d[-,+]\d\d:\d\d)*\s*"/>
+            </restriction>
+          </simpleType>
+        </element>
         <element name="incidents" type="xs:string" minOccurs="0" />
         <element name="info" minOccurs="0" maxOccurs="unbounded">
           <complexType>
@@ -216,14 +226,16 @@ Original schema is Copyright OASIS Open 2010 All Rights Reserved
                     <element name="polygon" minOccurs="0" maxOccurs="unbounded">
                       <simpleType>
                         <restriction base="xs:string">
-                          <pattern value="([+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*\s+){3,}([+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*)"/>
+                          <!--  A minimum of 4 whitespace-delimited [WGS 84] coordinate pairs-->
+                          <pattern value="\s*([+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*\s+){3,}([+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*)\s*"/>
                         </restriction>
                       </simpleType>
                     </element>
                     <element name="circle" minOccurs="0" maxOccurs="unbounded">
                       <simpleType>
                         <restriction base="xs:string">
-                          <pattern value="[+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*\s[+]?\d*[.]?\d*"/>
+                          <!-- A [WGS 84] coordinate pair followed by a space character and a radius value in kilometers -->
+                          <pattern value="\s*[+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*\s[+]?\d*[.]?\d*\s*"/>
                         </restriction>
                       </simpleType>
                     </element>
@@ -238,6 +250,7 @@ Original schema is Copyright OASIS Open 2010 All Rights Reserved
                     <element name="altitude" minOccurs="0">
                       <simpleType>
                         <restriction base="xs:decimal">
+                          <!--  Non-negative -->
                           <pattern value="[+]?\d*[.]?\d*"/>
                         </restriction>
                       </simpleType>
@@ -245,6 +258,7 @@ Original schema is Copyright OASIS Open 2010 All Rights Reserved
                     <element name="ceiling"  minOccurs="0">
                       <simpleType>
                         <restriction base="xs:decimal">
+                          <!--  Non-negative -->
                           <pattern value="[+]?\d*[.]?\d*"/>
                         </restriction>
                       </simpleType>

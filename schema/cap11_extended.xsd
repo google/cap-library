@@ -4,10 +4,11 @@ This is an extended version of the CAP 1.1 specification that
 adds additional validation rules.
 
 Changes:
-- added version to schema
+- Added version to schema
 - Added pattern restriction to identifier
 - Added pattern restriction to sender
 - Updated sent to 1.2 schema
+- Added pattern restriction to references
 - Updated effective to 1.2 schema
 - Updated onset to 1.2 schema
 - Updated expires to 1.2 schema
@@ -29,6 +30,7 @@ Changes:
         <element name="identifier">
           <simpleType>
             <restriction base="xs:string">
+              <!--  MUST NOT include spaces, commas or restricted characters (< and &). -->
               <pattern value="[^\s,&amp;&lt;]+"/>
             </restriction>
           </simpleType>
@@ -36,6 +38,7 @@ Changes:
         <element name="sender">
           <simpleType>
             <restriction base="xs:string">
+              <!--  MUST NOT include spaces, commas or restricted characters (< and &). -->
               <pattern value="[^\s,&amp;&lt;]+"/>
             </restriction>
           </simpleType>
@@ -83,7 +86,14 @@ Changes:
         <element name="addresses" type="string" minOccurs="0" />
         <element name="code" type="string" minOccurs="0" maxOccurs="unbounded" />
         <element name="note" type="string" minOccurs="0" />
-        <element name="references" type="string" minOccurs="0" />
+        <element name="references" minOccurs="0">
+          <simpleType>
+            <restriction base="xs:string">
+              <!-- Form of sender,identifier,sent -->
+              <pattern value="\s*[^\s,&amp;&lt;]+,[^\s,&amp;&lt;]+,\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d[-,+]\d\d:\d\d(\s+[^\s,&amp;&lt;]+,[^\s,&amp;&lt;]+,\d\d\d\d-\d\d-\d\dT\d\d:\d\d:\d\d[-,+]\d\d:\d\d)*\s*"/>
+            </restriction>
+          </simpleType>
+        </element>
         <element name="incidents" type="string" minOccurs="0" />
         <element name="info" minOccurs="0" maxOccurs="unbounded">
           <complexType>
@@ -218,14 +228,16 @@ Changes:
                     <element name="polygon" minOccurs="0" maxOccurs="unbounded">
                       <simpleType>
                         <restriction base="xs:string">
-                          <pattern value="([+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*\s+){3,}([+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*)"/>
+                          <!--  A minimum of 4 whitespace-delimited [WGS 84] coordinate pairs-->
+                          <pattern value="\s*([+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*\s+){3,}([+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*)\s*"/>
                         </restriction>
                       </simpleType>
                     </element>
                     <element name="circle" minOccurs="0" maxOccurs="unbounded">
                       <simpleType>
                         <restriction base="xs:string">
-                          <pattern value="[+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*\s[+]?\d*[.]?\d*"/>
+                          <!-- A [WGS 84] coordinate pair followed by a space character and a radius value in kilometers -->
+                          <pattern value="\s*[+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*\s[+]?\d*[.]?\d*\s*"/>
                         </restriction>
                       </simpleType>
                     </element>
@@ -240,6 +252,7 @@ Changes:
                     <element name="altitude" minOccurs="0">
                       <simpleType>
                         <restriction base="xs:decimal">
+                          <!--  Non-negative -->
                           <pattern value="[+]?\d*[.]?\d*"/>
                         </restriction>
                       </simpleType>
@@ -247,6 +260,7 @@ Changes:
                     <element name="ceiling"  minOccurs="0">
                       <simpleType>
                         <restriction base="xs:decimal">
+                          <!--  Non-negative -->
                           <pattern value="[+]?\d*[.]?\d*"/>
                         </restriction>
                       </simpleType>

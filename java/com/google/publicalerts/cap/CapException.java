@@ -52,11 +52,11 @@ public class CapException extends Exception {
   public String toString() {
     return "CapException[reasons=[" + getMessage() + "]]";
   }
-  
+
   public String getMessage(Locale locale) {
     return getMessage(reasons, locale);
   }
-  
+
   private static String getMessage(List<Reason> reasons, Locale locale) {
     StringBuilder sb = new StringBuilder();
     for (Reason reason : reasons) {
@@ -82,31 +82,38 @@ public class CapException extends Exception {
      * Line number of the reason. Valid only when parsing an alert from text,
      * otherwise -1.
      */
-    private int lineNumber;
-    
+    private final int lineNumber;
+
     /**
      * Column number of the reason.  Valid only when parsing an alert from
      * text, otherwise -1.
      */
-    private int columnNumber;
-    
+    private final int columnNumber;
+
     /** Message parameters for the reason. */
     private final Object[] messageParams;
+
+    public static Reason withNewLineNumber(Reason reason, int newLineNumber) {
+      return new Reason(newLineNumber, reason.columnNumber,
+          reason.type, reason.messageParams);
+    }
 
     public Reason(ReasonType type, Object...messageParams) {
       this(-1, -1, type, messageParams);
     }
 
-    public Reason(int line, int col, ReasonType type, Object...messageParams) {
-      this.type = type;
+    public Reason(
+        int line, int col, ReasonType type, Object...messageParams) {
       this.lineNumber = line;
+      this.columnNumber = col;
+      this.type = type;
       this.messageParams = messageParams;
     }
 
     public ReasonType getType() {
       return type;
     }
-    
+
     public int getMessageParamsCount() {
       return messageParams.length;
     }
@@ -114,27 +121,19 @@ public class CapException extends Exception {
     public Object getMessageParam(int i) {
       return getMessageParamsCount() > i ? messageParams[i] : null;
     }
-    
-    public void setLineNumber(int line) {
-      this.lineNumber = line;
-    }
 
     public int getLineNumber() {
       return lineNumber;
     }
 
-    public void setColumnNumber(int col) {
-      this.columnNumber = col;
-    }
-
     public int getColumnNumber() {
       return columnNumber;
     }
-    
+
     /**
      * Returns the {@link ReasonType}'s message formatted with the
      * {@link #messageParams}.
-     * @return an English human-readable message for this reason 
+     * @return an English human-readable message for this reason
      */
     public String getMessage() {
       return getLocalizedMessage(Locale.ENGLISH);
@@ -144,7 +143,7 @@ public class CapException extends Exception {
      * Returns the {@link ReasonType}'s message formatted with the
      * {@link #messageParams}.
      * @param locale for the requested message
-     * @return a human-readable message for this reason 
+     * @return a human-readable message for this reason
      */
     public String getLocalizedMessage(Locale locale) {
       StringBuilder sb = new StringBuilder();
@@ -157,6 +156,11 @@ public class CapException extends Exception {
       return sb.toString();
     }
     
+    @Override
+    public String toString() {
+      return getMessage();
+    }
+
     @Override
     public boolean equals(Object other) {
       if (!(other instanceof Reason)) {
@@ -179,10 +183,10 @@ public class CapException extends Exception {
       return result;
     }
   }
-  
+
   /**
    * Interface defining the type of a CapException Reason.
-   * This allows for external types to be defined. 
+   * This allows for external types to be defined.
    */
   public static interface ReasonType {
 
@@ -206,66 +210,44 @@ public class CapException extends Exception {
     
     ADDRESSES_SCOPE_MISMATCH(
         "<addresses> should be used only when <scope> is Private"),
-    ALERT_ELEMENTS_OUT_OF_SEQUENCE(""),
-    AREA_AREA_DESC_IS_REQUIRED("<areaDesc> is required in Info #{0}"),
-    AREA_INVALID_CIRCLE("Invalid <circle> \"{1}\" in Info #{0}"),
-    AREA_INVALID_CIRCLE_POINT("Invalid <circle> point \"{1}\" in Info #{0}"),
-    AREA_INVALID_CIRCLE_RADIUS("Invalid <circle> radius \"{1}\" in Info #{0}"),
-    AREA_INVALID_ALTITUDE_CEILING_RANGE("Invalid <area>; altitude must not " +
-    		"be greater than ceiling in Info #{0}"),
-    AREA_INVALID_CEILING("Invalid <area>; when ceiling is specified " +
-        "altitude must also be specified in Info #{0}"),
-    AREA_INVALID_POINT_LATITUDE("Invalid latitude \"{1}\" in Info #{0}"),
-    AREA_INVALID_POINT_LONGITUDE("Invalid longitude: \"{1}\" in Info #{0}"),
-    AREA_INVALID_POLYGON_NUM_POINTS(
-        "Invalid <polygon>; must have at least 4 points in Info #{0}"),
-    AREA_INVALID_POLYGON_POINT("Invalid <polygon> at point \"{1}\" in "
-    		+ "Info #{0}: \"{2}\""),
-    AREA_INVALID_POLYGON_START_END("Invalid <polygon> in Info #{0}; "
-        + "first and last pairs of coordinates must be the same."),
+    CERTAINTY_VERY_LIKELY_DEPRECATED("<certainty> VeryLikely has been " +
+        "deprecated. Use Likely instead"),
     DUPLICATE_ELEMENT("Invalid duplicate <{0}>, ignoring \"{1}\""),
-    IDENTIFIER_IS_REQUIRED("<identifier> is required"),
-    INFO_CATEGORY_IS_REQUIRED("<category> is required in Info #{0}"),
-    INFO_CERTAINTY_VERY_LIKELY_DEPRECATED("<certainty> VeryLikely has been " +
-    		"deprecated. Use Likely instead in Info #{0}"),
-    INFO_INVALID_EFFECTIVE("Invalid <effective>: \"{1}\" in Info #{0}. " +
-        "Must be formatted like '2002-05-24T16:49:00-07:00'"),
-    INFO_INVALID_EXPIRES("Invalid <expires>: \"{1}\" in Info #{0}. " +
-        "Must be formatted like '2002-05-24T16:49:00-07:00'"),
-    INFO_INVALID_ONSET("Invalid <onset>: \"{1}\" in Info #{0}. " +
-        "Must be formatted like '2002-05-24T16:49:00-07:00'"),
-    INFO_INVALID_WEB("Invalid <web>: \"{1}\" in Info #{0}. Must be a full " +
-    		"absolute URI"),
-    INFO_EVENT_IS_REQUIRED("<event> is required in Info #{0}"),
-    INFO_URGENCY_IS_REQUIRED("<urgency> is required in Info #{0}"),
-    INFO_SEVERITY_IS_REQUIRED("<severity> is required in Info #{0}"),
-    INFO_CERTAINTY_IS_REQUIRED("<certainty> is required in Info #{0}"),
+    INVALID_ALTITUDE_CEILING_RANGE("Invalid <area>; altitude must not " +
+    		"be greater than ceiling"),
+    INVALID_AREA("Invalid <area>; when ceiling is specified " +
+        "altitude must also be specified."),
+    INVALID_CHARACTERS("Invalid characters in element \"{0}\""),
+    INVALID_CIRCLE("Invalid <circle> \"{1}\". Must be formatted like: " +
+        "\"-12.345,67.89 15.2\", which is a [WGS 84] coordinate followed by a " +
+        "radius in kilometers"),
+    INVALID_DATE("Invalid <{0}>: \"{1}\". " +
+        "Must be formatted like \"2002-05-24T16:49:00-07:00\""),
     INVALID_ENUM_VALUE("Invalid enum value <{0}> = \"{1}\". " +
-    		"Must be one of {2}"),
+        "Must be one of {2}"),
     INVALID_IDENTIFIER("Invalid <identifier> \"{0}\". Must not include " +
         "spaces, commas, or restricted characters (< and &)"),
+    INVALID_POLYGON("Invalid <polygon> \"{1}\". Expect a minimum of 4 " +
+    		"[WGS 84] coordinates like: \"12.3,4.2 12.3,4.3 12.4,4.3 12.3,4.3 \", " +
+    		"where the first and last coordinates are equal."),
+    INVALID_REFERENCES("Invalid <references>: \"{0}\". Must be a " +
+    		"space-separated list of sender,identifier,sent triplets."),
+    INVALID_RESOURCE_SIZE("Invalid size: \"{0}\""),
+    INVALID_RESOURCE_URI("Invalid URI: \"{0}\""),
     INVALID_SENDER("Invalid <sender>: \"{0}\". Must not include " +
         "spaces, commas, or restricted characters (< and &)"),
-    INVALID_SENT("Invalid <sent>: \"{0}\" " +
-        "Must be formatted like '2002-05-24T16:49:00-07:00'"),
-    INVALID_SEQUENCE("Elements not in the correct sequence order specified " +
-    		"by the official schema. One of {0} expected instead of \"{1}\"."),
-    MSGTYPE_IS_REQUIRED("<msgType> is required"),
+    INVALID_SEQUENCE("Elements are not in the correct sequence order." +
+        "One of {0} expected instead of \"{1}\"."),
+    INVALID_VALUE("Unsupported value <{0}> = \"{1}\""),
+    INVALID_WEB("Invalid <web>: \"{0}\". Must be a full " +
+        "absolute URI"),
+    MISSING_REQUIRED_ELEMENT("The content of <{0}> is not complete. One of " +
+    	"{1} is required"),
     OTHER("{0}"),
     PASSWORD_DEPRECATED("<password> has been deprecated"),
-    RESOURCE_RESOURCE_DESC_IS_REQUIRED(
-        "<resourceDesc> is required in Info #{0}"),
-    RESOURCE_MIME_TYPE_IS_REQUIRED("<mimeType> is required> in Info #{0}"),
-    RESOURCE_INVALID_SIZE("Invalid size: {1} in Info #{0}"),
-    RESOURCE_INVALID_URI("Invalid URI: {1} in Info #{0}"),
     RESTRICTION_SCOPE_MISMATCH(
         "<restriction> should be used only when <scope> is Restricted"),
-    SCOPE_IS_REQUIRED("<scope> is required"),
-    SENDER_IS_REQUIRED("<sender> is required"),
-    SENT_IS_REQUIRED("<sent> is required"),
-    STATUS_IS_REQUIRED("<status> is required"),
     UNSUPPORTED_ELEMENT("Unsupported element <{0}>"),
-    UNSUPPORTED_VALUE("Unsupported value <{0}> = \"{1}\""),
     ;
 
     private final String message;

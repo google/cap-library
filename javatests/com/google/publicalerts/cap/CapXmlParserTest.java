@@ -34,8 +34,42 @@ import org.xml.sax.SAXParseException;
  */
 public class CapXmlParserTest extends TestCase {
 
+  private static final String SCHEMA_FACTORY =
+      "javax.xml.validation.SchemaFactory";
+  private static final String SAX_PARSER_FACTORY =
+      "javax.xml.parsers.SAXParserFactory";
+  private String schemaFactory;
+  private String saxParserFactory;
+  
   public CapXmlParserTest(String s) {
     super(s);
+  }
+  
+  @Override
+  public void setUp() throws Exception {
+    super.setUp();
+    // Force use of the Xerces parser so we can use XercesCapExceptionMapper
+    schemaFactory = System.getProperty(SCHEMA_FACTORY);
+    saxParserFactory = System.getProperty(SAX_PARSER_FACTORY);
+    System.setProperty(SCHEMA_FACTORY,
+        "com.sun.org.apache.xerces.internal.jaxp.validation.xs.SchemaFactoryImpl");
+    System.setProperty(SAX_PARSER_FACTORY,
+        "com.sun.org.apache.xerces.internal.jaxp.SAXParserFactoryImpl"); 
+  }
+  
+  @Override
+  public void tearDown() throws Exception {
+    if (schemaFactory == null) {
+      System.clearProperty(SCHEMA_FACTORY);      
+    } else {
+      System.setProperty(SCHEMA_FACTORY, schemaFactory);
+    }
+    if (saxParserFactory == null) {
+      System.clearProperty(SAX_PARSER_FACTORY);
+    } else {
+      System.setProperty(SAX_PARSER_FACTORY, saxParserFactory);
+    }
+    super.tearDown();
   }
 
   private String getValidAlertPre(String xmlns) {
@@ -52,7 +86,7 @@ public class CapXmlParserTest extends TestCase {
       + "<code>abcde</code>\n"
       + "<code>fghij</code>\n"
       + "<note>a note</note>\n"
-      + "<references>reference1 \"reference 2\"</references>\n"
+      + "<references>a,b,2002-04-02T14:39:01-05:00 </references>\n"
       + "<incidents>incident1 incident2</incidents>\n";
   }
 
@@ -68,15 +102,7 @@ public class CapXmlParserTest extends TestCase {
     + "<headline>Homeland Security Sets Code ORANGE</headline>\n"
     + "<description>DHS has set the threat level to ORANGE.</description>\n"
     + "<instruction>Take Protective Measures.</instruction>\n"
-    + "<web>http://www.dhs.gov/dhspublic/display?theme=29</web>\n"
-    + "<parameter>\n"
-    + "<valueName>HSAS</valueName>\n"
-    + "<value>ORANGE</value>\n"
-    + "</parameter>\n"
-    + "<parameter>\n"
-    + "<valueName>p2</valueName>\n"
-    + "<value>v2</value>\n"
-    + "</parameter>\n";
+    + "<web>http://www.dhs.gov/dhspublic/display?theme=29</web>\n";
   }
 
   public void testParseAlert() throws Exception {
@@ -98,8 +124,8 @@ public class CapXmlParserTest extends TestCase {
     assertEquals("abcde", alert.getCode(0));
     assertEquals("fghij", alert.getCode(1));
     assertEquals("a note", alert.getNote());
-    assertEquals("reference1", alert.getReferences().getValue(0));
-    assertEquals("reference 2", alert.getReferences().getValue(1));
+    assertEquals("a,b,2002-04-02T14:39:01-05:00",
+        alert.getReferences().getValue(0));
     assertEquals("incident1", alert.getIncidents().getValue(0));
     assertEquals("incident2", alert.getIncidents().getValue(1));
   }
@@ -125,6 +151,14 @@ public class CapXmlParserTest extends TestCase {
         + "<expires>2003-04-02T16:39:01-00:00</expires>\n"
         + "<senderName>Department of Homeland Security</senderName>\n"
         + "<contact>a contact</contact>\n"
+        + "<parameter>\n"
+        + "<valueName>HSAS</valueName>\n"
+        + "<value>ORANGE</value>\n"
+        + "</parameter>\n"
+        + "<parameter>\n"
+        + "<valueName>p2</valueName>\n"
+        + "<value>v2</value>\n"
+        + "</parameter>\n"
         + "</info>\n"
         + "</alert>";
 
@@ -145,10 +179,6 @@ public class CapXmlParserTest extends TestCase {
     assertEquals("Take Protective Measures.", info1.getInstruction());
     assertEquals("http://www.dhs.gov/dhspublic/display?theme=29",
         info1.getWeb());
-    assertEquals("HSAS", info1.getParameter(0).getValueName());
-    assertEquals("ORANGE", info1.getParameter(0).getValue());
-    assertEquals("p2", info1.getParameter(1).getValueName());
-    assertEquals("v2", info1.getParameter(1).getValue());
     assertEquals("an audience", info2.getAudience());
     assertEquals("a contact", info2.getContact());
     assertEquals("EC", info2.getEventCode(0).getValueName());
@@ -158,6 +188,10 @@ public class CapXmlParserTest extends TestCase {
     assertEquals("2003-04-02T14:39:01-05:00", info2.getEffective());
     assertEquals("2003-04-02T15:39:01+05:00", info2.getOnset());
     assertEquals("2003-04-02T16:39:01-00:00", info2.getExpires());
+    assertEquals("HSAS", info2.getParameter(0).getValueName());
+    assertEquals("ORANGE", info2.getParameter(0).getValue());
+    assertEquals("p2", info2.getParameter(1).getValueName());
+    assertEquals("v2", info2.getParameter(1).getValue());
   }
   
   public void testParseArea() throws Exception {
@@ -412,11 +446,11 @@ public class CapXmlParserTest extends TestCase {
     // Comma is not allowed in an identifier
     alertStr = alertStr.replace("</identifier>", ",</identifier>");
     CapXmlParser parser = new CapXmlParser(true);
-    assertCapException(parser, alertStr, Type.OTHER, Type.OTHER);
+    assertCapException(parser, alertStr, Type.INVALID_IDENTIFIER);
   }
   
   private String getPolygonAlert(String xmlns, String polygon) {
-    return getValidAlertPre(CapValidator.CAP_LATEST_XMLNS)
+    return getValidAlertPre(xmlns)
         + getValidInfoPre()
         + "<area>"
         + "<areaDesc>U.S. nationwide</areaDesc>"
@@ -425,12 +459,12 @@ public class CapXmlParserTest extends TestCase {
         + "</info>"
         + "</alert>";    
   }
-  
+
   public void testParseInvalidPolygon() throws Exception {
     for (String xmlns : CapValidator.CAP_XML_NAMESPACES) {
       String alertStr = getPolygonAlert(xmlns, "1,2 3,4 1,2");
       CapXmlParser parser = new CapXmlParser(true);
-      assertCapException(parser, alertStr, Type.OTHER, Type.OTHER);      
+      assertCapException(parser, alertStr, Type.INVALID_POLYGON);      
     }
   }
 
@@ -438,7 +472,7 @@ public class CapXmlParserTest extends TestCase {
     for (String xmlns : CapValidator.CAP_XML_NAMESPACES) {
       String alertStr = getPolygonAlert(xmlns, "a,b 3,4 5,6");
       CapXmlParser parser = new CapXmlParser(true);
-      assertCapException(parser, alertStr, Type.OTHER, Type.OTHER);
+      assertCapException(parser, alertStr, Type.INVALID_POLYGON);
     }
   }
   
@@ -446,27 +480,82 @@ public class CapXmlParserTest extends TestCase {
     for (String xmlns : CapValidator.CAP_XML_NAMESPACES) {
       String alertStr = getPolygonAlert(xmlns, "300,200 3,4 5,6 7,8");    
       CapXmlParser parser = new CapXmlParser(true);
-      assertCapException(parser, alertStr, Type.OTHER);
+      assertCapException(parser, alertStr, Type.INVALID_POLYGON);
+    }
+  }
+
+  private String getCircleAlert(String xmlns, String circle) {
+    return getValidAlertPre(xmlns)
+        + getValidInfoPre()
+        + "<area>"
+        + "<areaDesc>U.S. nationwide</areaDesc>"
+        + "<circle>" + circle + "</circle>"
+        + "</area>"
+        + "</info>"
+        + "</alert>";    
+  }
+
+  public void testParseInvalidCircle() throws Exception {
+    for (String xmlns : CapValidator.CAP_XML_NAMESPACES) {
+      String alertStr = getCircleAlert(xmlns, "invalid");    
+      CapXmlParser parser = new CapXmlParser(true);
+      assertCapException(parser, alertStr, Type.INVALID_CIRCLE);
+    }
+  }
+
+  public void testParseInvalidCircle2() throws Exception {
+    for (String xmlns : CapValidator.CAP_XML_NAMESPACES) {
+      String alertStr = getCircleAlert(xmlns, "1,2 -3");    
+      CapXmlParser parser = new CapXmlParser(true);
+      assertCapException(parser, alertStr, Type.INVALID_CIRCLE);
     }
   }
   
+  public void testParseInvalidCircle3() throws Exception {
+    for (String xmlns : CapValidator.CAP_XML_NAMESPACES) {
+      String alertStr = getCircleAlert(xmlns, "1, 2 3");    
+      CapXmlParser parser = new CapXmlParser(true);
+      assertCapException(parser, alertStr, Type.INVALID_CIRCLE);
+    }
+  }
   
-  public void testParseValidationError() throws Exception {
-    String alertStr = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
-        + "<alert xmlns=\"" + CapValidator.CAP_LATEST_XMLNS + "\">"
-        + "<identifier>43b080713727</identifier>\n"
-        + "<sender>hsas@dhs.gov</sender>\n"
-        + "<sent>2003-04-02T14:39:01-05:00</sent>\n"
-        + "<status>Actual</status>\n"
-        + "<msgType>Alert</msgType>\n"
-        + "<scope>Invalid</scope>"
-        + "</alert>";
-    CapXmlParser parser = new CapXmlParser(true);
-    assertCapException(parser, alertStr,
-        Type.INVALID_ENUM_VALUE, Type.SCOPE_IS_REQUIRED);
+  public void testParseInvalidAltitude() throws Exception {
+    for (String xmlns : CapValidator.CAP_XML_NAMESPACES) {
+      String alertStr = getCircleAlert(xmlns, "1,2 3").replace("</area>",
+          "<altitude>-1</altitude></area>");
+      CapXmlParser parser = new CapXmlParser(true);
+      assertCapException(parser, alertStr, Type.INVALID_VALUE);
+      
+      alertStr = getCircleAlert(xmlns, "1,2 3").replace("</area>",
+      "<ceiling>-1</ceiling></area>");
+      assertCapException(parser, alertStr, Type.INVALID_AREA, Type.INVALID_VALUE);
+      
+      alertStr = getCircleAlert(xmlns, "1,2 3").replace("</area>",
+      "<altitude>2</altitude><ceiling>1</ceiling></area>");
+      assertCapException(parser, alertStr, Type.INVALID_ALTITUDE_CEILING_RANGE);
+    }
   }
 
-  public void testParseRequiredTagError() throws Exception {
+  public void testParseMultipleValidationErrors() throws Exception {
+    String alertStr = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
+        + "<alert xmlns=\"" + CapValidator.CAP_LATEST_XMLNS + "\">"
+        + "<identifier>43b080713727,</identifier>\n"  // invalid identifier
+        + "<sender>hsas@dhs.gov</sender>\n"
+        + "<sender>hsas@dhs.gov</sender>\n"  // invalid duplicate
+        + "<sent>2003-14-02T14:39:01-05:00</sent>\n" // invalid date format
+        + "<status>Actual</status>\n"
+        + "<msgType>Alert</msgType>\n"
+        + "<scope>Invalid</scope>"  // invalid scope
+        + "<references>a,b,c</references>"
+        + "invalid"
+        + "</alert>";
+    CapXmlParser parser = new CapXmlParser(true);
+    assertCapException(parser, alertStr, Type.INVALID_IDENTIFIER,
+        Type.DUPLICATE_ELEMENT, Type.INVALID_DATE, Type.INVALID_ENUM_VALUE,
+        Type.INVALID_REFERENCES, Type.INVALID_CHARACTERS);
+  }
+
+  public void testParseRequiredElementError() throws Exception {
     String alertStr = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
         + "<alert xmlns=\"" + CapValidator.CAP_LATEST_XMLNS + "\">"
         + "<identifier>43b080713727</identifier>\n"
@@ -477,11 +566,24 @@ public class CapXmlParserTest extends TestCase {
         + "<scoep>Public</scoep>\n"
         + "</alert>";
     CapXmlParser parser = new CapXmlParser(true);
-    assertCapException(parser, alertStr,
-        Type.UNSUPPORTED_ELEMENT, Type.SCOPE_IS_REQUIRED);
+    assertCapException(parser, alertStr, Type.UNSUPPORTED_ELEMENT);
   }
 
-  public void testParseOptionalTagError() throws Exception {
+  public void testParseRequiredElementError2() throws Exception {
+    String alertStr = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
+        + "<alert xmlns=\"" + CapValidator.CAP_LATEST_XMLNS + "\">"
+        + "<identifier>43b080713727</identifier>\n"
+        + "<sender>hsas@dhs.gov</sender>\n"
+        + "<sent>2003-04-02T14:39:01-05:00</sent>\n"
+        + "<status>Actual</status>\n"
+        + "<msgType>Alert</msgType>\n"
+        + "<source>a source</source>\n"
+        + "</alert>";
+    CapXmlParser parser = new CapXmlParser(true);
+    assertCapException(parser, alertStr, Type.MISSING_REQUIRED_ELEMENT);
+  }
+
+  public void testParseOptionalElementError() throws Exception {
     String alertStr = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
         + "<alert xmlns=\"" + CapValidator.CAP_LATEST_XMLNS + "\">"
         + "<identifier>43b080713727</identifier>\n"
@@ -573,11 +675,9 @@ public class CapXmlParserTest extends TestCase {
     assertEquals("foo", alert.getXmlns());
     assertTrue(handler.getParseErrors().isEmpty());
 
+    // Can't add duplicate
     handler.setOrAdd(alert, fd, "bar");
     assertEquals("foo", alert.getXmlns());
-    assertEquals(1, handler.getParseErrors().size());
-    assertEquals(Type.DUPLICATE_ELEMENT,
-        handler.getParseErrors().get(0).getType());
 
     // Repeated field
     handler = new CapXmlHandler();
@@ -623,37 +723,25 @@ public class CapXmlParserTest extends TestCase {
     Resource.Builder resource = Resource.newBuilder();
     Point.Builder point = Point.newBuilder();
 
-    int errorCount = 0;
-
     FieldDescriptor fd = alert.getDescriptorForType().findFieldByName("status");
     assertEquals(FieldDescriptor.Type.ENUM, fd.getType());
     assertNull(handler.getPrimitiveValue(fd, "Foo"));
-    assertEquals(errorCount, handler.getParseErrors().size());
     // Capitalization must be correct
     assertNull(handler.getPrimitiveValue(fd, "actual"));
-    assertEquals(errorCount, handler.getParseErrors().size());
     assertNull(handler.getPrimitiveValue(fd, ""));
-    assertEquals(errorCount, handler.getParseErrors().size());
     assertNull(handler.getPrimitiveValue(fd, null));
-    assertEquals(errorCount, handler.getParseErrors().size());
 
     fd = resource.getDescriptorForType().findFieldByName("size");
     assertEquals(FieldDescriptor.Type.INT64, fd.getType());
     assertNull(handler.getPrimitiveValue(fd, "a"));
-    assertEquals(++errorCount, handler.getParseErrors().size());
     assertNull(handler.getPrimitiveValue(fd, ""));
-    assertEquals(++errorCount, handler.getParseErrors().size());
     assertNull(handler.getPrimitiveValue(fd, null));
-    assertEquals(++errorCount, handler.getParseErrors().size());
 
     fd = point.getDescriptorForType().findFieldByName("latitude");
     assertEquals(FieldDescriptor.Type.DOUBLE, fd.getType());
     assertNull(handler.getPrimitiveValue(fd, "a"));
-    assertEquals(++errorCount, handler.getParseErrors().size());
     assertNull(handler.getPrimitiveValue(fd, ""));
-    assertEquals(++errorCount, handler.getParseErrors().size());
     assertNull(handler.getPrimitiveValue(fd, null));
-    assertEquals(++errorCount, handler.getParseErrors().size());
   }
 
   public void testGetComplexValue() {
@@ -682,33 +770,25 @@ public class CapXmlParserTest extends TestCase {
     Point point2 = Point.newBuilder().setLatitude(-2).setLongitude(-3).build();
     Point point3 = Point.newBuilder().setLatitude(3).setLongitude(4).build();
 
-    int errorCount = 0;
     assertEquals(Polygon.newBuilder().addPoint(point).addPoint(point2)
         .addPoint(point3).build(), handler.toPolygon("1.5,2.5 -2,-3 3,4"));
     assertEquals(Polygon.newBuilder().addPoint(point).addPoint(point2)
         .addPoint(point3).build(), handler.toPolygon("1.5,2.5 \t -2,-3  3,4"));
     assertNull(handler.toPolygon("invalid"));
-    assertEquals(++errorCount, handler.getParseErrors().size());
     assertNull(handler.toPolygon("1,23,4 5,6"));
-    assertEquals(++errorCount, handler.getParseErrors().size());
     assertNull(handler.toPolygon(""));
-    assertEquals(errorCount, handler.getParseErrors().size());
   }
 
   public void testToCircle() {
     CapXmlHandler handler = new CapXmlHandler();
     Point point = Point.newBuilder().setLatitude(1).setLongitude(2).build();
-    int errorCount = 0;
     assertEquals(Circle.newBuilder().setPoint(point).setRadius(3).build(),
         handler.toCircle("1,2 3"));
     assertEquals(Circle.newBuilder().setPoint(point).setRadius(3.125).build(),
         handler.toCircle("1.00,2.00  \t 3.125"));
     assertNull(handler.toCircle("1, 2 3"));
-    assertEquals(++errorCount, handler.getParseErrors().size());
     assertNull(handler.toCircle("invalid"));
-    assertEquals(++errorCount, handler.getParseErrors().size());
     assertNull(handler.toCircle(""));
-    assertEquals(++errorCount, handler.getParseErrors().size());
   }
 
   public void testToPoint() {
@@ -744,8 +824,8 @@ public class CapXmlParserTest extends TestCase {
       parser.parseFrom(alertStr);
       fail("Expected CapException");
     } catch (CapException e) {
+      e = new XercesCapExceptionMapper().map(e);
       TestUtil.assertErrorTypes(e.getReasons(), types);
     }    
   }
-
 }
