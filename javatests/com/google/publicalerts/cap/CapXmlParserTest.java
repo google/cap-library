@@ -73,7 +73,7 @@ public class CapXmlParserTest extends TestCase {
   }
 
   private String getValidAlertPre(String xmlns) {
-    return "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"
+    String alert = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>\n"
       + "<alert xmlns=\"" + xmlns + "\">\n"
       + "<identifier>43b080713727</identifier>\n"
       + "<sender>hsas@dhs.gov</sender>\n"
@@ -85,9 +85,13 @@ public class CapXmlParserTest extends TestCase {
       + "<addresses>\"address 1\" address2</addresses>\n"
       + "<code>abcde</code>\n"
       + "<code>fghij</code>\n"
-      + "<note>a note</note>\n"
-      + "<references>a,b,2002-04-02T14:39:01-05:00 </references>\n"
-      + "<incidents>incident1 incident2</incidents>\n";
+      + "<note>a note</note>\n";
+    if (xmlns == CapValidator.CAP10_XMLNS) {
+      alert += "<references>a/b</references>";
+    } else {
+      alert += "<references>a,b,2002-04-02T14:39:01-05:00 </references>\n"; 
+    }
+    return alert + "<incidents>incident1 incident2</incidents>\n";
   }
 
   private String getValidInfoPre() {
@@ -289,7 +293,8 @@ public class CapXmlParserTest extends TestCase {
         + "<sent>2003-04-02T14:39:01-05:00</sent>\n"
         + "<status>Actual</status>\n"
         + "<msgType>Alert</msgType>\n"
-        + "<password>obsolete</password>"
+        + "<password>obsolete</password>\n"
+        + "<references>43b080713727/hsas@dhs.gov a/b</references>\n"
         + "<info>"
         + "<category>Safety</category>\n"
         + "<event>Homeland Security Advisory System Update</event>\n"
@@ -310,6 +315,9 @@ public class CapXmlParserTest extends TestCase {
     Info info = alert.getInfo(0);
     Area area = info.getArea(0);
     assertEquals(CapValidator.CAP10_XMLNS , alert.getXmlns());
+    assertEquals(
+        "43b080713727/hsas@dhs.gov", alert.getReferences().getValue(0));
+    assertEquals("a/b", alert.getReferences().getValue(1));
     assertEquals("obsolete", alert.getPassword());
     assertEquals(Info.Certainty.VeryLikely, info.getCertainty());
     assertEquals("EC", info.getEventCode(0).getValueName());

@@ -58,22 +58,22 @@ class CapValidator {
    * @return a list of reasons the message is invalid, empty if valid
    */
   public List<Reason> validate(MessageOrBuilder message, String xmlns,
-      int infoSeqNum, boolean visitChildren) {
+      String xpath, boolean visitChildren) {
     int version = getValidateVersion(xmlns);
 
     if (message instanceof AlertOrBuilder) {
       return validateAlert((AlertOrBuilder) message, visitChildren);
     } else if (message instanceof InfoOrBuilder) {
       return validateInfo(
-          (InfoOrBuilder) message, infoSeqNum, version, visitChildren);
+          (InfoOrBuilder) message, xpath, version, visitChildren);
     } else if (message instanceof AreaOrBuilder) {
       return validateArea(
-          (AreaOrBuilder) message, infoSeqNum, version, visitChildren);
+          (AreaOrBuilder) message, xpath, version, visitChildren);
     } else if (message instanceof ResourceOrBuilder) {
       return validateResource(
-          (ResourceOrBuilder) message, infoSeqNum, version);
+          (ResourceOrBuilder) message, xpath, version);
     } else if (message instanceof PolygonOrBuilder) {
-      return validatePolygon((PolygonOrBuilder) message, infoSeqNum);
+      return validatePolygon((PolygonOrBuilder) message, xpath);
     } else if (message instanceof ValuePairOrBuilder
         || message instanceof GroupOrBuilder
         || message instanceof CircleOrBuilder
@@ -102,77 +102,82 @@ class CapValidator {
       AlertOrBuilder alert, boolean visitChildren) {
     List<Reason> reasons = new ArrayList<Reason>();
     
-    if (alert.hasRestriction() && !"".equals(alert.getRestriction())
+    if (alert.hasRestriction()
+        && !CapUtil.isEmptyOrWhitespace(alert.getRestriction())
         && alert.getScope() != Alert.Scope.Restricted) {
-      reasons.add(new Reason(Type.RESTRICTION_SCOPE_MISMATCH));
+      reasons.add(new Reason("/alert", Type.RESTRICTION_SCOPE_MISMATCH));
     }
 
     if (alert.hasAddresses() && alert.getAddresses().getValueCount() > 0
         && alert.getScope() != Alert.Scope.Private) {
-      reasons.add(new Reason(Type.ADDRESSES_SCOPE_MISMATCH));
+      reasons.add(new Reason("/alert", Type.ADDRESSES_SCOPE_MISMATCH));
     }
 
     if (visitChildren) {
       int version = getValidateVersion(alert.getXmlns());
       for (int i = 0; i < alert.getInfoOrBuilderList().size(); ++i) {
-        reasons.addAll(validateInfo(
-            alert.getInfoOrBuilderList().get(i), i, version, visitChildren));
+        reasons.addAll(validateInfo(alert.getInfoOrBuilderList().get(i),
+            "/alert/info[" + i + "]", version, visitChildren));
       }
     }
 
     return reasons;
   }
 
-  List<Reason> validateInfo(InfoOrBuilder info, int infoSeqNum,
+  List<Reason> validateInfo(InfoOrBuilder info, String xpath,
       int version, boolean visitChildren) {
     List<Reason> reasons = new ArrayList<Reason>();
 
     if (visitChildren) {
       for (int i = 0; i < info.getAreaOrBuilderList().size(); ++i) {
         reasons.addAll(validateArea(info.getAreaOrBuilderList().get(i),
-            i, version, visitChildren));
+            xpath + "/area[" + i + "]", version, visitChildren));
       }
 
       for (int i = 0; i < info.getResourceList().size(); ++i) {
         reasons.addAll(validateResource(info.getResourceOrBuilderList().get(i),
-            i, version));
+            xpath + "/resource[" + i + "]", version));
       }
     }
     return reasons;
   }
 
-  List<Reason> validateArea(AreaOrBuilder area, int infoSeqNum,
+  List<Reason> validateArea(AreaOrBuilder area, String xpath,
                             int version, boolean visitChildren) {
     List<Reason> reasons = new ArrayList<Reason>();
 
-    for (PolygonOrBuilder polygon : area.getPolygonOrBuilderList()) {
-    	reasons.addAll(validatePolygon(polygon, infoSeqNum));
+    if (visitChildren) {
+      for (int i = 0; i < area.getPolygonOrBuilderList().size(); i++) {
+      	reasons.addAll(validatePolygon(
+      	    area.getPolygonOrBuilder(i), xpath + "/polygon[" + i + "]"));
+      }
     }
 
     if (area.hasCeiling() && !area.hasAltitude()) {
-      reasons.add(new Reason(Type.INVALID_AREA));
+      reasons.add(new Reason(xpath + "/ceiling", Type.INVALID_AREA));
     }
 
     if (area.hasAltitude() && area.hasCeiling()) {
       if (area.getAltitude() > area.getCeiling()) {
-        reasons.add(new Reason(Type.INVALID_ALTITUDE_CEILING_RANGE));
+        reasons.add(new Reason(xpath + "/ceiling",
+            Type.INVALID_ALTITUDE_CEILING_RANGE));
       }
     }
 
     return reasons;
   }
 
-  List<Reason> validatePolygon(PolygonOrBuilder polygon, int infoSeqNum) {
+  List<Reason> validatePolygon(PolygonOrBuilder polygon, String xpath) {
     List<Reason> reasons = new ArrayList<Reason>();
     if (!polygon.getPoint(0).equals(
         polygon.getPoint(polygon.getPointCount() - 1))) {
-      reasons.add(new Reason(Type.INVALID_POLYGON));
+      reasons.add(new Reason(xpath, Type.INVALID_POLYGON));
     }
     return reasons;
   }
 
   List<Reason> validateResource(
-      ResourceOrBuilder resource, int infoSeqNum, int version) {
+      ResourceOrBuilder resource, String xpath, int version) {
 
     // TODO(shakusa) Check if mime type is valid RFC 2046?
     // TODO(shakusa) Check if derefUri is base-64 encoded?

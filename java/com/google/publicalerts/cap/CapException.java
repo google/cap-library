@@ -79,6 +79,11 @@ public class CapException extends Exception {
     private final ReasonType type;
 
     /**
+     * XPath expression to the error.
+     */
+    private final String xpath;
+
+    /**
      * Line number of the reason. Valid only when parsing an alert from text,
      * otherwise -1.
      */
@@ -94,18 +99,19 @@ public class CapException extends Exception {
     private final Object[] messageParams;
 
     public static Reason withNewLineNumber(Reason reason, int newLineNumber) {
-      return new Reason(newLineNumber, reason.columnNumber,
+      return new Reason(newLineNumber, reason.columnNumber, reason.xpath,
           reason.type, reason.messageParams);
     }
 
-    public Reason(ReasonType type, Object...messageParams) {
-      this(-1, -1, type, messageParams);
+    public Reason(String xpath, ReasonType type, Object...messageParams) {
+      this(-1, -1, xpath, type, messageParams);
     }
 
-    public Reason(
-        int line, int col, ReasonType type, Object...messageParams) {
+    public Reason(int line, int col, String xpath, ReasonType type,
+        Object...messageParams) {
       this.lineNumber = line;
       this.columnNumber = col;
+      this.xpath = xpath;
       this.type = type;
       this.messageParams = messageParams;
     }
@@ -130,6 +136,10 @@ public class CapException extends Exception {
       return columnNumber;
     }
 
+    public String getXPath() {
+      return xpath;
+    }
+
     /**
      * Returns the {@link ReasonType}'s message formatted with the
      * {@link #messageParams}.
@@ -151,11 +161,11 @@ public class CapException extends Exception {
         sb.append(type.getMessage(locale));
       } else {
         sb.append(MessageFormat.format(
-            type.getMessage(locale), messageParams));        
+            type.getMessage(locale), messageParams));
       }
       return sb.toString();
     }
-    
+
     @Override
     public String toString() {
       return getMessage();
@@ -168,6 +178,7 @@ public class CapException extends Exception {
       }
       Reason that = (Reason) other;
       return type == that.type
+          && (xpath == null ? that.xpath == null : xpath.equals(that.xpath))
           && lineNumber == that.lineNumber
           && columnNumber == that.columnNumber
           && Arrays.deepEquals(messageParams, that.messageParams);
@@ -179,6 +190,7 @@ public class CapException extends Exception {
       result = 31 * result + columnNumber;
       result = 31 * result + lineNumber;
       result = 31 * result + Arrays.hashCode(messageParams);
+      result = 31 * result + ((xpath == null) ? 0 : xpath.hashCode());
       result = 31 * result + ((type == null) ? 0 : type.hashCode());
       return result;
     }
@@ -200,25 +212,20 @@ public class CapException extends Exception {
   /**
    * Type of the exception message. Use {@link Type#OTHER} if your exception
    * doesn't fit one of the listed types.
-   * 
-   * TODO(shakusa) Localize messages
    */
+  // TODO(shakusa) Localize messages
   public enum Type implements ReasonType {
-    // For ADDRESS_*, INFO_*, and RESOURCE_* values, the convention is for
-    // the first parameter to contain the sequential index of the Info it 
-    // pertains to.
-    
     ADDRESSES_SCOPE_MISMATCH(
         "<addresses> should be used only when <scope> is Private"),
-    CERTAINTY_VERY_LIKELY_DEPRECATED("<certainty> VeryLikely has been " +
+    CERTAINTY_VERY_LIKELY_DEPRECATED("<certainty> \"Very Likely\" has been " +
         "deprecated. Use Likely instead"),
     DUPLICATE_ELEMENT("Invalid duplicate <{0}>, ignoring \"{1}\""),
-    INVALID_ALTITUDE_CEILING_RANGE("Invalid <area>; altitude must not " +
-    		"be greater than ceiling"),
+    INVALID_ALTITUDE_CEILING_RANGE("Invalid <area>; ceiling must " +
+    		"be greater than altitude"),
     INVALID_AREA("Invalid <area>; when ceiling is specified " +
         "altitude must also be specified."),
     INVALID_CHARACTERS("Invalid characters in element \"{0}\""),
-    INVALID_CIRCLE("Invalid <circle> \"{1}\". Must be formatted like: " +
+    INVALID_CIRCLE("Invalid <circle> \"{0}\". Must be formatted like: " +
         "\"-12.345,67.89 15.2\", which is a [WGS 84] coordinate followed by a " +
         "radius in kilometers"),
     INVALID_DATE("Invalid <{0}>: \"{1}\". " +
@@ -227,8 +234,9 @@ public class CapException extends Exception {
         "Must be one of {2}"),
     INVALID_IDENTIFIER("Invalid <identifier> \"{0}\". Must not include " +
         "spaces, commas, or restricted characters (< and &)"),
-    INVALID_POLYGON("Invalid <polygon> \"{1}\". Expect a minimum of 4 " +
-    		"[WGS 84] coordinates like: \"12.3,4.2 12.3,4.3 12.4,4.3 12.3,4.3 \", " +
+    INVALID_POLYGON("Invalid <polygon> \"{0}\". Expect a minimum of four " +
+    		"[WGS 84] coordinates like: " +
+    		"\"12.3,-4.2 12.3,-4.3 12.4,-4.3 12.3,-4.2\", " +
     		"where the first and last coordinates are equal."),
     INVALID_REFERENCES("Invalid <references>: \"{0}\". Must be a " +
     		"space-separated list of sender,identifier,sent triplets."),
@@ -242,7 +250,7 @@ public class CapException extends Exception {
     INVALID_WEB("Invalid <web>: \"{0}\". Must be a full " +
         "absolute URI"),
     MISSING_REQUIRED_ELEMENT("The content of <{0}> is not complete. One of " +
-    	"{1} is required"),
+    		"{1} is required"),
     OTHER("{0}"),
     PASSWORD_DEPRECATED("<password> has been deprecated"),
     RESTRICTION_SCOPE_MISMATCH(

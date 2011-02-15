@@ -216,5 +216,16 @@ public class CapUtil {
     return toJavaDate(dateStr) != null;
   }
 
+  /**
+   * Returns true if the string is null or {@code s.trim()}
+   * returns the empty string.
+   * 
+   * @param s the string to check
+   * @return true if the string is empty or whitespace
+   */
+  public static boolean isEmptyOrWhitespace(String s) {
+    return s == null || "".equals(s.trim());
+  }
+  
   private CapUtil() {}
 }

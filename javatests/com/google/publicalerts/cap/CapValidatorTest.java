@@ -104,10 +104,12 @@ public class CapValidatorTest extends TestCase {
   }
 
   private void assertValidateErrors(InfoOrBuilder info, Type...types) {
-    TestUtil.assertErrorTypes(validator.validateInfo(info, 0, 12, true), types);
+    TestUtil.assertErrorTypes(
+        validator.validateInfo(info, "/alert/info[0]", 12, true), types);
   }
 
   private void assertValidateErrors(AreaOrBuilder area, Type...types) {
-    TestUtil.assertErrorTypes(validator.validateArea(area, 0, 12, true), types);
+    TestUtil.assertErrorTypes(
+        validator.validateArea(area, "/alert/info[0]", 12, true), types);
   }
 }

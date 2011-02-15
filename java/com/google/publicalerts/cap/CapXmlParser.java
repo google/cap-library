@@ -58,6 +58,7 @@ import com.google.publicalerts.cap.CapException.Type;
  * Ignores enveloped digital signature.  To validate the signature, use
  * {@link XmlSignatureValidator}.
  * 
+ * TODO(shakusa) Explicit XEE prevention here like Rome's WireFeedInput?
  * TODO(shakusa) Support input from javax.xml.transform.Source ?
  *
  * @author shakusa@google.com (Steve Hakusa)
@@ -261,10 +262,10 @@ public class CapXmlParser {
     private boolean inSignature;
     private Alert.Builder alertBuilder;
     private Alert alert;
+    private Xpath xpath;
 
     private Locator locator;
     private String localName;
-    private int infoSeqNum;
 
     public CapXmlHandler() {
       this.validator = new CapValidator();
@@ -273,6 +274,7 @@ public class CapXmlParser {
       this.builderNameStack = new Stack<String>();
       this.builderLineStack = new Stack<Integer>();
       this.parseErrors = new ArrayList<Reason>();
+      this.xpath = new Xpath();
     }
 
     public Alert getAlert() {
@@ -285,8 +287,9 @@ public class CapXmlParser {
 
     @Override
     public void error(SAXParseException e) throws SAXException {
-      parseErrors.add(new Reason(e.getLineNumber(), e.getColumnNumber(),
-          Type.OTHER, e.getMessage(), localName, characters.toString()));
+      parseErrors.add(
+          new Reason(e.getLineNumber(), e.getColumnNumber(), xpath.toString(),
+              Type.OTHER, e.getMessage(), localName, characters.toString()));
     }
 
     @Override
@@ -327,13 +330,17 @@ public class CapXmlParser {
         builderStack.push(alertBuilder);
         builderNameStack.push(localName);
         builderLineStack.push(locator.getLineNumber());
+        xpath.push("alert", false);
       } else if ("Signature".equals(localName)) {
         inSignature = true;
-      } else if (fd != null && fd.getType() == FieldDescriptor.Type.MESSAGE) {
-        // Start a new complex child element
-        builderStack.push(builderStack.peek().newBuilderForField(fd));
-        builderNameStack.push(localName);
-        builderLineStack.push(locator.getLineNumber());
+      } else if (fd != null) {
+        if (fd.getType() == FieldDescriptor.Type.MESSAGE) {
+          // Start a new complex child element
+          builderStack.push(builderStack.peek().newBuilderForField(fd));
+          builderNameStack.push(localName);
+          builderLineStack.push(locator.getLineNumber());
+        }
+        xpath.push(localName, fd.isRepeated());        
       }
     }
 
@@ -361,12 +368,11 @@ public class CapXmlParser {
             if (builder != null) {
               alert = (Alert) builder.buildPartial();
               List<Reason> reasons = validator.validate(
-                  alert, alert.getXmlns(), infoSeqNum, false);
+                  alert, alert.getXmlns(), xpath.toString(), false);
               for (Reason reason : reasons) {
                 parseErrors.add(Reason.withNewLineNumber(
                     reason, builderLineStack.peek()));
               }
-              parseErrors.addAll(reasons);
             }
             builderLineStack.pop();
           } else {
@@ -379,6 +385,7 @@ public class CapXmlParser {
                   fd.getName(), characters.toString()));
               characters.setLength(0);
               builderLineStack.pop();
+              xpath.pop();
             } else {
               builderLineStack.pop();
             }
@@ -389,8 +396,8 @@ public class CapXmlParser {
 
       setOrAdd(fd, getPrimitiveValue(fd, characters.toString()));
       characters.setLength(0);
-      if ("info".equals(localName)) {
-        infoSeqNum++;
+      if (fd != null) {
+        xpath.pop();        
       }
     }
 
@@ -523,7 +530,7 @@ public class CapXmlParser {
       if (message != null) {
         List<Reason> reasons = validator.validate(
             message, alertBuilder == null ? null : alertBuilder.getXmlns(),
-            infoSeqNum, false);
+            xpath.toString(), false);
         if (!builderLineStack.isEmpty()) {
           for (Reason reason : reasons) {
             parseErrors.add(Reason.withNewLineNumber(
@@ -536,7 +543,7 @@ public class CapXmlParser {
 
     Polygon toPolygon(String str) {
       String[] pointStrs = str.split("\\s+");
-      if ("".equals(str) || pointStrs.length == 0) {
+      if (CapUtil.isEmptyOrWhitespace(str) || pointStrs.length == 0) {
         return null;
       }
       Polygon.Builder polygon = Polygon.newBuilder();
@@ -638,6 +645,43 @@ public class CapXmlParser {
       }
       return ValuePair.newBuilder().setValueName(nameValue[0].trim())
           .setValue(nameValue[1].trim()).build();
+    }
+
+    private static class Xpath {
+      Stack<String> elements;
+      Stack<Integer> indexes;
+      Map<String, Integer> indexCounts;
+      String lastElement;
+      
+      public Xpath() {
+        this.elements = new Stack<String>();
+        this.indexes = new Stack<Integer>();
+        this.indexCounts = new HashMap<String, Integer>();
+      }
+      
+      public void push(String element, boolean repeated) {
+        elements.push(element);
+        indexes.push(repeated ?
+            (element.equals(lastElement) ? indexCounts.get(lastElement) + 1 : 0)
+            : null);
+      }
+      
+      public void pop() {
+        lastElement = elements.pop();
+        indexCounts.put(lastElement, indexes.pop());
+      }
+      
+      @Override
+      public String toString() {
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < elements.size(); i++) {
+          sb.append("/").append(elements.get(i));
+          if (indexes.get(i) != null) {
+            sb.append("[").append(indexes.get(i)).append("]");
+          }
+        }
+        return sb.toString();
+      }
     }
   }
 }

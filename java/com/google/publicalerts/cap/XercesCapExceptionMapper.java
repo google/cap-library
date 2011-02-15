@@ -42,7 +42,7 @@ import com.google.publicalerts.cap.CapException.Type;
  */
 public class XercesCapExceptionMapper {
   private static final Pattern XERCES_ONE_PARAM_PATTERN = Pattern.compile(
-  ".* '(.*)'.*");
+  ".* '(.*)' .*");
   private static final Pattern XERCES_TWO_PARAM_PATTERN = Pattern.compile(
       ".* '(.*)'.* '(.*)'.*");
   
@@ -138,7 +138,7 @@ public class XercesCapExceptionMapper {
       Matcher matcher = XERCES_TWO_PARAM_PATTERN.matcher(message);
       if (matcher.matches()) {
         type = Type.INVALID_ENUM_VALUE;
-        args = new String[] {tag, matcher.group(2)};
+        args = new String[] {tag, value, matcher.group(2)};
       }
     } else if ("cvc-pattern-valid".equals(code)) {
       // fail regex pattern match
@@ -175,8 +175,8 @@ public class XercesCapExceptionMapper {
       return null;
     }
 
-    return new Reason(reason.getLineNumber(), reason.getColumnNumber(), type,
-        (Object[]) args);
+    return new Reason(reason.getLineNumber(), reason.getColumnNumber(),
+        reason.getXPath(), type, (Object[]) args);
   }
   
   private String extractMessageCode(String message) {
