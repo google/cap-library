@@ -134,7 +134,7 @@ class CapValidator {
             xpath + "/area[" + i + "]", version, visitChildren));
       }
 
-      for (int i = 0; i < info.getResourceList().size(); ++i) {
+      for (int i = 0; i < info.getResourceOrBuilderList().size(); ++i) {
         reasons.addAll(validateResource(info.getResourceOrBuilderList().get(i),
             xpath + "/resource[" + i + "]", version));
       }

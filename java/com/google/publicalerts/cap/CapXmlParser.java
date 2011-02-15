@@ -172,7 +172,7 @@ public class CapXmlParser {
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setNamespaceAware(true);
 
-    CapXmlHandler handler = new CapXmlHandler();
+    CapXmlHandler handler = new CapXmlHandler(schemaMap != STRICT_SCHEMA_MAP);
     try {
       String xmlns = getXmlns(is);
       if (!schemaMap.containsKey(xmlns)) {
@@ -267,8 +267,8 @@ public class CapXmlParser {
     private Locator locator;
     private String localName;
 
-    public CapXmlHandler() {
-      this.validator = new CapValidator();
+    public CapXmlHandler(boolean useCapValidator) {
+      this.validator = useCapValidator ? new CapValidator() : null;
       this.characters = new StringBuilder();
       this.builderStack = new Stack<Builder>();
       this.builderNameStack = new Stack<String>();
@@ -367,11 +367,13 @@ public class CapXmlParser {
             Builder builder = builderStack.pop();
             if (builder != null) {
               alert = (Alert) builder.buildPartial();
-              List<Reason> reasons = validator.validate(
-                  alert, alert.getXmlns(), xpath.toString(), false);
-              for (Reason reason : reasons) {
-                parseErrors.add(Reason.withNewLineNumber(
-                    reason, builderLineStack.peek()));
+              if (validator != null) {
+                List<Reason> reasons = validator.validate(
+                    alert, alert.getXmlns(), xpath.toString(), false);
+                for (Reason reason : reasons) {
+                  parseErrors.add(Reason.withNewLineNumber(
+                      reason, builderLineStack.peek()));
+                }
               }
             }
             builderLineStack.pop();
@@ -527,7 +529,7 @@ public class CapXmlParser {
       } else {
         message = builder.buildPartial();
       }
-      if (message != null) {
+      if (message != null && validator != null) {
         List<Reason> reasons = validator.validate(
             message, alertBuilder == null ? null : alertBuilder.getXmlns(),
             xpath.toString(), false);

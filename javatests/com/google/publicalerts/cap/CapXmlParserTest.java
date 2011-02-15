@@ -659,6 +659,36 @@ public class CapXmlParserTest extends TestCase {
     parser.parseFrom(alertStr);
   }
 
+  public void testParseStrictXsdValidation() throws Exception {
+    String alertStr = getValidAlertPre(CapValidator.CAP_LATEST_XMLNS)
+        + getValidInfoPre()
+        + "<area>"
+        + "<areaDesc>U.S. nationwide</areaDesc>"
+        + "<circle>invalid, but not caught by xsd in spec</circle>"
+        + "<altitude>2</altitude>"
+        + "<ceiling>1</ceiling>"
+        + "</area>"
+        + "</info>"
+        + "</alert>";
+
+    // Strict xsd validation means validate according to the xsd in the spec
+    // exactly; it will not catch certain invalid content
+    // (like circle formatting) specified in the extended xsd,
+    // nor will it check validation not possible to express in the xsd
+    // (like the fact that altitude must be less than ceiling)
+    // Thus, the above alert is actually valid according to strict checking.
+
+    boolean strictXsdValidation = true;
+    CapXmlParser parser = new CapXmlParser(true, strictXsdValidation);
+    Alert alert = parser.parseFrom(alertStr);
+    
+    Area area = alert.getInfo(0).getArea(0);
+    // No validation error, but invalid circle won't parse
+    assertEquals(0, area.getCircleCount());
+    assertEquals(1.0, area.getCeiling());
+    assertEquals(2.0, area.getAltitude());
+  }
+
   public void testUnescaping() throws Exception {
     String alertStr = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
         + "<alert xmlns=\"" + CapValidator.CAP_LATEST_XMLNS + "\">"
@@ -670,7 +700,7 @@ public class CapXmlParserTest extends TestCase {
   }
 
   public void testSetOrAdd() {
-    CapXmlHandler handler = new CapXmlHandler();
+    CapXmlHandler handler = new CapXmlHandler(true);
     Alert.Builder alert = Alert.newBuilder();
 
     // Single field
@@ -688,7 +718,7 @@ public class CapXmlParserTest extends TestCase {
     assertEquals("foo", alert.getXmlns());
 
     // Repeated field
-    handler = new CapXmlHandler();
+    handler = new CapXmlHandler(true);
     fd = alert.getDescriptorForType().findFieldByName("code");
     assertTrue(fd.isRepeated());
     handler.setOrAdd(alert, fd, "foo");
@@ -701,7 +731,7 @@ public class CapXmlParserTest extends TestCase {
   }
 
   public void testGetPrimitiveValue() {
-    CapXmlHandler handler = new CapXmlHandler();
+    CapXmlHandler handler = new CapXmlHandler(true);
     Alert.Builder alert = Alert.newBuilder();
     Resource.Builder resource = Resource.newBuilder();
     Point.Builder point = Point.newBuilder();
@@ -726,7 +756,7 @@ public class CapXmlParserTest extends TestCase {
   }
 
   public void testGetPrimitiveValueErrors() {
-    CapXmlHandler handler = new CapXmlHandler();
+    CapXmlHandler handler = new CapXmlHandler(true);
     Alert.Builder alert = Alert.newBuilder();
     Resource.Builder resource = Resource.newBuilder();
     Point.Builder point = Point.newBuilder();
@@ -753,7 +783,7 @@ public class CapXmlParserTest extends TestCase {
   }
 
   public void testGetComplexValue() {
-    CapXmlHandler handler = new CapXmlHandler();
+    CapXmlHandler handler = new CapXmlHandler(true);
     Point point = Point.newBuilder().setLatitude(1.5).setLongitude(2.5).build();
     Point point2 = Point.newBuilder().setLatitude(-2).setLongitude(-3).build();
     Point point3 = Point.newBuilder().setLatitude(3).setLongitude(4).build();
@@ -773,7 +803,7 @@ public class CapXmlParserTest extends TestCase {
   }
 
   public void testToPolygon() {
-    CapXmlHandler handler = new CapXmlHandler();
+    CapXmlHandler handler = new CapXmlHandler(true);
     Point point = Point.newBuilder().setLatitude(1.5).setLongitude(2.5).build();
     Point point2 = Point.newBuilder().setLatitude(-2).setLongitude(-3).build();
     Point point3 = Point.newBuilder().setLatitude(3).setLongitude(4).build();
@@ -788,7 +818,7 @@ public class CapXmlParserTest extends TestCase {
   }
 
   public void testToCircle() {
-    CapXmlHandler handler = new CapXmlHandler();
+    CapXmlHandler handler = new CapXmlHandler(true);
     Point point = Point.newBuilder().setLatitude(1).setLongitude(2).build();
     assertEquals(Circle.newBuilder().setPoint(point).setRadius(3).build(),
         handler.toCircle("1,2 3"));
@@ -800,7 +830,7 @@ public class CapXmlParserTest extends TestCase {
   }
 
   public void testToPoint() {
-    CapXmlHandler handler = new CapXmlHandler();
+    CapXmlHandler handler = new CapXmlHandler(true);
     assertEquals(Point.newBuilder().setLatitude(1).setLongitude(2).build(),
         handler.toPoint("1,2"));
     assertEquals(Point.newBuilder().setLatitude(-1).setLongitude(-2).build(),
@@ -812,7 +842,7 @@ public class CapXmlParserTest extends TestCase {
   }
 
   public void testToGroup() {
-    CapXmlHandler handler = new CapXmlHandler();
+    CapXmlHandler handler = new CapXmlHandler(true);
     assertEquals(Group.newBuilder().addValue("a").addValue("b").build(),
         handler.toGroup("a b"));
     assertEquals(Group.newBuilder().addValue("a").addValue("b").build(),
