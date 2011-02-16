@@ -1,0 +1,96 @@
+<?xml version = '1.0' encoding = 'UTF-8' standalone = 'yes'?>
+<?xml-stylesheet href='http://www.weather.gov/alerts-beta/capatomproduct.xsl' type='text/xsl'?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.1">
+<identifier>USGS-earthquakes-us2010apcd.6.20100831T000925.496Z</identifier>
+<sender>http://earthquake.usgs.gov/research/monitoring/anss/neic/</sender> 
+<sent>2010-08-31T00:09:25-05:00</sent>
+<status>Actual</status>
+<msgType>Alert</msgType>
+<scope>Public</scope>
+<code>IPAWSv1.0</code>
+<info>
+<category>Geo</category>
+<event>Earthquake</event>
+<urgency>Past</urgency>
+<severity>Unknown</severity>
+<certainty>Likely</certainty>
+<eventCode><valueName>SAME</valueName><value>EQW</value></eventCode>
+<expires>2010-09-02T00:09:25-05:00</expires>
+<senderName>U.S. Geological Survey</senderName>
+<headline>EQ 5.3 Neiafu, Tonga - PRELIMINARY REPORT</headline>
+<description>An earthquake with magnitude 5.3 occurred near Neiafu, Tonga at 23:25:40.68 UTC on Aug 30, 2010. (This event has been reviewed by a seismologist.)</description>
+<web>http://earthquake.usgs.gov/eqcenter/recenteqsww/Quakes/us2010apcd.php</web>
+<contact>http://earthquake.usgs.gov/research/monitoring/anss/neic/</contact>
+<parameter>
+<valueName>EventTime</valueName>
+<value>2010-08-30T23:25:40+00:00</value>
+</parameter>
+<parameter>
+<valueName>EventIDKey</valueName>
+<value>us2010apcd</value>
+</parameter>
+<parameter>
+<valueName>Version</valueName>
+<value>6</value>
+</parameter>
+<parameter>
+<valueName>Magnitude</valueName>
+<value>5.3</value>
+</parameter>
+<parameter>
+<valueName>Depth</valueName>
+<value>38.7 km (24.0 miles)</value>
+</parameter>
+<parameter>
+<valueName>HorizontalError</valueName>
+<value>18.3 km</value>
+</parameter>
+<parameter>
+<valueName>VerticalError</valueName>
+<value>6.7 km</value>
+</parameter>
+<parameter>
+<valueName>NumStations</valueName>
+<value>268</value>
+</parameter>
+<parameter>
+<valueName>NumPhases</valueName>
+<value>272</value>
+</parameter>
+<parameter>
+<valueName>MinDistance</valueName>
+<value>287.2 km</value>
+</parameter>
+<parameter>
+<valueName>RMSTimeError</valueName>
+<value>1.07 seconds</value>
+</parameter>
+<parameter>
+<valueName>AzimuthalGap</valueName>
+<value>57 degrees</value>
+</parameter>
+<area>
+<areaDesc>185 miles (298 km) NNE of Neiafu, Tonga; 186 miles (299 km) SSW of APIA, Samoa; 211 miles (340 km) SW of PAGO PAGO, American Samoa; 1570 miles (2527 km) W of PAPEETE, Tahiti, French Polynesia</areaDesc>
+<circle>-16.053,-173.274 0.0</circle>
+</area>
+</info>
+<info>
+<language>sp-US</language>
+<category>Geo</category>
+<event>terremoto</event>
+<urgency>Past</urgency>
+<severity>Unknown</severity>
+<certainty>Likely</certainty>
+<eventCode><valueName>SAME</valueName><value>EQW</value></eventCode>
+<expires>2010-09-02T00:09:25-05:00</expires>
+<senderName>U.S. Geological Survey</senderName>
+<headline>EQ 5.3 Neiafu, Tonga - PRELIMINARY REPORT</headline>
+<description>Un terremoto de magnitud 5,3 se produjo cerca de Neiafu, Tonga en 23:25:40.68 UTC el 30 de Ago de 2010. (Este caso ha sido revisado por un sism—logo.)</description>
+<web>http://earthquake.usgs.gov/eqcenter/recenteqsww/Quakes/us2010apcd.php</web>
+<contact>http://earthquake.usgs.gov/research/monitoring/anss/neic/</contact>
+<area>
+<areaDesc>185 miles (298 km) NNE of Neiafu, Tonga; 186 miles (299 km) SSW of APIA, Samoa; 211 miles (340 km) SW of PAGO PAGO, American Samoa; 1570 miles (2527 km) W of PAPEETE, Tahiti, French Polynesia</areaDesc>
+<circle>-16.053,-173.274 0.0</circle>
+</area>
+</info>
+</alert>

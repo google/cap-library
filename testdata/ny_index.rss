@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <title>NY State-Wide RSS-Based CAP Index</title>
+    <description>NY State-Wide RSS-Based CAP Index</description>
+    <link>http://www.nyalert.gov/</link>
+    <pubDate>Fri, 04 Feb 2011 20:32:08 GMT</pubDate>
+    <lastBuildDate>Fri, 04 Feb 2011 20:32:08 GMT</lastBuildDate>
+    <docs>http://backend.userland.com/rss</docs>
+    <generator>RSS.NET: http://www.rssdotnet.com/</generator>
+    <item>
+      <title>I-81 NB  29S EXIT RAMP to I-481SB is Restricted  @ 3:20 PM due to an accident for upto 2 hours. Onondaga County.</title>
+      <description> I-81 NB 29S EXIT RAMP to I-481SB is Restricted @ 3:20 PM due to an accident for upto 2 hours. Onondaga County.    </description>
+      <link>http://www.nyalert.gov/Public/News/GetCapAlert.aspx?capID=NYAlert-ALLHAZALERT-3167113</link>
+      <comments>2/4/2011 10:30:00 PM</comments>
+      <guid>NYAlert-ALLHAZALERT-3167113</guid>
+      <pubDate>Fri, 04 Feb 2011 20:20:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>UPDATE: ROAD CLOSURE: State Hwy 218 in between Cornwall town line &amp; West Point Military Academy  due to weather.</title>
+      <description> ROAD CLOSURE: State Hwy 218 in between Cornwall town line &amp; West Point Military Academy, in Cornwall, Orange County,  closed due to weather conditions, at 2:15am for up to 1 day.      </description>
+      <link>http://www.nyalert.gov/Public/News/GetCapAlert.aspx?capID=NYAlert-ALLHAZALERT-3162202</link>
+      <comments>2/7/2011 4:33:00 PM</comments>
+      <guid>NYAlert-ALLHAZALERT-3162202</guid>
+      <pubDate>Fri, 28 Jan 2011 16:13:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

@@ -1,0 +1,11 @@
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:georss="http://www.georss.org/georss">
+  <updated>2010-08-31T00:48:10Z</updated>
+  <title>USGS M5+ Earthquakes</title>
+  <subtitle>Real-time, worldwide earthquake list for the past 7 days</subtitle>
+  <link rel="self" href="http://earthquake.usgs.gov/earthquakes/catalogs/7day-M5.xml"/>
+  <link href="http://earthquake.usgs.gov/earthquakes/"/>
+  <author><name>U.S. Geological Survey</name></author>
+  <id>http://earthquake.usgs.gov/</id>
+  <icon>/favicon.ico</icon>
+  <entry><id>urn:earthquake-usgs-gov:us:2010apcd</id><title>M 5.3, Tonga</title><updated>2010-08-30T23:25:40Z</updated><link rel="alternate" type="text/html" href="http://earthquake.usgs.gov/earthquakes/recenteqsww/Quakes/us2010apcd.php"/><link rel="related" type="application/cap+xml" href="http://earthquake.usgs.gov/earthquakes/catalogs/cap/us2010apcd" /><summary type="html"><![CDATA[><img src="http://earthquake.usgs.gov/images/globes/-15_-175.jpg" alt="16.053&#176;S 173.274&#176;W" align="left" hspace="20" /><p>Monday, August 30, 2010 23:25:40 UTC<br>Tuesday, August 31, 2010 12:25:40 PM at epicenter</p><p><strong>Depth</strong>: 38.70 km (24.05 mi)</p>]]></summary><georss:point>-16.0529 -173.2739</georss:point><georss:elev>-38700</georss:elev><category label="Age" term="Past day"/></entry>
+</feed>

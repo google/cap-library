@@ -1,0 +1,100 @@
+<?xml version = '1.0' encoding = 'UTF-8' standalone = 'yes'?>
+<feed
+xmlns = 'http://www.w3.org/2005/Atom'
+xmlns:cap = 'urn:oasis:names:tc:emergency:cap:1.1'
+xmlns:ha = 'http://www.alerting.net/namespace/index_1.0'
+>
+<!-- http-date = Mon, 30 Aug 2010 02:37:00 GMT -->
+<id>http://www.weather.gov/alerts-beta/</id>
+<logo>http://weather.gov/images/xml_logo.gif</logo>
+<generator>NWS CAP Server</generator>
+<updated>2010-08-30T14:37:00-00:00</updated>
+<author>
+<name>w-nws.webmaster@noaa.gov</name>
+</author>
+<title>Current Watches, Warnings and Advisories for the United States Issued by the National Weather Service</title>
+<link href='http://www.weather.gov/alerts-beta/'/>
+<entry>
+<id>http://www.weather.gov/alerts-beta/wwacapget.php?x=DC20100829202900LWXAirQualityAlertLWX20100831040000DC</id>
+<updated>2010-08-29T16:29:00-04:00</updated>
+<published>2010-08-29T16:29:00-04:00</published>
+<author>
+<name>w-nws.webmaster@noaa.gov</name>
+</author>
+<title>Air Quality Alert issued August 29 at 4:29PM EDT expiring August 31 at 12:00AM EDT by NWS Baltimore/Washington http://www.erh.noaa.gov/lwx/</title>
+<link href='http://www.weather.gov/alerts-beta/wwacapget.php?x=DC20100829202900LWXAirQualityAlertLWX20100831040000DC'/>
+<summary>...AIR QUALITY ALERT IS IN EFFECT FOR MONDAY AUGUST 30 2010... THE METROPOLITAN WASHINGTON COUNCIL OF GOVERNMENTS HAS ISSUED A CODE ORANGE AIR QUALITY ALERT MONDAY FOR THE DC METRO AREA. A CODE ORANGE AIR QUALITY ALERT MEANS THAT AIR POLLUTION CONCENTRATIONS WITHIN THE REGION MAY BECOME UNHEALTHY FOR SENSITIVE GROUPS. SENSITIVE GROUPS INCLUDE CHILDREN...PEOPLE SUFFERING FROM</summary>
+<content type="text/xml">
+<alert xmlns = 'urn:oasis:names:tc:emergency:cap:1.1'>
+<!-- http-date = Mon, 30 Aug 2010 10:07:00 GMT -->
+<identifier>NOAA-NWS-ALERTS-MT20100830100700TFXFlashFloodWatchTFX20100830180000MT</identifier>
+<sender>w-nws.webmaster@noaa.gov</sender>
+<sent>2010-08-30T04:07:00-06:00</sent>
+<status>Actual</status>
+<msgType>Alert</msgType>
+<scope>Public</scope>
+<note>Alert for Central and Southern Lewis and Clark; Lewis and Clark (Montana) Issued by the National Weather Service</note>
+<info>
+<category>Met</category>
+<event>Flash Flood Watch</event>
+<urgency>Expected</urgency>
+<severity>Severe</severity>
+<certainty>Possible</certainty>
+<eventCode>
+<valueName>SAME</valueName>
+<value>FFA</value>
+</eventCode>
+<effective>2010-08-30T04:07:00-06:00</effective>
+<expires>2010-08-30T12:00:00-06:00</expires>
+<senderName>NWS GreatFalls (Central Montana)</senderName>
+<headline>Flash Flood Watch issued August 30 at 4:07AM MDT expiring August 30 at 12:00PM MDT by NWS GreatFalls</headline>
+<description>...FLASH FLOOD WATCH REMAINS IN EFFECT UNTIL NOON MDT TODAY...
+THE FLASH FLOOD WATCH CONTINUES FOR
+* A PORTION OF SOUTHWEST MONTANA...INCLUDING THE FOLLOWING
+AREA...CENTRAL AND SOUTHERN LEWIS AND CLARK.
+* UNTIL NOON MDT TODAY
+* ISOLATED SHOWERS ARE EXPECTED THROUGH EARLY THIS AFTERNOON.
+ADDITIONAL RAINFALL TOTALS OF LESS THAN ONE QUARTER OF AN INCH
+ARE EXPECTED THROUGH MIDDAY MONDAY.
+* RAINFALL COULD LEAD TO LOCALIZED FLASH FLOODING AND POSSIBLE
+DEBRIS FLOWS IN WILDLAND FIRE BURN AREAS INCLUDING THE DAVIS...
+LAKESIDE...AND MERIWETHER FIRE AREAS.
+A FLASH FLOOD WATCH MEANS THAT CONDITIONS MAY DEVELOP THAT LEAD
+TO FLASH FLOODING.</description>
+<instruction>A FLASH FLOOD WATCH MEANS THAT CONDITIONS MAY DEVELOP THAT LEAD
+TO FLASH FLOODING. FLASH FLOODING IS A VERY DANGEROUS SITUATION.
+YOU SHOULD MONITOR LATER FORECASTS AND BE PREPARED TO TAKE ACTION
+SHOULD FLASH FLOOD WARNINGS BE ISSUED.</instruction>
+<parameter>
+<valueName>WMOHEADER</valueName>
+<value></value>
+</parameter>
+<parameter>
+<valueName>UGC</valueName>
+<value>MTZ014</value>
+</parameter>
+<parameter>
+<valueName>VTEC</valueName>
+<value>/O.CON.KTFX.FF.A.0003.000000T0000Z-100830T1800Z/
+/00000.0.ER.000000T0000Z.000000T0000Z.000000T0000Z.OO/</value>
+</parameter>
+<parameter>
+<valueName>TIME...MOT...LOC</valueName>
+<value></value>
+</parameter>
+<area>
+<areaDesc>Central and Southern Lewis and Clark; Lewis and Clark</areaDesc>
+<geocode>
+<valueName>FIPS6</valueName>
+<value>030049</value>
+</geocode>
+<geocode>
+<valueName>UGC</valueName>
+<value>MTZ014</value>
+</geocode>
+</area>
+</info>
+</alert>
+</content>
+</entry>
+</feed>

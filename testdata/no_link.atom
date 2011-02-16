@@ -1,0 +1,18 @@
+<?xml version = '1.0' encoding = 'UTF-8' standalone = 'yes'?>
+<feed xmlns = 'http://www.w3.org/2005/Atom' xmlns:cap = 'urn:oasis:names:tc:emergency:cap:1.1' xmlns:ha = 'http://www.alerting.net/namespace/index_1.0'>
+<id>http://www.weather.gov/alerts-beta/wwacapget.php?x=DC20100829202900LWXAirQualityAlertLWX20100831040000DC</id>
+<title>Title</title>
+<updated>2010-08-29T16:29:00-04:00</updated>
+<author>
+<name>w-nws.webmaster@noaa.gov</name>
+</author>
+<entry>
+<id>http://www.weather.gov/alerts-beta/wwacapget.php?x=DC20100829202900LWXAirQualityAlertLWX20100831040000DC</id>
+<updated>2010-08-29T16:29:00-04:00</updated>
+<title>Title</title>
+<author>
+<name>w-nws.webmaster@noaa.gov</name>
+</author>
+<!-- Empty content and <link> is missing -->
+</entry>
+</feed>
