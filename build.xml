@@ -42,6 +42,10 @@
 	  failonerror="true">
       <fileset dir="schema"/>
     </copy>
+    <copy toDir="${build.java}"
+	  failonerror="true">
+      <fileset dir="config/java"/>
+    </copy>
   </target>
 
   <target name="jar" depends="java_compile">
@@ -81,6 +85,14 @@
     <copy toDir="${build.javatests}/com/google/publicalerts/cap/schema"
 	  failonerror="true">
       <fileset dir="schema"/>
+    </copy>
+    <copy toDir="${build.javatests}/com/google/publicalerts/cap/feed/testdata"
+	  failonerror="true">
+      <fileset dir="testdata"/>
+    </copy>
+    <copy toDir="${build.javatests}"
+	  failonerror="true">
+      <fileset dir="config/java"/>
     </copy>
   </target>
 

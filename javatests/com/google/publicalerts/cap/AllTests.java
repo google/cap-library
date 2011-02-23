@@ -8,6 +8,9 @@ import java.util.List;
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
+import com.google.publicalerts.cap.feed.CapFeedParserTest;
+import com.google.publicalerts.cap.feed.CapFeedValidatorTest;
+
 /**
  * All tests.
  *
@@ -37,6 +40,9 @@ public class AllTests {
     suite.addTestSuite(CapXmlParserTest.class);
     suite.addTestSuite(CapUtilTest.class);
     suite.addTestSuite(CapValidatorTest.class);
+
+    suite.addTestSuite(CapFeedParserTest.class);
+    suite.addTestSuite(CapFeedValidatorTest.class);
 
     return suite;
   }

@@ -1,0 +1,19 @@
+<?xml version = '1.0' encoding = 'UTF-8' standalone = 'yes'?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+<identifier>12345</identifier>
+<sender>sender</sender> 
+<sent>2010-08-31T00:09:25+00:00</sent>
+<status>Actual</status>
+<msgType>Alert</msgType>
+<!-- Missing required Scope -->
+<info>
+<category>Met</category>
+<event>Storm</event>
+<urgency>Unknown</urgency>
+<severity>Unknown</severity>
+<certainty>Unknown</certainty>
+<area>
+<areaDesc>New York</areaDesc>
+</area>
+</info>
+</alert>

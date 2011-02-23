@@ -1,0 +1,18 @@
+<?xml version = '1.0' encoding = 'UTF-8' standalone = 'yes'?>
+<feed xmlns = 'http://www.w3.org/2005/Atom' xmlns:cap = 'urn:oasis:names:tc:emergency:cap:1.1' xmlns:ha = 'http://www.alerting.net/namespace/index_1.0'>
+<!--============================ ID IS MISSING ==============================-->
+<updated>2010-08-29T16:29:00-04:00</updated>
+<author>
+<name>w-nws.webmaster@noaa.gov</name>
+</author>
+<title>Air Quality Alert issued August 29 at 4:29PM EDT expiring August 31 at 12:00AM EDT by NWS Baltimore/Washington http://www.erh.noaa.gov/lwx/</title>
+<entry>
+<!--============================ ID IS MISSING ==============================-->
+<updated>2010-08-29T16:29:00-04:00</updated>
+<author>
+<name>w-nws.webmaster@noaa.gov</name>
+</author>
+<title>Air Quality Alert issued August 29 at 4:29PM EDT expiring August 31 at 12:00AM EDT by NWS Baltimore/Washington http://www.erh.noaa.gov/lwx/</title>
+<content></content>
+</entry>
+</feed>

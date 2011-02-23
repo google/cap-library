@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="UTF-8"?> 
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.1"> 
+  <identifier>CA-EC-CWTO-2011-138776</identifier> 
+  <sender>cwto@ec.gc.ca</sender> 
+  <sent>2011-02-07T23:52:00-00:00</sent> 
+  <status>Actual</status> 
+  <msgType>Update</msgType> 
+  <source>Environment Canada - Environnement Canada - Toronto (CWTO)</source> 
+  <scope>Public</scope> 
+  <code>profile:CAP-CP:1.0</code> 
+  <code>layer:EC:1.0</code> 
+  <code>layer:NPAS:1.0</code> 
+  <references>cwto@ec.gc.ca,CA-EC-CWTO-2011-138774,2011-02-07T23:52:00-00:00 cwto@ec.gc.ca,CA-EC-CWTO-2011-138729,2011-02-07T19:33:00-00:00 cwto@ec.gc.ca,CA-EC-CWTO-2011-138727,2011-02-07T19:33:00-00:00 cwto@ec.gc.ca,CA-EC-CWTO-2011-138651,2011-02-07T13:53:00-00:00 cwto@ec.gc.ca,CA-EC-CWTO-2011-138649,2011-02-07T13:53:00-00:00</references> 
+  <info> 
+    <language>fr-CA</language> 
+    <category>Met</category> 
+    <event>Vent de tempéte</event> 
+    <responseType>Monitor</responseType> 
+    <urgency>Future</urgency> 
+    <severity>Severe</severity> 
+    <certainty>Likely</certainty> 
+    <audience>General Public</audience> 
+    <eventCode> 
+      <valueName>profile:CAP-CP:Event:1.0</valueName> 
+      <value>storm</value> 
+    </eventCode> 
+    <effective>2011-02-08T00:00:00-00:00</effective> 
+    <expires>2011-02-08T14:00:00-00:00</expires> 
+    <senderName>Environment Canada</senderName> 
+    <headline>alerte vent de tempête</headline> 
+    <description>C'est l'épreuve - ce message de PAC a été créé pour les buts d'essai seulement.</description> 
+    <instruction>Surveiller les conditions locales et prendre les précautions qui s'imposent</instruction> 
+    <web>http://www.weatheroffice.gc.ca/warnings/warnings_f.html</web> 
+    <parameter> 
+      <valueName>layer:EC:1.0:Type</valueName> 
+      <value>Warning</value> 
+    </parameter> 
+    <parameter> 
+      <valueName>layer:EC:1.0:Status</valueName> 
+      <value>Continued</value> 
+    </parameter> 
+    <parameter> 
+      <valueName>layer:EC:1.0:EventId</valueName> 
+      <value>000616CWHX</value> 
+    </parameter> 
+    <parameter> 
+      <valueName>layer:EC:1.0:BroadcastIntrusive</valueName> 
+      <value>No</value> 
+    </parameter> 
+    <parameter> 
+      <valueName>layer:NPAS:1.0:BroadcastIntrusive</valueName> 
+      <value>No</value> 
+    </parameter> 
+    <resource> 
+      <resourceDesc>Radar Image File</resourceDesc> 
+      <mimeType>image/gif</mimeType> 
+      <size>17437</size> 
+      <uri>http://www.alerting.ca/cap/resources/wkr.gif</uri> 
+    </resource> 
+    <area> 
+      <areaDesc>cône Laurentien</areaDesc> 
+      <polygon>44.4998,-54.9979 44.3352,-54.9979 44.3352,-54.9979 43.5320,-54.9979 43.5320,-54.9979 42.5017,-54.9984 42.5017,-54.9984 42.4997,-54.9984 42.4997,-54.9984 42.2687,-57.0430 42.2687,-57.0430 41.9999,-58.9982 41.9999,-58.9982 43.0023,-58.9982 43.0023,-58.9982 43.9999,-58.9982 43.9999,-58.9982 44.2611,-57.0982 44.2611,-57.0982 44.4998,-54.9979 </polygon>   <geocode> 
+        <valueName>layer:EC:1.0:CLC</valueName> 
+        <value>003380</value> 
+      </geocode> 
+    </area> 
+    <area> 
+      <areaDesc>banc Georges</areaDesc> 
+      <polygon>42.0000,-67.1647 42.0046,-66.4765 42.0046,-66.4765 42.0000,-65.3316 42.0000,-65.3316 41.9907,-65.3300 41.9907,-65.3300 41.1440,-65.1861 41.1440,-65.1861 39.9999,-64.9992 39.9999,-64.9992 39.9999,-65.4992 41.1439,-66.4333 41.1439,-66.4333 42.0000,-67.1647 </polygon>    <geocode> 
+        <valueName>layer:EC:1.0:CLC</valueName> 
+        <value>003250</value> 
+      </geocode> 
+    </area> 
+    <area> 
+      <areaDesc>talus Scotian Est</areaDesc> 
+      <polygon>43.5544,-60.8908 43.9999,-58.9982 43.9999,-58.9982 43.0023,-58.9982 43.0023,-58.9982 41.9999,-58.9982 41.9999,-58.9982 41.9028,-59.4294 41.9028,-59.4294 41.5646,-60.8518 41.5646,-60.8518 41.0000,-62.9984 41.0000,-62.9984 41.0036,-62.9984 41.0036,-62.9984 41.7898,-62.9984 41.7898,-62.9984 42.0395,-62.9984 42.0395,-62.9984 42.9999,-62.9984 42.9999,-62.9984 43.2323,-62.1439 43.2323,-62.1439 43.5544,-60.8908 </polygon>   <geocode> 
+        <valueName>layer:EC:1.0:CLC</valueName> 
+        <value>003350</value> 
+      </geocode> 
+    </area> 
+    <area> 
+      <areaDesc>talus Scotian Ouest</areaDesc> 
+      <polygon>42.9948,-63.0111 42.9999,-62.9984 42.9999,-62.9984 42.0395,-62.9984 42.0395,-62.9984 41.7898,-62.9984 41.7898,-62.9984 41.0036,-62.9984 41.0036,-62.9984 41.0000,-62.9984 41.0000,-62.9984 40.9948,-63.0093 40.9948,-63.0093 40.5559,-63.9074 40.5559,-63.9074 40.0041,-64.9907 40.0041,-64.9907 39.9999,-64.9992 39.9999,-64.9992 41.1440,-65.1861 41.1440,-65.1861 41.9907,-65.3300 41.9907,-65.3300 42.0000,-65.3316 42.0000,-65.3316 42.5195,-64.1487 42.5195,-64.1487 42.9948,-63.0111 </polygon>   <geocode> 
+        <valueName>layer:EC:1.0:CLC</valueName> 
+        <value>003280</value> 
+      </geocode> 
+    </area> 
+  </info> 
+  <info> 
+    <language>en-CA</language> 
+    <category>Met</category> 
+    <event>Storm</event> 
+    <responseType>Monitor</responseType> 
+    <urgency>Future</urgency> 
+    <severity>Severe</severity> 
+    <certainty>Likely</certainty> 
+    <audience>General Public</audience> 
+    <eventCode> 
+      <valueName>profile:CAP-CP:Event:1.0</valueName> 
+      <value>storm</value> 
+    </eventCode> 
+    <effective>2011-02-08T00:00:00-00:00</effective> 
+    <expires>2011-02-08T14:00:00-00:00</expires> 
+    <senderName>Environment Canada</senderName> 
+    <headline>storm alert</headline> 
+    <description>This is a test - this CAP message was created for testing and evaluation purposes only.</description> 
+    <instruction>Monitor local conditions and take appropriate precautions</instruction> 
+    <web>http://www.weatheroffice.gc.ca/warnings/warnings_e.html</web> 
+    <parameter> 
+      <valueName>layer:EC:1.0:Type</valueName> 
+      <value>Warning</value> 
+    </parameter> 
+    <parameter> 
+      <valueName>layer:EC:1.0:Status</valueName> 
+      <value>Continued</value> 
+    </parameter> 
+    <parameter> 
+      <valueName>layer:EC:1.0:EventId</valueName> 
+      <value>000616CWHX</value> 
+    </parameter> 
+    <parameter> 
+      <valueName>layer:EC:1.0:BroadcastIntrusive</valueName> 
+      <value>No</value> 
+    </parameter> 
+    <parameter> 
+      <valueName>layer:NPAS:1.0:BroadcastIntrusive</valueName> 
+      <value>No</value> 
+    </parameter> 
+    <resource> 
+      <resourceDesc>Radar Image File</resourceDesc> 
+      <mimeType>image/gif</mimeType> 
+      <size>17437</size> 
+      <uri>http://www.alerting.ca/cap/resources/wkr.gif</uri> 
+    </resource> 
+    <area> 
+      <areaDesc>Laurentian Fan</areaDesc> 
+      <polygon>44.4998,-54.9979 44.3352,-54.9979 44.3352,-54.9979 43.5320,-54.9979 43.5320,-54.9979 42.5017,-54.9984 42.5017,-54.9984 42.4997,-54.9984 42.4997,-54.9984 42.2687,-57.0430 42.2687,-57.0430 41.9999,-58.9982 41.9999,-58.9982 43.0023,-58.9982 43.0023,-58.9982 43.9999,-58.9982 43.9999,-58.9982 44.2611,-57.0982 44.2611,-57.0982 44.4998,-54.9979 </polygon>   <geocode> 
+        <valueName>layer:EC:1.0:CLC</valueName> 
+        <value>003380</value> 
+      </geocode> 
+    </area> 
+    <area> 
+      <areaDesc>Georges Bank</areaDesc> 
+      <polygon>42.0000,-67.1647 42.0046,-66.4765 42.0046,-66.4765 42.0000,-65.3316 42.0000,-65.3316 41.9907,-65.3300 41.9907,-65.3300 41.1440,-65.1861 41.1440,-65.1861 39.9999,-64.9992 39.9999,-64.9992 39.9999,-65.4992 41.1439,-66.4333 41.1439,-66.4333 42.0000,-67.1647 </polygon>    <geocode> 
+        <valueName>layer:EC:1.0:CLC</valueName> 
+        <value>003250</value> 
+      </geocode> 
+    </area> 
+    <area> 
+      <areaDesc>East Scotian Slope</areaDesc> 
+      <polygon>43.5544,-60.8908 43.9999,-58.9982 43.9999,-58.9982 43.0023,-58.9982 43.0023,-58.9982 41.9999,-58.9982 41.9999,-58.9982 41.9028,-59.4294 41.9028,-59.4294 41.5646,-60.8518 41.5646,-60.8518 41.0000,-62.9984 41.0000,-62.9984 41.0036,-62.9984 41.0036,-62.9984 41.7898,-62.9984 41.7898,-62.9984 42.0395,-62.9984 42.0395,-62.9984 42.9999,-62.9984 42.9999,-62.9984 43.2323,-62.1439 43.2323,-62.1439 43.5544,-60.8908 </polygon>   <geocode> 
+        <valueName>layer:EC:1.0:CLC</valueName> 
+        <value>003350</value> 
+      </geocode> 
+    </area> 
+    <area> 
+      <areaDesc>West Scotian Slope</areaDesc> 
+      <polygon>42.9948,-63.0111 42.9999,-62.9984 42.9999,-62.9984 42.0395,-62.9984 42.0395,-62.9984 41.7898,-62.9984 41.7898,-62.9984 41.0036,-62.9984 41.0036,-62.9984 41.0000,-62.9984 41.0000,-62.9984 40.9948,-63.0093 40.9948,-63.0093 40.5559,-63.9074 40.5559,-63.9074 40.0041,-64.9907 40.0041,-64.9907 39.9999,-64.9992 39.9999,-64.9992 41.1440,-65.1861 41.1440,-65.1861 41.9907,-65.3300 41.9907,-65.3300 42.0000,-65.3316 42.0000,-65.3316 42.5195,-64.1487 42.5195,-64.1487 42.9948,-63.0111 </polygon>   <geocode> 
+        <valueName>layer:EC:1.0:CLC</valueName> 
+        <value>003280</value> 
+      </geocode> 
+    </area> 
+  </info> 
+</alert>

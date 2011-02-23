@@ -1,0 +1,52 @@
+<atom:feed xmlns:atom="http://www.w3.org/2005/Atom">
+  <atom:title>Amber Alert in Washington D.C.</atom:title>
+  <atom:id>http://doj.dc.gov/amber12345</atom:id>
+  <atom:updated>2010-06-03T19:15:00-05:00</atom:updated>
+  <atom:entry>
+    <atom:title>Amber Alert in Washington D.C.</atom:title>
+    <atom:id>http://doj.dc.gov/amber12345</atom:id>
+    <atom:updated>2010-06-03T19:15:00-05:00</atom:updated>
+    <atom:summary>
+      DATE/TIME: 06/03/10, 1915 HRS. VICTIM(S): KHAYRI DOE JR. M/B BLK/BRO 3&amp;#39;0&amp;quot;, 40
+      1022 LBS. LIGHT COMPLEXION. DOB 06/24/06. WEARING RED SHORTS, WHITE T-SHIRT, W/BLUE COLLAR.
+      1023 LOCATION: 5721 DOE ST., WASHINGTON D.C. SUSPECT(S): KHAYRI DOE SR. DOB 04/18/71 M/B, BLK HAIR,
+      1024 BRO EYE. VEHICLE: 81&amp;#39; BUICK 2-DR, BLUE (4XXX000).
+    </atom:summary>
+    <atom:content type="text/xml">
+      <alert xmlns="urn:oasis:names:tc:emergency:cap:1.1">
+        <identifier>http://doj.dc.gov/amber12345</identifier>
+        <sender>KARO@CLETS.DOJ.DC.GOV</sender>
+        <sent>2010-06-03T19:15:00-05:00</sent>
+        <status>Actual</status>
+        <msgType>Alert</msgType>
+        <source>SW</source>
+        <scope>Public</scope>
+        <info>
+          <language>en-US</language>
+          <category>Rescue</category>
+          <event>Child Abduction</event>
+          <urgency>Immediate</urgency>
+          <severity>Severe</severity>
+          <certainty>Likely</certainty>
+          <eventCode><valueName>SAME</valueName><value>CAE</value></eventCode>
+          <senderName>Metropolitan Police Dept - LAPD</senderName>
+          <headline>Amber Alert in Washington D.C.</headline>
+          <description>
+            DATE/TIME: 06/03/10, 1915 HRS. VICTIM(S): KHAYRI DOE JR. M/B BLK/BRO 3&amp;apos;0&amp;quot;, 40
+            1022 LBS. LIGHT COMPLEXION. DOB 06/24/06. WEARING RED SHORTS, WHITE T-SHIRT, W/BLUE COLLAR.
+            1023 LOCATION: 5721 DOE ST., WASHINGTON D.C. SUSPECT(S): KHAYRI DOE SR. DOB 04/18/71 M/B, BLK HAIR,
+            1024 BRO EYE. VEHICLE: 81&amp;apos; BUICK 2-DR, BLUE (4XXX000).
+          </description>
+          <contact>DET. SMITH, 5TH DIV, METROPOLITAN POLICE DEPT-MPD AT 202-727-9099</contact>
+          <area>
+            <areaDesc>Washington D.C.</areaDesc>
+            <geocode>
+              <valueName>FIPS6</valueName>
+              <value>006037</value>
+            </geocode>
+          </area>
+        </info>
+      </alert>
+    </atom:content>
+  </atom:entry>
+</atom:feed>

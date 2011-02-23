@@ -1,9 +1,16 @@
-jar: protobuf.jar
-    URL: http://protobuf.googlecode.com/files/protobuf-2.4.0a.tar.bz2
-    Version: 2.4.0a
-    License: New BSD License
-    Local Modifications: No changes have been made to the released files, they have been compiled and packaged into a jar.
-    Download date: 2011-02-02
+jar: jdom.jar
+    URL: http://www.jdom.org/dist/binary/archive/jdom-1.0.zip
+    Version: 1.0
+    License: MIT-based
+    Local Modifications: None
+    Download date: 2011-02-04
+
+jar: jing.jar
+    URL: http://code.google.com/p/jing-trang/downloads/detail?name=jing-20091111.zip&can=2
+    Version: 20091111
+    License: New BSD License 
+    Local Modifications: None
+    Download date: 2011-02-04
 
 jar: json.jar
     URL: http://json.org/java/index.html
@@ -12,12 +19,12 @@ jar: json.jar
     Local Modifications: No changes have been made to the released files, they have been compiled and packaged into a jar.
     Download date: 2008-03-12
 
-jar: jdom.jar
-    URL: http://www.jdom.org/
-    Version: 1.0
-    License: MIT-based
-    Local Modifications: None
-    Download date: 2011-02-04
+jar: protobuf-java.jar
+    URL: http://protobuf.googlecode.com/files/protobuf-2.4.0a.tar.bz2
+    Version: 2.4.0a
+    License: New BSD License
+    Local Modifications: No changes have been made to the released files, they have been compiled and packaged into a jar.
+    Download date: 2011-02-02
 
 jar: rome.jar
     URL: https://rome.dev.java.net/dist/rome-1.0.jar
