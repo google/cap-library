@@ -115,16 +115,31 @@ public class CapFeedParser {
   /** True to validate feeds and alerts that are parsed. */
   private boolean validate;
 
-  /** True to require digital signatures on parsed alerts */
-  private boolean requireSignature;
+  /**
+   * Used to validate XML signatures on alerts, if {@code validate} is true.
+   * If null, no signature validation is done.
+   */
+  private XmlSignatureValidator xmlSignatureValidator;
 
+  /**
+   * Creates a new parser with no XML signature validation.
+   *
+   * @param validate true to validate the feed as it is parsed
+   */
   public CapFeedParser(boolean validate) {
-    this(validate, false);
+    this(validate, null);
   }
 
-  public CapFeedParser(boolean validate, boolean requireSignature) {
+  /**
+   * Creates a new parser.
+   *
+   * @param validate true to validate the feed as it is parsed
+   * @param validator Used to validate XML signatures on alerts, if
+   * {@code validate} is true. If null, no signature validation is done.
+   */
+  public CapFeedParser(boolean validate, XmlSignatureValidator validator) {
     this.validate = validate;
-    this.requireSignature = requireSignature;
+    this.xmlSignatureValidator = validator;
   }
 
   /**
@@ -134,30 +149,28 @@ public class CapFeedParser {
   public void setValidate(boolean validate) {
     this.validate = validate;
   }
-  
+
   /**
    * @return true if this parser is validating input feeds and alerts
    */
   public boolean isValidate() {
     return validate;
   }
-  
+
   /**
-   * Sets whether or not this parser requires digital signatures on
-   * parsed alerts.
-   * @param requireSignature true if this parser is requiring digital
-   * signatures on parsed alerts
+   * Sets the validator used to validate XML signatures on alerts,
+   if {@code validate} is true. If null, no signature validation is done.
+   * @param validator the new validator
    */
-  public void setRequireSignature(boolean requireSignature) {
-    this.requireSignature = requireSignature;
+  public void setXmlSignatureValidator(XmlSignatureValidator validator) {
+    this.xmlSignatureValidator = validator;
   }
-  
+
   /**
-   * @return true if this parser is requiring digital signatures on
-   * parsed alerts
+   * @return the validator used to validate XML signatures on alerts
    */
-  public boolean isRequireSignature() {
-    return requireSignature;
+  public XmlSignatureValidator getXmlSignatureValidator() {
+    return xmlSignatureValidator;
   }
 
   /**
@@ -240,7 +253,7 @@ public class CapFeedParser {
         }
       }
     }
-    return syndFeed;    
+    return syndFeed;
   }
 
   private void validate(Schema schema, Source source)
@@ -265,7 +278,7 @@ public class CapFeedParser {
       throw new CapFeedException(errorHandler.reasons);
     }
   }
-  
+
   /**
    * Parses the CAP alerts assumed to be in the &lt;content&gt; bodies of the
    * entries of the given feed.
@@ -323,12 +336,12 @@ public class CapFeedParser {
     }
 
     CapXmlParser parser = new CapXmlParser(validate);
-    XmlSignatureValidator sigValidator = new XmlSignatureValidator();
     Alert alert;
     try {
       alert = parser.parseFrom(entryPayload);
 
-      if (!sigValidator.isSignatureValid(entryPayload, !requireSignature)) {
+      if (validate && xmlSignatureValidator != null &&
+          xmlSignatureValidator.isSignatureValid(entryPayload, false)) {
         throw new CapException(new Reason("/alert/Signature", Type.OTHER,
             "Invalid Signature: " + entryPayload));
       }
@@ -392,7 +405,7 @@ public class CapFeedParser {
 
   private static class FeedErrorHandler implements ErrorHandler {
     List<Reason> reasons;
-    
+
     public FeedErrorHandler() {
       this.reasons = new ArrayList<Reason>();
     }

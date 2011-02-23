@@ -35,7 +35,7 @@ import com.sun.syndication.io.FeedException;
 /**
  * Validates portions of Atom/RSS feeds (fat or thin) of CAP alerts
  * beyond what is done in by the schemas in {@link CapFeedParser}.
- * 
+ *
  * @author shakusa@google.com (Steve Hakusa)
  */
 public class CapFeedValidator {
@@ -45,7 +45,7 @@ public class CapFeedValidator {
    * has a non-null {@code originalWireFeed()}.
    *
    * @param syndFeed the parsed feed to validate
-   * @throws FeedException if the feed is invalid
+   * @throws CapFeedException if the feed is invalid
    */
   public void checkForErrors(SyndFeed feed) throws CapFeedException {
     if (feed.originalWireFeed() instanceof Feed) {
@@ -57,6 +57,12 @@ public class CapFeedValidator {
     }
   }
 
+  /**
+   * Checks the given Atom feed for errors.
+   *
+   * @param feed the feed to check
+   * @throws CapFeedException if the feed is invalid
+   */
   public void checkForErrors(Feed feed) throws CapFeedException {
     @SuppressWarnings("unchecked")
     List<Entry> entries = (List<Entry>) feed.getEntries();
@@ -68,7 +74,7 @@ public class CapFeedValidator {
       }
     }
   }
-    
+
   private boolean hasCapLink(Entry entry) {
     @SuppressWarnings("unchecked")
     List<Link> links = (List<Link>) entry.getAlternateLinks();
@@ -86,6 +92,12 @@ public class CapFeedValidator {
     return false;
   }
 
+  /**
+   * Checks the given RSS channel for errors.
+   *
+   * @param channel the channel to check
+   * @throws CapFeedException if the channel is invalid
+   */
   public void checkForErrors(Channel channel) throws CapFeedException {
     List<Reason> reasons = new ArrayList<Reason>();
 
@@ -95,7 +107,7 @@ public class CapFeedValidator {
     for (int i = 0; i < items.size(); i++) {
       Item item = items.get(i);
       String xpath = "/channel/item[" + i + "]";
-      if (CapUtil.isEmptyOrWhitespace(item.getTitle()) 
+      if (CapUtil.isEmptyOrWhitespace(item.getTitle())
           && (item.getDescription() == null
           || CapUtil.isEmptyOrWhitespace(item.getDescription().getValue()))) {
         itemReasons.add(new Reason(xpath,
@@ -121,9 +133,8 @@ public class CapFeedValidator {
    * Checks the given feed for recommendations. Assumes the given feed
    * has a non-null {@code originalWireFeed()}.
    *
-   * @param syndFeed the parsed feed to validate
+   * @param syndFeed the feed to check
    * @return a list of recommendations, empty list if there are none
-   * @throws FeedException if the feed is invalid
    */
   public List<Reason> checkForRecommendations(SyndFeed feed) {
     if (feed.originalWireFeed() instanceof Feed) {
@@ -133,11 +144,23 @@ public class CapFeedValidator {
     }
     return Collections.<Reason>emptyList();
   }
-  
+
+  /**
+   * Checks the given Atom feed for recommendations. Currently a no-op.
+   *
+   * @param feed the feed to check
+   * @return an empty list
+   */
   public List<Reason> checkForRecommendations(Feed feed) {
     return Collections.<Reason>emptyList();
   }
 
+  /**
+   * Checks the given RSS feed for recommendations.
+   *
+   * @param channel the channel to check
+   * @return a list of recommendations, empty list if there are none
+   */
   public List<Reason> checkForRecommendations(Channel channel) {
     List<Reason> reasons = new ArrayList<Reason>();
     if (channel.getPubDate() == null) {
@@ -163,5 +186,5 @@ public class CapFeedValidator {
       }
     }
     return reasons;
-  }  
+  }
 }

@@ -38,16 +38,22 @@ public class CapFeedException extends CapException {
     super(reasons);
   }
 
+  /**
+   * Types of errors that can occur when validating a feed.
+   */
   public enum FeedErrorType implements CapException.ReasonType {
-    // Errors
     ATOM_ID_IS_REQUIRED("Feeds must have a non-empty <id> element"),
     ATOM_TITLE_IS_REQUIRED("Feeds must have a non-empty <title> element"),
     ATOM_UPDATED_IS_REQUIRED("Feeds must have a non-empty <updated> element"),
     ATOM_ENTRY_ID_IS_REQUIRED("Entries must have a non-empty <id> element"),
-    ATOM_ENTRY_TITLE_IS_REQUIRED("Entries must have a non-empty <title> element"),
-    ATOM_ENTRY_UPDATED_IS_REQUIRED("Entries must have a non-empty <updated> element"),
-    ATOM_ENTRY_MISSING_CAP_LINK("Entries that do not embed CAP must contain a link to a CAP document"),
-    RSS_ITEM_TITLE_OR_DESCRIPTION_IS_REQUIRED("Items must have a non-empty <title> or <description>"),
+    ATOM_ENTRY_TITLE_IS_REQUIRED(
+        "Entries must have a non-empty <title> element"),
+    ATOM_ENTRY_UPDATED_IS_REQUIRED(
+        "Entries must have a non-empty <updated> element"),
+    ATOM_ENTRY_MISSING_CAP_LINK(
+        "Entries that do not embed CAP must contain a link to a CAP document"),
+    RSS_ITEM_TITLE_OR_DESCRIPTION_IS_REQUIRED(
+        "Items must have a non-empty <title> or <description>"),
     RSS_ITEM_MISSING_CAP_LINK("Item ust contain a link to a CAP document"),
     OTHER("{0}"),
     ;
@@ -58,12 +64,18 @@ public class CapFeedException extends CapException {
       this.message = message;
     }
 
+    /**
+     * @return the localized message for the type
+     */
     @Override
     public String getMessage(Locale locale) {
       return message;
     }
   }
 
+  /**
+   * Recommendations for improving the utility of a feed.
+   */
   public enum FeedRecommendationType implements CapException.ReasonType {
     RSS_PUBDATE_IS_RECOMMENDED("Feeds should contain a <pubDate>"),
     RSS_ITEM_GUID_IS_RECOMMENDED("Items should contain a <guid>"),
@@ -75,6 +87,9 @@ public class CapFeedException extends CapException {
       this.message = message;
     }
 
+    /**
+     * @return the localized message for the type
+     */
     @Override
     public String getMessage(Locale locale) {
       return message;

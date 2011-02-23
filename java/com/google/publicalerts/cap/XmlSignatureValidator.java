@@ -48,6 +48,9 @@ import javax.xml.crypto.dsig.keyinfo.KeyValue;
  * XML signature. Based on sample code at
  * http://download.oracle.com/javase/6/docs/technotes/guides/security/xmldsig/XMLDigitalSignature.html
  *
+ * TODO(shakusa) This class is not yet fully ready; it needs to accept
+ * a KeyStore and validate that the KeyInfo parsed from the XML is trusted.
+ *
  * @author shakusa@google.com (Steve Hakusa)
  */
 public class XmlSignatureValidator {
@@ -120,7 +123,15 @@ public class XmlSignatureValidator {
     }
   }
 
- private static class KeyValueKeySelector extends KeySelector {
+  /**
+   * TODO(shakusa) This is a very simple KeySelector implementation,
+   * designed for illustration rather than real-world usage.
+   * A more practical example of a KeySelector is one that searches a KeyStore
+   * for trusted keys that match X509Data information (for example,
+   * X509SubjectName, X509IssuerSerial, X509SKI, or X509Certificate elements)
+   * contained in a KeyInfo.
+   */
+  private static class KeyValueKeySelector extends KeySelector {
 
     public KeySelectorResult select(KeyInfo keyInfo,
         KeySelector.Purpose purpose,
