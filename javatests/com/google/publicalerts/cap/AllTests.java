@@ -10,6 +10,8 @@ import junit.framework.TestSuite;
 
 import com.google.publicalerts.cap.feed.CapFeedParserTest;
 import com.google.publicalerts.cap.feed.CapFeedValidatorTest;
+import com.google.publicalerts.cap.profile.CanadianProfileTest;
+import com.google.publicalerts.cap.profile.Ipaws1ProfileTest;
 
 /**
  * All tests.
@@ -43,6 +45,9 @@ public class AllTests {
 
     suite.addTestSuite(CapFeedParserTest.class);
     suite.addTestSuite(CapFeedValidatorTest.class);
+
+    suite.addTestSuite(CanadianProfileTest.class);
+    suite.addTestSuite(Ipaws1ProfileTest.class);
 
     return suite;
   }
