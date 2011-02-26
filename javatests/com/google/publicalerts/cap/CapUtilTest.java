@@ -40,7 +40,7 @@ public class CapUtilTest extends TestCase {
     assertEquals("foo_bar_baz", CapUtil.underscoreCase("fooBarBaz"));
     assertEquals("Foo__bar", CapUtil.underscoreCase("Foo_Bar"));
   }
-  
+
   public void testIsDateParseable() {
     assertTrue(CapUtil.isValidDate("2003-04-02T14:39:01-05:00"));
     assertTrue(CapUtil.isValidDate("2008-02-29T24:59:59-00:00"));
@@ -53,5 +53,16 @@ public class CapUtilTest extends TestCase {
     assertFalse(CapUtil.isValidDate("2003-04-02T14:39:01-24:00"));
     assertFalse(CapUtil.isValidDate("2003-04-02T14:39:01-05:61"));
     assertFalse(CapUtil.isValidDate("2003-04-02T14:39:01-24:000"));
+  }
+
+  public void testGetTimezoneOffset() {
+    assertEquals(0, CapUtil.getTimezoneOffset("invalid"));
+
+    assertEquals(-300, CapUtil.getTimezoneOffset("2003-04-02T14:39:01-05:00"));
+    assertEquals(300, CapUtil.getTimezoneOffset("2003-04-02T14:39:01+05:00"));
+    assertEquals(89, CapUtil.getTimezoneOffset("2003-04-02T14:39:01+01:29"));
+    assertEquals(-89, CapUtil.getTimezoneOffset("2003-04-02T14:39:01-01:29"));
+    assertEquals(0, CapUtil.getTimezoneOffset("2003-04-02T14:39:01+00:00"));
+    assertEquals(0, CapUtil.getTimezoneOffset("2003-04-02T14:39:01-00:00"));
   }
 }

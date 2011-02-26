@@ -27,6 +27,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.Date;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
@@ -56,7 +57,7 @@ public class CapUtil {
   // to devise a more robust and flexible solution here.
   private static final Pattern DATE_PATTERN = Pattern.compile(
       "[0-9]{4}-[01][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](\\.[0-9]{2}([0-9])?)?"
-          + "[\\+|-][01][0-9]:[0-5][0-9]");
+          + "([\\+|-])([01][0-9]:[0-5][0-9])");
 
   // These are the (only) supported date formats; they must be covered by DATE_PATTERN.
   private static final String [] DATE_FORMATS = {"yyyy-MM-dd'T'HH:mm:ssZ",
@@ -208,6 +209,25 @@ public class CapUtil {
   }
 
   /**
+   * Returns the timezone offset, in minutes, between the given
+   * {@code dateStr} and UTC.
+   * <p>For example, if {@code dateStr} is 2003-04-02T14:39:01+05:00, this
+   * method would return 300. If {@code dateStr} is 2003-04-02T14:39:01-01:29,
+   * this method would return -89.
+   */
+  public static int getTimezoneOffset(String dateStr) {
+    Matcher matcher = DATE_PATTERN.matcher(dateStr);
+    if (!matcher.matches()) {
+      return 0;
+    }
+    String sign = matcher.group(3);
+    String tz = matcher.group(4);
+    String[] parts = tz.split(":");
+    int hours = Integer.parseInt(parts[0]) * 60 + Integer.parseInt(parts[1]);
+    return "+".equals(sign) ? hours : -hours;
+  }
+
+  /**
    * Returns true if the given string is a valid date according to the CAP spec
    * @param dateStr the string to parse
    * @return true if the given string is a valid date according to the CAP spec
@@ -219,13 +239,13 @@ public class CapUtil {
   /**
    * Returns true if the string is null or {@code s.trim()}
    * returns the empty string.
-   * 
+   *
    * @param s the string to check
    * @return true if the string is empty or whitespace
    */
   public static boolean isEmptyOrWhitespace(String s) {
     return s == null || "".equals(s.trim());
   }
-  
+
   private CapUtil() {}
 }
