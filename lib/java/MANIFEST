@@ -39,3 +39,10 @@ jar: junit.jar
     License: Common Public License 1.0
     Local Modifications: None.
     Download date: 2011-02-02
+
+jar: jarjar.jar
+     URL: http://jarjar.googlecode.com/files/jarjar-1.1.jar
+     Version: 1.1
+     License: Apache 2.0
+     Local Modifications: None.
+     Download date: 2011-02-25

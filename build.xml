@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (C) 2011 Google Inc.
+
+ Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ use this file except in compliance with the License. You may obtain a copy of
+ the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ License for the specific language governing permissions and limitations under
+ the License.
+-->
 <project basedir="." default="all">
-  <property environment="env"/>
+  <!-- TODO(shakusa) Create jar_minimal that doesn't include the feed/ package,
+                     and thus doesn't need jdom, jing, and rome
+       TODO(shakusa) Javadoc target
+       TODO(shakusa) Source jar
+       TODO(shakusa) Zip containing source, jar and javadoc
+    -->
+
   <property name="build" value="build"/>
-  <property name="build.javalib" value="${build}/lib/java"/>
   <property name="build.java" value="${build}/java"/>
   <property name="build.javatests" value="${build}/javatests"/>
+  <property name="dist" value="dist"/>
 
   <!-- To run this target, you must first download and install the protoc
        compiler from http://code.google.com/p/protobuf/downloads/list -->
@@ -16,25 +37,27 @@
   </target>
 
   <target name="clean">
-    <delete dir="build"/>
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
   </target>
 
   <path id="java_classpath">
-    <fileset dir=".">
-      <include name="lib/java/*.jar"/>
-      <exclude name="lib/java/junit.jar"/>
+    <fileset dir="lib/java">
+      <include name="*.jar"/>
+      <exclude name="junit.jar"/>
+      <exclude name="jarjar.jar"/>
     </fileset>
   </path>
 
   <target name="java_init">
     <mkdir dir="${build.java}"/>
-    <mkdir dir="${build.javalib}"/>
+    <mkdir dir="${dist}"/>
   </target>
 
   <target name="java_compile" depends="java_init">
     <javac debug="on" memoryMaximumSize="256m" memoryInitialSize="256m"
            fork="true" destdir="${build.java}">
-      <!--compilerarg value="-Xlint"/-->
+      <compilerarg value="-Xlint"/>
       <classpath refid="java_classpath"/>
       <src path="java"/>
     </javac>
@@ -48,9 +71,9 @@
     </copy>
   </target>
 
-  <target name="jar" depends="java_compile">
-    <!-- TODO(shakusa) Compile a jar that bundles the required dep jars. -->
-    <jar destfile="${build.javalib}/cap-library.jar" basedir="${build.java}">
+  <target name="jar_no_deps" depends="java_compile"
+	  description="Builds a jar without any external dependencies from lib/">
+    <jar jarfile="${dist}/cap-library_no-deps.jar" basedir="${build.java}">
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
         <attribute name="Implementation-Vendor" value="Google"/>
@@ -60,8 +83,28 @@
     </jar>
   </target>
 
+  <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
+           classpath="lib/java/jarjar.jar"/>
 
-<!-- Test Rules -->
+  <target name="jar" depends="java_compile"
+	  description="Builds a jar including external dependencies from lib. Note that this jar
+		       still relies on a service provider (like Xerces) for XML parsing">
+    <jarjar jarfile="${dist}/cap-library.jar" basedir="${build.java}">
+      <zipfileset src="lib/java/jdom.jar"/>
+      <zipfileset src="lib/java/jing.jar"/>
+      <zipfileset src="lib/java/json.jar"/>
+      <zipfileset src="lib/java/protobuf-java.jar"/>
+      <zipfileset src="lib/java/rome.jar"/>
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Implementation-Vendor" value="Google"/>
+        <attribute name="Implementation-Title" value="cap-library"/>
+        <attribute name="Implementation-Version" value="0.1"/>
+      </manifest>
+    </jarjar>
+  </target>
+
+  <!-- Test Rules -->
 
   <path id="javatests_classpath">
     <path refid="java_classpath"/>
@@ -77,7 +120,7 @@
   <target name="javatests_compile" depends="javatests_init">
     <javac debug="on" memoryMaximumSize="256m" memoryInitialSize="256m"
            fork="true" destdir="${build.javatests}">
-      <!--compilerarg value="-Xlint"/-->
+      <compilerarg value="-Xlint"/>
       <classpath refid="javatests_classpath"/>
       <src path="java"/>
       <src path="javatests"/>
@@ -98,28 +141,14 @@
 
   <target name="javatests" description="Runs the test you specify on the
       command line with -Dtest=" depends="javatests_compile">
-      <junit printsummary="true" fork="yes" failureproperty="junit.failure">
-        <sysproperty key="test" value="${test}"/>
-        <sysproperty key="tests" value="${tests}"/>
-        <classpath>
-          <path refid="javatests_classpath"/>
-          <pathelement location="${build.javatests}"/>
-        </classpath>
-        <formatter type="plain" usefile="false"/>
-        <batchtest>
-          <fileset dir="${build.javatests}" includes="**/AllTests.class" />
-        </batchtest>
-      </junit>
-     <fail if="junit.failure" message="Unit test(s) failed."/>
-  </target>
-
-  <target name="javatestsdebug" description="Runs the test you specify on the
-      command line with -Dtest=" depends="javatests_compile">
+    <condition property="suspend" value="y" else="n">
+      <isset property="debug"/>
+    </condition>
     <junit printsummary="true" fork="yes" failureproperty="junit.failure">
       <sysproperty key="test" value="${test}"/>
       <sysproperty key="tests" value="${tests}"/>
       <jvmarg value="-Xdebug"/>
-      <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"/>
+      <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=${suspend},address=5005"/>
       <classpath>
         <path refid="javatests_classpath"/>
         <pathelement location="${build.javatests}"/>
@@ -132,8 +161,35 @@
     <fail if="junit.failure" message="Unit test(s) failed."/>
   </target>
 
-  <target name="test" depends="javatests"/>
-  <target name="testdebug" depends="javatestsdebug"/>
+  <target name="javatestsdebug" description="Runs the test you specify on the command
+      line with -Dtest=" depends="javatests_compile">
+    <antcall target="javatests">
+      <param name="debug" value="true"/>
+    </antcall>
+  </target>
+
+  <target name="jar_testlib" depends="javatests_compile"
+	  description="Builds a jar without any external dependencies from lib/">
+    <jar jarfile="${dist}/cap-library-testing.jar" basedir="${build.javatests}"
+	 includes="com/google/publicalerts/cap/TestUtil*
+		   com/google/publicalerts/cap/feed/TestResources*
+		   com/google/publicalerts/cap/feed/testdata/*">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Implementation-Vendor" value="Google"/>
+        <attribute name="Implementation-Title" value="cap-library-testlib"/>
+        <attribute name="Implementation-Version" value="0.1"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="test" depends="javatests">
+    <ant dir="validator" target="test"/>
+  </target>
+
+  <target name="testdebug" depends="javatestsdebug">
+    <ant dir="validator" target="testd"/>
+  </target>
 
   <target name="all" depends="test" />
 

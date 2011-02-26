@@ -7,10 +7,12 @@ Changes:
 - Added pattern restriction to identifier
 - Added pattern restriction to sender
 - Added pattern restriction to references
-- Added pattern restriction to polygon
 - Added pattern restriction to circle
 - Added pattern restriction to altitude
 - Added pattern restriction to ceiling
+
+Note: No pattern restriction is added to polygon because it can cause a stack
+overflow in the regex parser for large polygons
 
 Original schema is Copyright OASIS Open 2010 All Rights Reserved 
 -->
@@ -223,14 +225,7 @@ Original schema is Copyright OASIS Open 2010 All Rights Reserved
                 <complexType>
                   <sequence>
                     <element name="areaDesc" type="xs:string" />
-                    <element name="polygon" minOccurs="0" maxOccurs="unbounded">
-                      <simpleType>
-                        <restriction base="xs:string">
-                          <!--  A minimum of 4 whitespace-delimited [WGS 84] coordinate pairs-->
-                          <pattern value="\s*([+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*\s+){3,}([+-]?\d{0,2}[.]?\d*,[+-]?\d{0,3}[.]?\d*)\s*"/>
-                        </restriction>
-                      </simpleType>
-                    </element>
+                    <element name="polygon" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
                     <element name="circle" minOccurs="0" maxOccurs="unbounded">
                       <simpleType>
                         <restriction base="xs:string">

@@ -147,7 +147,7 @@ public class XmlSignatureValidator {
       List<XMLStructure> list = (List<XMLStructure>) keyInfo.getContent();
 
       for (int i = 0; i < list.size(); i++) {
-        XMLStructure xmlStructure = (XMLStructure) list.get(i);
+        XMLStructure xmlStructure = list.get(i);
         if (xmlStructure instanceof KeyValue) {
           PublicKey pk;
           try {
