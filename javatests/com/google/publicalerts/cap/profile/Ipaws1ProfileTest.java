@@ -25,27 +25,31 @@ import com.google.publicalerts.cap.profile.Ipaws1Profile.RecommendationType;
 
 /**
  * Tests for {@link Ipaws1Profile}.
- * 
+ *
  * @author shakusa@google.com (Steve Hakusa)
  */
 public class Ipaws1ProfileTest extends CapProfileTestCase {
-  
+
   public Ipaws1ProfileTest(String name) {
     super(name);
   }
-  
+
   @Override
   public void setUp() {
     profile = new Ipaws1Profile();
   }
-  
+
+  public void testParseFrom() throws Exception {
+    runTestParseFrom("canada.cap");
+  }
+
   public void testCheckForErrors() throws Exception {
     Alert.Builder alert = loadAlert("earthquake.cap").toBuilder();
     assertNoErrors(alert);
-    
+
     alert.clearCode();
     assertErrors(alert, ErrorType.VERSION_CODE_REQUIRED);
-    
+
     alert = loadAlert("earthquake.cap").toBuilder();
     alert.setMsgType(MsgType.Update);
     alert.clearReferences();
@@ -66,8 +70,12 @@ public class Ipaws1ProfileTest extends CapProfileTestCase {
         ErrorType.EXPIRES_IS_REQUIRED,
         ErrorType.AREA_IS_REQUIRED,
         ErrorType.SAME_EVENT_CODE_REQUIRED);
+
+    alert = loadAlert("earthquake.cap").toBuilder();
+    alert.getInfoBuilder(0).setExpires("2002-01-01T00:00:00+00:00");
+    assertErrors(alert, ErrorType.EXPIRES_INCLUDE_TIMEZONE_OFFSET);
   }
-  
+
   public void testCheckForRecommendations() throws Exception {
     Alert.Builder alert = loadAlert("earthquake.cap").toBuilder();
     alert.getInfoBuilder(0).setInstruction("test")
@@ -77,7 +85,7 @@ public class Ipaws1ProfileTest extends CapProfileTestCase {
         .getAreaBuilder(0).addGeocode(
             ValuePair.newBuilder().setValueName("SAME").setValue("AKZ001"));
     assertNoRecommendations(alert);
-    
+
     alert.getInfoBuilder(0)
         .setEffective("2002-01-01T00:00:00+00:00")
         .setOnset("2002-01-01T00:00:00+00:00")

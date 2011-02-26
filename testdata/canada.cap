@@ -2,7 +2,7 @@
 <alert xmlns="urn:oasis:names:tc:emergency:cap:1.1"> 
   <identifier>CA-EC-CWTO-2011-138776</identifier> 
   <sender>cwto@ec.gc.ca</sender> 
-  <sent>2011-02-07T23:52:00-00:00</sent> 
+  <sent>2011-02-07T23:52:00-05:00</sent> 
   <status>Actual</status> 
   <msgType>Update</msgType> 
   <source>Environment Canada - Environnement Canada - Toronto (CWTO)</source> 
@@ -24,8 +24,8 @@
       <valueName>profile:CAP-CP:Event:1.0</valueName> 
       <value>storm</value> 
     </eventCode> 
-    <effective>2011-02-08T00:00:00-00:00</effective> 
-    <expires>2011-02-08T14:00:00-00:00</expires> 
+    <effective>2011-02-08T00:00:00-05:00</effective> 
+    <expires>2011-02-08T14:00:00-05:00</expires> 
     <senderName>Environment Canada</senderName> 
     <headline>alerte vent de tempête</headline> 
     <description>C'est l'épreuve - ce message de PAC a été créé pour les buts d'essai seulement.</description> 
@@ -99,8 +99,8 @@
       <valueName>profile:CAP-CP:Event:1.0</valueName> 
       <value>storm</value> 
     </eventCode> 
-    <effective>2011-02-08T00:00:00-00:00</effective> 
-    <expires>2011-02-08T14:00:00-00:00</expires> 
+    <effective>2011-02-08T00:00:00-05:00</effective> 
+    <expires>2011-02-08T14:00:00-05:00</expires> 
     <senderName>Environment Canada</senderName> 
     <headline>storm alert</headline> 
     <description>This is a test - this CAP message was created for testing and evaluation purposes only.</description> 

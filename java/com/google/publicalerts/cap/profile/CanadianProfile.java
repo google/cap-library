@@ -42,10 +42,18 @@ import com.google.publicalerts.cap.ValuePair;
  *
  * @author shakusa@google.com (Steve Hakusa)
  */
-public class CanadianProfile implements CapProfile {
+public class CanadianProfile extends AbstractCapProfile {
 
   static final String CAPCP_LOCATION = "layer:EC:1.0:CLC";
   static final String CAPCP_EVENT = "profile:CAP-CP:Event:";
+
+  public CanadianProfile() {
+    super();
+  }
+
+  public CanadianProfile(boolean strictXsdValidation) {
+    super(strictXsdValidation);
+  }
 
   @Override
   public String getName() {
@@ -86,7 +94,7 @@ public class CanadianProfile implements CapProfile {
     if (alert.getMsgType() != Alert.MsgType.Ack
         && alert.getMsgType() != Alert.MsgType.Error
         && alert.getInfoCount() == 0) {
-      reasons.add(new Reason("/alert", ErrorType.INFO_IS_REQUIRED));
+      reasons.add(new Reason("/alert", ErrorType.IS_REQUIRED));
     }
 
     // 12. An Update or Cancel message should minimally include
@@ -128,7 +136,7 @@ public class CanadianProfile implements CapProfile {
 
       // 10. <area> blocks are required
       if (info.getAreaCount() == 0) {
-        reasons.add(new Reason(xpath, ErrorType.INFO_AREA_IS_REQUIRED));
+        reasons.add(new Reason(xpath, ErrorType.AREA_IS_REQUIRED));
       }
 
       for (int j = 0; j < info.getAreaCount(); j++) {
@@ -162,11 +170,10 @@ public class CanadianProfile implements CapProfile {
     // TODO(shakusa) Lookup established event values?
 
     // 4. Time zone field must be included in all time values
-    checkTimezone(reasons, alert.getSent(), "/alert/sent",
+    checkZeroTimezone(reasons, alert.getSent(), "/alert/sent",
         RecommendationType.SENT_INCLUDE_TIMEZONE_OFFSET);
 
     Set<String> languages = new HashSet<String>();
-    boolean addedCirclePolygonPreferred = false;
     for (int i = 0; i < alert.getInfoCount(); i++) {
       Info info = alert.getInfo(i);
       String xpath = "/alert/info[" + i + "]";
@@ -177,32 +184,32 @@ public class CanadianProfile implements CapProfile {
       if (!info.hasExpires()
           || CapUtil.isEmptyOrWhitespace(info.getExpires())) {
         reasons.add(new Reason(xpath,
-            RecommendationType.INFO_EXPIRES_STRONGLY_RECOMMENDED));
+            RecommendationType.EXPIRES_STRONGLY_RECOMMENDED));
       }
 
       // 4. Time zone field must be included in all time values
-      checkTimezone(reasons, info.getEffective(), xpath + "/effective",
+      checkZeroTimezone(reasons, info.getEffective(), xpath + "/effective",
           RecommendationType.EFFECTIVE_INCLUDE_TIMEZONE_OFFSET);
-      checkTimezone(reasons, info.getOnset(), xpath + "/onset",
+      checkZeroTimezone(reasons, info.getOnset(), xpath + "/onset",
           RecommendationType.ONSET_INCLUDE_TIMEZONE_OFFSET);
-      checkTimezone(reasons, info.getExpires(), xpath + "/expires",
+      checkZeroTimezone(reasons, info.getExpires(), xpath + "/expires",
           RecommendationType.EXPIRES_INCLUDE_TIMEZONE_OFFSET);
 
       // 14. A <senderName> is strongly recommended
       if (CapUtil.isEmptyOrWhitespace(info.getSenderName())) {
         reasons.add(new Reason(xpath,
-            RecommendationType.INFO_SENDER_NAME_STRONGLY_RECOMMENDED, i + 1));
+            RecommendationType.SENDER_NAME_STRONGLY_RECOMMENDED));
       }
 
       // 15. <responseType> is strongly recommended, when applicable,
       // along with a corresponding <instruction> value
       if (info.getResponseTypeCount() == 0) {
         reasons.add(new Reason(xpath,
-            RecommendationType.INFO_RESPONSE_TYPE_STRONGLY_RECOMMENDED, i + 1));
+            RecommendationType.RESPONSE_TYPE_STRONGLY_RECOMMENDED));
       }
       if (CapUtil.isEmptyOrWhitespace(info.getInstruction())) {
         reasons.add(new Reason(xpath,
-            RecommendationType.INFO_INSTRUCTION_STRONGLY_RECOMMENDED, i + 1));
+            RecommendationType.INSTRUCTION_STRONGLY_RECOMMENDED));
       }
 
       // 16. Indicate when an update message contains non-substantive
@@ -225,14 +232,6 @@ public class CanadianProfile implements CapProfile {
           }
         }
       }
-      if (polygonCircleGeocodeAreaIndex != -1
-          && !addedCirclePolygonPreferred) {
-//        reasons.add(new Reason(
-//            xpath + "/area[" + polygonCircleGeocodeAreaIndex + "]",
-//            RecommendationType.CIRCLE_POLYGON_PREFERRED));
-        // This one can get wordy, only add it the first time
-        addedCirclePolygonPreferred = true;
-      }
       if (!hasPolygonOrCircle && info.getAreaCount() > 0) {
         reasons.add(new Reason(xpath + "/area[0]",
             RecommendationType.CIRCLE_POLYGON_ENCOURAGED));
@@ -249,18 +248,6 @@ public class CanadianProfile implements CapProfile {
     return reasons;
   }
 
-  private void checkTimezone(List<Reason> reasons,
-      String value, String xpath, ReasonType type) {
-    if (CapUtil.isEmptyOrWhitespace(value)) {
-      return;
-    }
-    @SuppressWarnings("deprecation")
-    int tzOffset = CapUtil.toJavaDate(value).getTimezoneOffset();
-    if (tzOffset == 0) {
-      reasons.add(new Reason(xpath, type));
-    }
-  }
-
   // TODO(shakusa) Localize messages
   public enum ErrorType implements CapException.ReasonType {
     // Errors
@@ -272,8 +259,8 @@ public class CanadianProfile implements CapProfile {
     RECOGNIZED_EVENT_CODE_REQUIRED("The CAP-CP requires the use of an " +
         "<eventCode> value from the CAP-CP Event References document that " +
         "should match the corresponding <event> value"),
-    INFO_IS_REQUIRED("At least one <info> must be present"),
-    INFO_AREA_IS_REQUIRED("At least one <area> must be present"),
+    IS_REQUIRED("At least one <info> must be present"),
+    AREA_IS_REQUIRED("At least one <area> must be present"),
     AREA_GEOCODE_IS_REQUIRED("At least one <geocode> value from the CAP-CP" +
         "Location References document for messages that describe areas " +
         "within Canada is required."),
@@ -294,12 +281,12 @@ public class CanadianProfile implements CapProfile {
   public enum RecommendationType implements CapException.ReasonType {
     ENGLISH_AND_FRENCH("Consider alerts with 2 <info> blocks, one each for " +
         "English and French"),
-    INFO_EXPIRES_STRONGLY_RECOMMENDED("<expires> is strongly recommended."),
-    INFO_SENDER_NAME_STRONGLY_RECOMMENDED(
+    EXPIRES_STRONGLY_RECOMMENDED("<expires> is strongly recommended."),
+    SENDER_NAME_STRONGLY_RECOMMENDED(
         "<senderName> is strongly recommended."),
-    INFO_RESPONSE_TYPE_STRONGLY_RECOMMENDED(
+    RESPONSE_TYPE_STRONGLY_RECOMMENDED(
         "<responseType> is strongly recommended."),
-    INFO_INSTRUCTION_STRONGLY_RECOMMENDED(
+    INSTRUCTION_STRONGLY_RECOMMENDED(
         "<instruction> is strongly recommended."),
     CIRCLE_POLYGON_ENCOURAGED("<polygon> and <circle>, while optional, are " +
         "encouraged as more accurate representations of <geocode> values"),

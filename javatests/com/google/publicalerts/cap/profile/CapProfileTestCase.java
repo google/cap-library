@@ -20,28 +20,43 @@ import junit.framework.TestCase;
 
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.AlertOrBuilder;
+import com.google.publicalerts.cap.CapException;
 import com.google.publicalerts.cap.CapException.ReasonType;
+import com.google.publicalerts.cap.CapXmlParser;
 import com.google.publicalerts.cap.TestUtil;
-import com.google.publicalerts.cap.feed.CapFeedParser;
 import com.google.publicalerts.cap.feed.TestResources;
 
 /**
  * Test case for {@link CapProfile} tests.
- * 
+ *
  * @author shakusa@google.com (Steve Hakusa)
  */
 public abstract class CapProfileTestCase extends TestCase {
-  protected CapProfile profile;
+  protected AbstractCapProfile profile;
 
   public CapProfileTestCase(String name) {
     super(name);
   }
-  
+
+  protected void runTestParseFrom(String filename) throws Exception {
+    // No CapException when parsing through plain CapXmlParser
+    String cap = TestResources.load(filename);
+    new CapXmlParser(true).parseFrom(cap);
+
+    try {
+      // ...but there is an exception when parsing with profile
+      loadAlert(filename);
+      fail("Expected CapException");
+    } catch (CapException e) {
+      // expected
+    }
+  }
+
   protected Alert loadAlert(String filename) throws Exception {
     String cap = TestResources.load(filename);
-    return new CapFeedParser(true).parseAlert(cap);
+    return profile.parseFrom(cap);
   }
-  
+
   protected void assertNoErrors(AlertOrBuilder alert) {
     assertErrors(alert, new ReasonType[] {});
   }

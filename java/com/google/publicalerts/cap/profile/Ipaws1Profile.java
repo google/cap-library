@@ -41,7 +41,16 @@ import com.google.publicalerts.cap.ValuePair;
  *
  * @author shakusa@google.com (Steve Hakusa)
  */
-public class Ipaws1Profile implements CapProfile {
+public class Ipaws1Profile extends AbstractCapProfile {
+
+  public Ipaws1Profile() {
+    super();
+  }
+
+  public Ipaws1Profile(boolean strictXsdValidation) {
+    super(strictXsdValidation);
+  }
+
   @Override
   public String getName() {
     return "US IPAWS Profile v1.0";
@@ -62,7 +71,7 @@ public class Ipaws1Profile implements CapProfile {
     List<Reason> reasons = new ArrayList<Reason>();
 
     // sent SHALL include the timezone offset
-    checkTimezone(reasons, alert.getSent(), "/alert/sent",
+    checkZeroTimezone(reasons, alert.getSent(), "/alert/sent",
         ErrorType.SENT_INCLUDE_TIMEZONE_OFFSET);
 
     // code SHALL include the string "IPAWSv1.0" to indicate the profile
@@ -113,7 +122,8 @@ public class Ipaws1Profile implements CapProfile {
       // expires is required.  The value MUST include the timezone offset.
       if (CapUtil.isEmptyOrWhitespace(info.getExpires())) {
         reasons.add(new Reason(xpath, ErrorType.EXPIRES_IS_REQUIRED));
-        checkTimezone(reasons, info.getExpires(), xpath,
+      } else {
+        checkZeroTimezone(reasons, info.getExpires(), xpath + "/expires",
             ErrorType.EXPIRES_INCLUDE_TIMEZONE_OFFSET);
       }
 
@@ -202,18 +212,6 @@ public class Ipaws1Profile implements CapProfile {
     }
 
     return reasons;
-  }
-
-  private void checkTimezone(List<Reason> reasons,
-      String value, String xpath, ReasonType type) {
-    if (CapUtil.isEmptyOrWhitespace(value)) {
-      return;
-    }
-    @SuppressWarnings("deprecation")
-    int tzOffset = CapUtil.toJavaDate(value).getTimezoneOffset();
-    if (tzOffset == 0) {
-      reasons.add(new Reason(xpath, type));
-    }
   }
 
   // TODO(shakusa) Localize messages
