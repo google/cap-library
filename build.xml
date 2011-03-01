@@ -183,13 +183,9 @@
     </jar>
   </target>
 
-  <target name="test" depends="javatests">
-    <ant dir="validator" target="test"/>
-  </target>
+  <target name="test" depends="javatests"/>
 
-  <target name="testdebug" depends="javatestsdebug">
-    <ant dir="validator" target="testd"/>
-  </target>
+  <target name="testdebug" depends="javatestsdebug"/>
 
   <target name="all" depends="test" />
 
