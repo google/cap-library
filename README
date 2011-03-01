@@ -12,7 +12,7 @@ ant test
 
 Compile the library into a jar
 ==============================
-ant package
+ant jar
 
 Usage
 =====

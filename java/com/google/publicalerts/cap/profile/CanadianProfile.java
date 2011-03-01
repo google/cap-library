@@ -71,6 +71,11 @@ public class CanadianProfile extends AbstractCapProfile {
   }
 
   @Override
+  public String toString() {
+    return getCode();
+  }
+
+  @Override
   public List<Reason> checkForErrors(AlertOrBuilder alert) {
     List<Reason> reasons = new ArrayList<Reason>();
 

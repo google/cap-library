@@ -24,6 +24,7 @@ import com.google.publicalerts.cap.CapXmlParser.CapXmlHandler;
 
 import junit.framework.TestCase;
 
+import org.xml.sax.Locator;
 import org.xml.sax.SAXParseException;
 
 
@@ -478,7 +479,7 @@ public class CapXmlParserTest extends TestCase {
 
   public void testParseInvalidPolygon2() throws Exception {
     for (String xmlns : CapValidator.CAP_XML_NAMESPACES) {
-      String alertStr = getPolygonAlert(xmlns, "a,b 3,4 5,6");
+      String alertStr = getPolygonAlert(xmlns, "3,4 a,b 5,6 3,4");
       CapXmlParser parser = new CapXmlParser(true);
       assertCapException(parser, alertStr, Type.INVALID_POLYGON);
     }
@@ -787,11 +788,11 @@ public class CapXmlParserTest extends TestCase {
     Point point = Point.newBuilder().setLatitude(1.5).setLongitude(2.5).build();
     Point point2 = Point.newBuilder().setLatitude(-2).setLongitude(-3).build();
     Point point3 = Point.newBuilder().setLatitude(3).setLongitude(4).build();
-
+    
     assertEquals(Polygon.newBuilder().addPoint(point).addPoint(point2)
-        .addPoint(point3).build(),
+        .addPoint(point3).addPoint(point).build(),
         handler.getComplexValue(
-            Polygon.newBuilder(), "polygon", "1.5,2.5 -2,-3 3,4"));
+            Polygon.newBuilder(), "polygon", "1.5,2.5 -2,-3 3,4 1.5,2.5"));
     assertEquals(Circle.newBuilder().setPoint(point).setRadius(3.5).build(),
         handler.getComplexValue(Circle.newBuilder(), "circle", "1.5,2.5 3.5"));
     assertEquals(Group.newBuilder().addValue("a").addValue("b").build(),
@@ -804,14 +805,17 @@ public class CapXmlParserTest extends TestCase {
 
   public void testToPolygon() {
     CapXmlHandler handler = new CapXmlHandler(true);
+    handler.setDocumentLocator(new FakeLocator());
     Point point = Point.newBuilder().setLatitude(1.5).setLongitude(2.5).build();
     Point point2 = Point.newBuilder().setLatitude(-2).setLongitude(-3).build();
     Point point3 = Point.newBuilder().setLatitude(3).setLongitude(4).build();
 
     assertEquals(Polygon.newBuilder().addPoint(point).addPoint(point2)
-        .addPoint(point3).build(), handler.toPolygon("1.5,2.5 -2,-3 3,4"));
+        .addPoint(point3).addPoint(point).build(),
+        handler.toPolygon("1.5,2.5 -2,-3 3,4 1.5,2.5"));
     assertEquals(Polygon.newBuilder().addPoint(point).addPoint(point2)
-        .addPoint(point3).build(), handler.toPolygon("1.5,2.5 \t -2,-3  3,4"));
+        .addPoint(point3).addPoint(point).build(), handler.toPolygon(
+            "1.5,2.5 \t -2,-3  3,4 1.5,2.5"));
     assertNull(handler.toPolygon("invalid"));
     assertNull(handler.toPolygon("1,23,4 5,6"));
     assertNull(handler.toPolygon(""));
@@ -865,5 +869,27 @@ public class CapXmlParserTest extends TestCase {
       e = new XercesCapExceptionMapper().map(e);
       TestUtil.assertErrorTypes(e.getReasons(), types);
     }    
+  }
+  
+  private static class FakeLocator implements Locator {
+    @Override
+    public int getColumnNumber() {
+      return 0;
+    }
+
+    @Override
+    public int getLineNumber() {
+      return 0;
+    }
+
+    @Override
+    public String getPublicId() {
+      return null;
+    }
+
+    @Override
+    public String getSystemId() {
+      return null;
+    }
   }
 }

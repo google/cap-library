@@ -57,7 +57,7 @@ import com.google.publicalerts.cap.CapException.Type;
  *
  * Ignores enveloped digital signature.  To validate the signature, use
  * {@link XmlSignatureValidator}.
- * 
+ *
  * TODO(shakusa) Explicit XEE prevention here like Rome's WireFeedInput?
  * TODO(shakusa) Support input from javax.xml.transform.Source ?
  *
@@ -106,7 +106,7 @@ public class CapXmlParser {
   public CapXmlParser(boolean validate) {
     this(validate, false);
   }
-  
+
   /**
    * Creates a new parser.
    *
@@ -117,7 +117,7 @@ public class CapXmlParser {
    * valid or not CAP. Instead, if there are errors parsing a field,
    * it is left as null.
    * @param strictXsdValidation if true, perform by-the-spec xsd schema
-   * validation, which does not check a number of properties specified 
+   * validation, which does not check a number of properties specified
    * elsewhere in the spec. If false (the default), attempt to do extra
    * validation to conform to the text of the spec.
    */
@@ -126,7 +126,7 @@ public class CapXmlParser {
     this.schemaMap = strictXsdValidation
         ? STRICT_SCHEMA_MAP : EXTENDED_SCHEMA_MAP;
   }
-  
+
   /**
    * Parse the given alert.
    *
@@ -340,7 +340,7 @@ public class CapXmlParser {
           builderNameStack.push(localName);
           builderLineStack.push(locator.getLineNumber());
         }
-        xpath.push(localName, fd.isRepeated());        
+        xpath.push(localName, fd.isRepeated());
       }
     }
 
@@ -399,7 +399,7 @@ public class CapXmlParser {
       setOrAdd(fd, getPrimitiveValue(fd, characters.toString()));
       characters.setLength(0);
       if (fd != null) {
-        xpath.pop();        
+        xpath.pop();
       }
     }
 
@@ -552,10 +552,23 @@ public class CapXmlParser {
       for (String pointStr : pointStrs) {
         Point point = toPoint(pointStr);
         if (point == null) {
+          // Would like to handle this in the xsd, but the pattern can
+          // cause stack overflow if the number of points is large
+          parseErrors.add(new Reason(locator.getLineNumber(),
+              locator.getColumnNumber(), xpath.toString(),
+              Type.INVALID_POLYGON,
+              str.length() > 50 ? str.substring(0, 47) + "..." : str));
           return null;
         } else {
           polygon.addPoint(point);
         }
+      }
+      if (polygon.getPointCount() < 4) {
+        // Would like to handle this in the xsd, but the pattern can
+        // cause stack overflow if the number of points is large
+        parseErrors.add(new Reason(locator.getLineNumber(),
+            locator.getColumnNumber(), xpath.toString(), Type.INVALID_POLYGON,
+            str.length() > 50 ? str.substring(0, 47) + "..." : str));
       }
       return polygon.buildPartial();
     }
@@ -654,25 +667,25 @@ public class CapXmlParser {
       Stack<Integer> indexes;
       Map<String, Integer> indexCounts;
       String lastElement;
-      
+
       public Xpath() {
         this.elements = new Stack<String>();
         this.indexes = new Stack<Integer>();
         this.indexCounts = new HashMap<String, Integer>();
       }
-      
+
       public void push(String element, boolean repeated) {
         elements.push(element);
         indexes.push(repeated ?
             (element.equals(lastElement) ? indexCounts.get(lastElement) + 1 : 0)
             : null);
       }
-      
+
       public void pop() {
         lastElement = elements.pop();
         indexCounts.put(lastElement, indexes.pop());
       }
-      
+
       @Override
       public String toString() {
         StringBuilder sb = new StringBuilder();
