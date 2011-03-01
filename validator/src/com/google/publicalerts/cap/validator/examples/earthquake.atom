@@ -1,0 +1,67 @@
+<?xml version = "1.0" encoding = "UTF-8"?> 
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:georss="http://www.georss.org/georss">
+  <updated>2010-08-31T00:48:10Z</updated>
+  <title>Trinet Earthquakes</title>
+  <subtitle>Real-time, worldwide earthquake list for the past 7 days</subtitle>
+  <link rel="self" href="http://www.trinet.org/scsn/scsn.html"/>
+  <link href="http://www.trinet.org"/>
+  <author><name>Trinet</name></author>
+  <id>http://earthquake.usgs.gov/</id>
+  <entry>
+  <id>TRI13970876.1</id>
+  <title>EQ 3.4 Imperial County CA - PRELIMINARY REPORT</title>
+  <updated>2003-06-11T20:56:00-07:00</updated>
+  <link rel="related" type="application/cap+xml" href="http://earthquake.usgs.gov/earthquakes/catalogs/cap/us2010apcd" /><summary type="html"><![CDATA[><img src="http://earthquake.usgs.gov/images/globes/-15_-175.jpg" alt="16.053&#176;S 173.274&#176;W" align="left" hspace="20" /><p>Monday, August 30, 2010 23:25:40 UTC<br>Tuesday, August 31, 2010 12:25:40 PM at epicenter</p><p><strong>Depth</strong>: 38.70 km (24.05 mi)</p>]]></summary><georss:point>-16.0529 -173.2739</georss:point><georss:elev>-38700</georss:elev>
+  <category label="Age" term="Past day"/>
+  <content type="text/xml">
+    <alert xmlns = "urn:oasis:names:tc:emergency:cap:1.1"> 
+     <identifier>TRI13970876.1</identifier>   
+     <sender>trinet@caltech.edu</sender>   
+     <sent>2003-06-11T20:56:00-07:00</sent> 
+     <status>Actual</status>   
+     <msgType>Alert</msgType> 
+     <scope>Public</scope> 
+     <incidents>13970876</incidents> 
+     <info> 
+       <category>Geo</category>     
+       <event>Earthquake</event>     
+       <urgency>Past</urgency>     
+       <severity>Minor</severity>     
+       <certainty>Observed</certainty>  
+       <senderName>Southern California Seismic Network (TriNet) operated by Caltech and 
+    USGS</senderName> 
+       <headline>EQ 3.4 Imperial County CA - PRELIMINARY REPORT</headline> 
+       <description>A minor earthquake measuring 3.4 on the Richter scale occurred near Brawley, 
+    California at 8:53 PM Pacific Daylight Time on Wednesday, June 11, 2003. (This is a computer-
+    generated solution and has not yet been reviewed by a human.)</description> 
+       <web>http://www.trinet.org/scsn/scsn.html</web> 
+       <parameter> 
+         <valueName>EventID</valueName> 
+         <value>13970876</value> 
+       </parameter> 
+       <parameter> 
+         <valueName>Version</valueName> 
+         <value>1</value> 
+       </parameter> 
+       <parameter> 
+         <valueName>Magnitude</valueName> 
+         <value>3.4 Ml</value> 
+       </parameter> 
+       <parameter> 
+         <valueName>Depth</valueName> 
+         <value>11.8 mi.</value> 
+       </parameter> 
+       <parameter> 
+         <valueName>Quality</valueName> 
+         <value>Excellent</value> 
+       </parameter> 
+       <area>         
+         <areaDesc>1 mi. WSW of Brawley, CA; 11 mi. N of El Centro, CA; 30 mi. E of OCOTILLO 
+    (quarry); 1 mi. N of the Imperial Fault</areaDesc> 
+         <circle>32.9525,-115.5527 0</circle>    
+       </area>  
+     </info> 
+    </alert>
+  </content>
+  </entry>
+</feed>

@@ -1,0 +1,174 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (C) 2011 Google Inc.
+
+ Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ use this file except in compliance with the License. You may obtain a copy of
+ the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ License for the specific language governing permissions and limitations under
+ the License.
+-->
+<project basedir="." default="all">
+  <property environment="env"/>
+  <property name="src.classes" value="war/WEB-INF/classes"/>
+  <property name="src.lib" value="war/WEB-INF/lib"/>
+  <property name="test.classes" value="build/test/classes"/>
+  <property name="test.lib" value="build/test/lib"/>
+
+  <target name="clean">
+    <delete dir="build"/>
+    <delete dir="${src.classes}"/>
+    <delete>
+      <fileset dir="${src.lib}" includes="cap-library.jar"/>
+    </delete>
+  </target>
+
+  <path id="classpath">
+    <fileset dir=".">
+      <include name="${src.lib}/*.jar"/>
+    </fileset>
+  </path>
+
+  <target name="init">
+    <mkdir dir="${src.classes}"/>
+    <ant dir="../" target="jar"/>
+    <copy toDir="${src.lib}" failonerror="true">
+      <fileset dir="../dist/">
+	<include name="cap-library.jar"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="compile" depends="init">
+    <javac debug="on" memoryMaximumSize="256m" memoryInitialSize="256m"
+           fork="true" destdir="${src.classes}">
+      <compilerarg value="-Xlint"/>
+      <classpath refid="classpath"/>
+      <src path="src"/>
+    </javac>
+    <copy toDir="${src.classes}/com/google/publicalerts/cap/validator/examples"
+	  failonerror="true">
+      <fileset dir="src/com/google/publicalerts/cap/validator/examples"/>
+    </copy>
+  </target>
+
+  <target name="war" depends="compile">
+    <copy toDir="${src.classes}" failonerror="true">
+      <fileset dir="src">
+        <include name="log4j.properties"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <!-- Test Rules -->
+
+  <path id="test.classpath">
+    <path refid="classpath"/>
+    <fileset dir=".">
+      <include name="${test.lib}/*.jar"/>
+    </fileset>
+    <fileset dir="../lib/java">
+      <include name="junit.jar"/>
+    </fileset>
+  </path>
+
+  <target name="test_init" depends="compile">
+    <mkdir dir="${test.classes}"/>
+    <ant dir="../" target="jar_testlib"/>
+    <copy toDir="${test.lib}" failonerror="true">
+      <fileset dir="../dist/">
+	<include name="cap-library-testing.jar"/>
+      </fileset>
+    </copy>
+  </target>
+
+  <target name="test_compile" depends="test_init">
+    <javac debug="on" memoryMaximumSize="256m" memoryInitialSize="256m"
+           fork="true" destdir="${test.classes}">
+      <compilerarg value="-Xlint"/>
+      <classpath refid="test.classpath"/>
+      <src path="src"/>
+      <src path="test"/>
+    </javac>
+  </target>
+
+  <target name="test" description="Runs the test you specify on the command
+      line with -Dtest=" depends="test_compile">
+    <condition property="suspend" value="y" else="n">
+      <isset property="debug"/>
+    </condition>
+    <junit printsummary="true" fork="yes" failureproperty="junit.failure">
+      <sysproperty key="test" value="${test}"/>
+      <sysproperty key="tests" value="${tests}"/>
+      <jvmarg value="-Xdebug"/>
+      <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=${suspend},address=5005"/>
+      <classpath>
+        <path refid="test.classpath"/>
+        <pathelement location="${test.classes}"/>
+      </classpath>
+      <formatter type="plain" usefile="false"/>
+      <batchtest>
+        <fileset dir="${test.classes}" includes="**/AllTests.class" />
+      </batchtest>
+    </junit>
+    <fail if="junit.failure" message="Unit test(s) failed."/>
+  </target>
+
+  <target name="testd" description="Runs the test you specify on the command
+      line with -Dtest=" depends="test_compile">
+    <antcall target="test">
+      <param name="debug" value="true"/>
+    </antcall>
+  </target>
+
+  <target name="all" depends="test" />
+
+
+  <!-- 
+     Google App Engine targets.
+
+     The validator does not depend on App Engine, but it is a convenient
+     development, test, and deployment environment.
+    -->
+
+  <macrodef name="dev_appserver" description="Runs the App Engine Development App Server with remote debugging">
+    <attribute name="war" description="The exploded war directory containing the application"/>
+    <attribute name="port" default="8080" description="The port the server starts on"/>
+    <attribute name="address" default="localhost" description="The interface the server binds to"/>
+    <attribute name="debugport" default="5005" description="The debug port the server starts on"/>
+    <attribute name="suspend" default="n" description="Suspend the server until debugger attaches?"/>
+    <element name="options" optional="true" description="Additional options for dev_appserver"/>
+    <element name="args" optional="true" description="Additional arguments for the java task"/>
+
+    <sequential>
+      <java classname="com.google.appengine.tools.KickStart"
+            classpath="${env.APPENGINE_JAVA_SDK}/lib/appengine-tools-api.jar"
+            fork="true" failonerror="true">
+        <arg value="--jvm_flag=-Xdebug"/>
+        <arg value="--jvm_flag=-Xrunjdwp:transport=dt_socket,server=y,suspend=@{suspend},address=@{debugport}"/>
+        <arg value="com.google.appengine.tools.development.DevAppServerMain"/>
+        <arg value="--port=@{port}"/>
+        <arg value="--address=@{address}"/>
+        <options/>
+        <arg value="@{war}"/>
+        <args/>
+      </java>
+    </sequential>
+  </macrodef>
+
+  <target name="runserver" depends="war"
+	  description="Starts the development server at http://localhost:8090">
+    <fail unless="env.APPENGINE_JAVA_SDK"
+	  message="Set APPENGINE_JAVA_SDK=/path/to/your/appengine_java_sdk" />
+    <condition property="suspend" value="y" else="n">
+      <isset property="debug"/>
+    </condition>
+    <dev_appserver war="war" address="0.0.0.0" port="8090" debugport="5005" suspend="${suspend}"/>
+  </target>
+</project>

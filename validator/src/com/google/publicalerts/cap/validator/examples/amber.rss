@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Amber Alert CAP Index</title>
+    <description>Amber Alert CAP Index</description>
+    <link>http://www.missingkids.com/</link>
+    <pubDate>Wed, 11 Jun 2003 22:39:00 PDT</pubDate>
+    <item>
+      <title>AMBER ALERT</title>
+      <description>DATE/TIME: 06/11/03, 1915 HRS.  VICTIM(S): KHAYRI DOE JR. M/B BLK/BRO 3'0", 40 
+LBS. LIGHT COMPLEXION.  DOB 06/24/01. WEARING RED SHORTS, WHITE T-SHIRT, W/BLUE COLLAR.  
+LOCATION: 5721 DOE ST., LOS ANGELES, CA.  SUSPECT(S): KHAYRI DOE SR. DOB 04/18/71 M/B, BLK HAIR, 
+BRO EYE. VEHICLE: 81' BUICK 2-DR, BLUE (4XXX000).</description>
+      <link>http://cap-validator.appspot.com/examples/KAR0-0306112239-SW.cap</link>
+      <guid>KAR0-0306112239-SW</guid>
+      <pubDate>Wed, 11 Jun 2003 22:39:00 PDT</pubDate>
+    </item>
+  </channel>
+</rss>
