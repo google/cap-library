@@ -35,10 +35,10 @@ import com.google.publicalerts.cap.profile.Ipaws1ProfileTest;
  * ant test
  *
  * To run an individual test, use
- * ant test -Dtest=CapXmlParserTest
+ * ant test -Dtest=EndToEndTest
  *
  * To run an indivisual test case, use
- * ant test -Dtest=CapXmlParserTest -Dtests=testParseAlert
+ * ant test -Dtest=EndToEndTest -Dtests=testEndToEnd
  *
 * @author shakusa@google.com (Steve Hakusa)
  */
@@ -54,9 +54,13 @@ public class AllTests {
     // TODO(shakusa) Automate this, recursively search for test classes
     TestSuite suite = new TestSuite();
 
+    suite.addTestSuite(CapJsonBuilderTest.class);
     suite.addTestSuite(CapXmlParserTest.class);
+    suite.addTestSuite(CapXmlBuilderTest.class);
     suite.addTestSuite(CapUtilTest.class);
     suite.addTestSuite(CapValidatorTest.class);
+    suite.addTestSuite(XmlSignAndValidateTest.class);
+    suite.addTestSuite(EndToEndTest.class);
 
     suite.addTestSuite(CapFeedParserTest.class);
     suite.addTestSuite(CapFeedValidatorTest.class);
