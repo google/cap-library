@@ -256,23 +256,17 @@ public class CapValidatorServlet extends HttpServlet {
   }
 
   String loadUrl(String capUrl) throws IOException {
-    StringBuilder builder = new StringBuilder();
     URL url = new URL(capUrl);
-    BufferedReader reader =
-      new BufferedReader(new InputStreamReader(url.openStream()));
-    String line;
-    while ((line = reader.readLine()) != null) {
-      builder.append(line).append("\n");
-    }
-    return builder.toString();
+    return readFully(url.openStream());
   }
 
   String loadExample(String filename) throws IOException {
     InputStream stream = CapValidatorServlet.class.getResourceAsStream(
         "examples/" + filename);
-    if (stream == null) {
-      return "";
-    }
+    return stream == null ? "" : readFully(stream);
+  }
+
+  String readFully(InputStream stream) throws IOException {
     BufferedReader br = new BufferedReader(new InputStreamReader(stream));
     StringBuilder sb = new StringBuilder();
     String line;
