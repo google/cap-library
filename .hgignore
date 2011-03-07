@@ -1,6 +1,10 @@
 syntax: glob
+*~
 *.class
 *.pyc
 
 syntax: regexp
 build/.*
+dist/.*
+validator/war/WEB-INF/classes/*.*
+validator/war/WEB-INF/lib/cap-library.jar

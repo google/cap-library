@@ -1,0 +1,114 @@
+body {
+  color: #333;
+  font-family: arial, san-serif;
+  padding-left: 1em;
+}
+td {
+  padding:1px;
+}
+.desc {
+  margin-top:2em;
+  padding-left: 1em;
+  width:45em;
+}
+.input, .examples, .logo {
+  padding-left: 1em;
+}
+.example {
+  line-height: 1.5em;
+}
+.lines {
+  background-color: #ffc;
+  display: inline-block;
+  margin-left: 1em;
+  padding: 1ex;
+  font-size: 80%;
+}
+td.linenum {
+  padding-left: 4px;
+  padding-right: 6px;
+  text-align: right;
+  vertical-align: top;
+}
+td.line {
+  padding-right: 4px;  
+}
+td.errormsg {
+  font-weight: bold; 
+}
+td.errormsg, td.recommendmsg {
+  padding: 4px;
+}
+.valid {
+  background-color: #cfc;
+  display: inline-block;
+  margin-left: 1em;
+  padding: 1ex;
+}
+.error {
+  background-color: #fcc;
+  display: inline-block;
+  margin-left: 1em;
+  padding: 1ex;
+  font-size: 80%;
+}
+tr.errorline td {
+  background-color: #fcc;
+}
+.recommendation {
+  background-color: #ccf;
+  display: inline-block;
+  margin-left: 1em;
+  padding: 1ex;
+  font-size: 80%;
+}
+tr.recommendline td {
+  background-color: #ccf;
+}
+.render {
+  margin-left: 1em;
+}
+.header {
+  margin-bottom: -1em;
+  margin-left: -1em;
+}
+.footer {
+  margin-top: 3em;
+  font-size: 80%;
+}
+.footer a {
+  color: #4272DB;
+  text-decoration: none;
+}
+.footer a:hover {
+  text-decoration: underline;
+}
+h4 {
+  margin-bottom: 1ex;
+}
+.title {
+  margin-left: 0.5em;
+  font-size: 18pt;
+  position: relative;
+  top: -6pt;
+}
+textarea {
+  border-color: #ccc;
+}
+.submit {
+  font-size: 1.5em;
+}
+.profiles {
+  margin: 1ex 2px;
+  border: 1px solid #ccc;
+  display: inline-block;
+  padding: 8px;
+}
+.infowindow {
+  font-size: 10pt;
+}
+.debugfooter {
+  padding-top: 20px;
+  font-size: 10pt;
+  color: #ddd;
+}

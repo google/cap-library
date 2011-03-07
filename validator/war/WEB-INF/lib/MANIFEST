@@ -1,0 +1,21 @@
+jar: guava.jar
+    URL: http://guava-libraries.googlecode.com/files/guava-r08.zip
+    Version: r08
+    License: Apache 2.0
+    Local Modifications: None
+    Download date: 2011-02-25
+
+jar: servlet-api.jar
+    URL: http://apache.inetbridge.net/tomcat/tomcat-6/v6.0.20/
+    Version: 2.5
+    License: Apache License Version 2.0, January 2004
+    Local Modifications: None
+    Download date: 2011-02-01
+
+jar: xercesImplNoMetaInf.jar
+    URL: http://xerces.apache.org/xerces-j/
+    Version: 2.9.1
+    License: Most of xerces itself is under the Apache License 2.0. The resolver parts are under the Apache Software License 1.1
+    Local Modifications: the original xercesImpl.jar with META-INF/services/*
+stripped
+    Download date: 2007-09-15

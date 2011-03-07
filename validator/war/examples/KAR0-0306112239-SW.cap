@@ -1,0 +1,35 @@
+<?xml version = "1.0" encoding = "UTF-8"?> 
+<alert xmlns = "urn:oasis:names:tc:emergency:cap:1.1"> 
+<identifier>KAR0-0306112239-SW</identifier>   
+<sender>KARO@CLETS.DOJ.CA.GOV</sender>  
+<sent>2003-06-11T22:39:00-07:00</sent> 
+<status>Actual</status>   
+<msgType>Alert</msgType> 
+<source>SW</source> 
+<scope>Public</scope> 
+<info> 
+ <category>Rescue</category>
+ <event>Child Abduction</event>     
+ <urgency>Immediate</urgency>     
+ <severity>Severe</severity>     
+ <certainty>Likely</certainty>  
+ <eventCode> 
+  <valueName>SAME</valueName> 
+  <value>CAE</value> 
+ </eventCode> 
+ <senderName>LOS ANGELES POLICE DEPT - LAPD</senderName> 
+ <headline>AMBER ALERT</headline> 
+ <description>DATE/TIME: 06/11/03, 1915 HRS.  VICTIM(S): KHAYRI DOE JR. M/B BLK/BRO 3'0", 40 
+LBS. LIGHT COMPLEXION.  DOB 06/24/01. WEARING RED SHORTS, WHITE T-SHIRT, W/BLUE COLLAR.  
+LOCATION: 5721 DOE ST., LOS ANGELES, CA.  SUSPECT(S): KHAYRI DOE SR. DOB 04/18/71 M/B, BLK HAIR, 
+BRO EYE. VEHICLE: 81' BUICK 2-DR, BLUE (4XXX000).</description> 
+ <contact>DET. SMITH, 77TH DIV, LOS ANGELES POLICE DEPT-LAPD AT 213 485-2389</contact>  
+ <area> 
+  <areaDesc>Los Angeles County</areaDesc> 
+  <geocode> 
+   <valueName>SAME</valueName> 
+   <value>006037</value> 
+  </geocode> 
+ </area> 
+</info> 
+</alert> 
