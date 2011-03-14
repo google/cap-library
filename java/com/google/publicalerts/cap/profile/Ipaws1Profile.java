@@ -221,7 +221,7 @@ public class Ipaws1Profile extends AbstractCapProfile {
 
   // TODO(shakusa) Localize messages
   public enum ErrorType implements CapException.ReasonType {
-    SENT_INCLUDE_TIMEZONE_OFFSET("<sent> should include the timezone offset." +
+    SENT_INCLUDE_TIMEZONE_OFFSET("<sent> should include the timezone offset. " +
         "An offset of 0 is unlikely for US alerts."),
     EXPIRES_INCLUDE_TIMEZONE_OFFSET("<expires> should include the timezone" +
         "offset. An offset of 0 is unlikely for US alerts."),
@@ -234,7 +234,7 @@ public class Ipaws1Profile extends AbstractCapProfile {
         "All <info> blocks must contain the same <category>s"),
     SAME_EVENT_CODE_REQUIRED("Messages intended for EAS, CMAS and " +
         "HazCollect dissemination MUST include one and only one instance of " +
-        "<eventCode> with a <valueName> of \"SAME\" and using a" +
+        "<eventCode> with a <valueName> of \"SAME\" and using a " +
         "SAME-standard three-letter value."),
     EXPIRES_IS_REQUIRED("<expires> is required"),
     AREA_IS_REQUIRED("At least one <area> must be present"),
