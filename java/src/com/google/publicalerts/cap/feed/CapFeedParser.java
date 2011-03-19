@@ -151,6 +151,8 @@ public class CapFeedParser {
   }
 
   /**
+   * Returns true if this parser is validating input feeds and alerts
+   *
    * @return true if this parser is validating input feeds and alerts
    */
   public boolean isValidate() {
@@ -167,6 +169,8 @@ public class CapFeedParser {
   }
 
   /**
+   * Returns the validator used to validate XML signatures on alerts.
+   *
    * @return the validator used to validate XML signatures on alerts
    */
   public XmlSignatureValidator getXmlSignatureValidator() {
@@ -192,7 +196,7 @@ public class CapFeedParser {
   /**
    * Parses the given ATOM or RSS feed, provided as an InputSource.
    *
-   * @param reader reader for the given feed.
+   * @param source source for the given feed.
    * @return the parsed Rome SyndFeed
    * @throws FeedException if the feed could not be parsed
    * @throws IllegalArgumentException if XML could be parsed, but is not a

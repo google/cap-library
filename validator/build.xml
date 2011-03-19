@@ -40,7 +40,7 @@
     <ant dir="../java" target="jar"/>
     <copy toDir="${src.lib}" failonerror="true">
       <fileset dir="../java/dist/">
-	<include name="cap-library.jar"/>
+	<include name="cap-library-r1.jar"/>
       </fileset>
     </copy>
   </target>

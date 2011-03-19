@@ -47,6 +47,12 @@ public class Ipaws1Profile extends AbstractCapProfile {
     super();
   }
 
+  /**
+   * @param strictXsdValidation if true, perform by-the-spec xsd schema
+   * validation, which does not check a number of properties specified
+   * elsewhere in the spec. If false (the default), attempt to do extra
+   * validation to conform to the text of the spec.
+   */
   public Ipaws1Profile(boolean strictXsdValidation) {
     super(strictXsdValidation);
   }

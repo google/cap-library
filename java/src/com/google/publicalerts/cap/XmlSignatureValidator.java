@@ -46,9 +46,10 @@ import javax.xml.crypto.dsig.keyinfo.KeyValue;
 /**
  * Uses the java XML Digital Signature API to validate an enveloped
  * XML signature. Based on sample code at
- * http://download.oracle.com/javase/6/docs/technotes/guides/security/xmldsig/XMLDigitalSignature.html
+ * <a href="http://download.oracle.com/javase/6/docs/technotes/guides/security/xmldsig/XMLDigitalSignature.html">
+ * http://download.oracle.com/javase/6/docs/technotes/guides/security/xmldsig/XMLDigitalSignature.html</a>
  *
- * TODO(shakusa) This class is not yet fully ready; it needs to accept
+ * <p>TODO(shakusa) This class is not yet fully ready; it needs to accept
  * a KeyStore and validate that the KeyInfo parsed from the XML is trusted.
  *
  * @author shakusa@google.com (Steve Hakusa)
