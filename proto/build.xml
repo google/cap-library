@@ -14,16 +14,13 @@
  License for the specific language governing permissions and limitations under
  the License.
 -->
-<project basedir="." default="all">
-  <target name="clean">
-    <ant dir="java" target="clean"/>
-    <ant dir="validator" target="clean"/>
+<project basedir="." default="protoc">
+  <!-- To run this target, you must first download and install the protoc
+       compiler from http://code.google.com/p/protobuf/downloads/list -->
+  <target name="protoc">
+    <exec executable="protoc">
+      <arg value="--java_out=../java/src/"/>
+      <arg value="proto/cap.proto"/>
+    </exec>
   </target>
-
-  <target name="test">
-    <ant dir="java" target="test"/>
-    <ant dir="validator" target="test"/>
-  </target>
-
-  <target name="all" depends="test" />
 </project>

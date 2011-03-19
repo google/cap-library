@@ -1,0 +1,179 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+ Copyright (C) 2011 Google Inc.
+
+ Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ use this file except in compliance with the License. You may obtain a copy of
+ the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ License for the specific language governing permissions and limitations under
+ the License.
+-->
+<project basedir="." default="all">
+  <!-- TODO(shakusa) Create jar_minimal that doesn't include the feed/ package,
+                     and thus doesn't need jdom, jing, and rome
+       TODO(shakusa) Javadoc target
+       TODO(shakusa) Source jar
+       TODO(shakusa) Zip containing source, jar and javadoc
+    -->
+
+  <property name="build" value="build"/>
+  <property name="build.src" value="${build}/java"/>
+  <property name="build.test" value="${build}/javatests"/>
+  <property name="dist" value="dist"/>
+
+  <target name="clean">
+    <delete dir="${build}"/>
+    <delete dir="${dist}"/>
+  </target>
+
+  <path id="src_classpath">
+    <fileset dir="lib">
+      <include name="*.jar"/>
+      <exclude name="junit.jar"/>
+      <exclude name="jarjar.jar"/>
+    </fileset>
+  </path>
+
+  <target name="src_init">
+    <mkdir dir="${build.src}"/>
+    <mkdir dir="${dist}"/>
+  </target>
+
+  <target name="src_compile" depends="src_init">
+    <javac debug="on" memoryMaximumSize="256m" memoryInitialSize="256m"
+           fork="true" destdir="${build.src}">
+      <compilerarg value="-Xlint"/>
+      <classpath refid="src_classpath"/>
+      <src path="src"/>
+    </javac>
+    <copy toDir="${build.src}/com/google/publicalerts/cap/schema"
+	  failonerror="true">
+      <fileset dir="../schema"/>
+    </copy>
+    <copy toDir="${build.src}"
+	  failonerror="true">
+      <fileset dir="config"/>
+    </copy>
+  </target>
+
+  <target name="jar_no_deps" depends="src_compile"
+	  description="Builds a jar without any external dependencies from lib/">
+    <jar jarfile="${dist}/cap-library_no-deps.jar" basedir="${build.src}">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Implementation-Vendor" value="Google"/>
+        <attribute name="Implementation-Title" value="cap-library"/>
+        <attribute name="Implementation-Version" value="0.1"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
+           classpath="lib/jarjar.jar"/>
+
+  <target name="jar" depends="src_compile"
+	  description="Builds a jar including external dependencies from lib. Note that this jar
+		       still relies on a service provider (like Xerces) for XML parsing">
+    <jarjar jarfile="${dist}/cap-library.jar" basedir="${build.src}">
+      <zipfileset src="lib/jdom.jar"/>
+      <zipfileset src="lib/jing.jar"/>
+      <zipfileset src="lib/json.jar"/>
+      <zipfileset src="lib/protobuf-java.jar"/>
+      <zipfileset src="lib/rome.jar"/>
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Implementation-Vendor" value="Google"/>
+        <attribute name="Implementation-Title" value="cap-library"/>
+        <attribute name="Implementation-Version" value="0.1"/>
+      </manifest>
+    </jarjar>
+  </target>
+
+  <!-- Test Rules -->
+
+  <path id="test_classpath">
+    <path refid="src_classpath"/>
+    <fileset dir=".">
+      <include name="lib/junit.jar"/>
+    </fileset>
+  </path>
+
+  <target name="test_init" depends="src_compile">
+    <mkdir dir="${build.test}"/>
+  </target>
+
+  <target name="test_compile" depends="test_init">
+    <javac debug="on" memoryMaximumSize="256m" memoryInitialSize="256m"
+           fork="true" destdir="${build.test}">
+      <compilerarg value="-Xlint"/>
+      <classpath refid="test_classpath"/>
+      <src path="src"/>
+      <src path="test"/>
+    </javac>
+    <copy toDir="${build.test}/com/google/publicalerts/cap/schema"
+	  failonerror="true">
+      <fileset dir="../schema"/>
+    </copy>
+    <copy toDir="${build.test}/com/google/publicalerts/cap/feed/testdata"
+	  failonerror="true">
+      <fileset dir="../testdata"/>
+    </copy>
+    <copy toDir="${build.test}"
+	  failonerror="true">
+      <fileset dir="config"/>
+    </copy>
+  </target>
+
+  <target name="test" description="Runs the test you specify on the
+      command line with -Dtest=" depends="test_compile">
+    <condition property="suspend" value="y" else="n">
+      <isset property="debug"/>
+    </condition>
+    <junit printsummary="true" fork="yes" failureproperty="junit.failure">
+      <sysproperty key="test" value="${test}"/>
+      <sysproperty key="tests" value="${tests}"/>
+      <jvmarg value="-Xdebug"/>
+      <jvmarg value="-Xrunjdwp:transport=dt_socket,server=y,suspend=${suspend},address=5005"/>
+      <classpath>
+        <path refid="test_classpath"/>
+        <pathelement location="${build.test}"/>
+      </classpath>
+      <formatter type="plain" usefile="false"/>
+      <batchtest>
+        <fileset dir="${build.test}" includes="**/AllTests.class" />
+      </batchtest>
+    </junit>
+    <fail if="junit.failure" message="Unit test(s) failed."/>
+  </target>
+
+  <target name="testdebug" description="Runs the test you specify on the command
+      line with -Dtest=" depends="test_compile">
+    <antcall target="test">
+      <param name="debug" value="true"/>
+    </antcall>
+  </target>
+
+  <target name="jar_testlib" depends="test_compile"
+	  description="Builds a jar without any external dependencies from lib/">
+    <jar jarfile="${dist}/cap-library-testing.jar" basedir="${build.test}"
+	 includes="com/google/publicalerts/cap/TestUtil*
+		   com/google/publicalerts/cap/feed/TestResources*
+		   com/google/publicalerts/cap/feed/testdata/*">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Implementation-Vendor" value="Google"/>
+        <attribute name="Implementation-Title" value="cap-library-testlib"/>
+        <attribute name="Implementation-Version" value="0.1"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="all" depends="test" />
+
+</project>
