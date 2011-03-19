@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * An exception for CAP alerts.
+ * An exception for CAP alerts. This class is thread-safe.
  *
  * @author shakusa@google.com (Steve Hakusa)
  */
@@ -44,6 +44,11 @@ public class CapException extends Exception {
         new ArrayList<Reason>(reasons));
   }
 
+  /**
+   * Returns the list of reasons for this exception.
+   *
+   * @return the list of reasons
+   */
   public List<Reason> getReasons() {
     return reasons;
   }
@@ -67,8 +72,8 @@ public class CapException extends Exception {
   }
 
   /**
-   * A reason for the exception. This allows a single exception to contain
-   * multiple causes.
+   * A reason for a {@link CapException}. This allows a single exception to
+   * contain multiple causes. This class is immutable and thread-safe.
    */
   public static class Reason {
 
@@ -98,6 +103,11 @@ public class CapException extends Exception {
     /** Message parameters for the reason. */
     private final Object[] messageParams;
 
+    /**
+     * Returns a new {@link Reason} with the given line number.
+     *
+     * @return a new {@link Reason} with the given line number
+     */
     public static Reason withNewLineNumber(Reason reason, int newLineNumber) {
       return new Reason(newLineNumber, reason.columnNumber, reason.xpath,
           reason.type, reason.messageParams);
@@ -116,26 +126,58 @@ public class CapException extends Exception {
       this.messageParams = messageParams;
     }
 
+    /**
+     * Gets the type of this reason.
+     *
+     * @return the type of this reason
+     */
     public ReasonType getType() {
       return type;
     }
 
+    /**
+     * Returns the number of message params
+     *
+     * @return the number of message parameters
+     */
     public int getMessageParamsCount() {
       return messageParams.length;
     }
 
+    /**
+     * Gets the {@code i}th message param, or null if {@code i} is out of bounds
+     *
+     * @param i the index of the param to retrieve
+     * @return the {@code i}th message param, or null if {@code i} is out of
+     * bounds
+     */
     public Object getMessageParam(int i) {
       return getMessageParamsCount() > i ? messageParams[i] : null;
     }
 
+    /**
+     * Gets a line number associated with the reason, or -1 if none.
+     *
+     * @return the line number of the reason
+     */
     public int getLineNumber() {
       return lineNumber;
     }
 
+    /**
+     * Gets a column number associated with the reason, or -1 if none.
+     *
+     * @return the column number of the reason
+     */
     public int getColumnNumber() {
       return columnNumber;
     }
 
+    /**
+     * Gets an XPath expression tying the error to a CAP message
+     *
+     * @return an XPath expression tying the error to a CAP message
+     */
     public String getXPath() {
       return xpath;
     }
@@ -203,14 +245,14 @@ public class CapException extends Exception {
   public static interface ReasonType {
 
     /**
-     * Returns the programmer-facing message for this type
-     * @return
+     * Returns a localized message for this type (currently English-only)
+     * @return the localized message for this type
      */
     String getMessage(Locale locale);
   }
 
   /**
-   * Type of the exception message. Use {@link Type#OTHER} if your exception
+   * Type of the exception message. Use {@link #OTHER} if your exception
    * doesn't fit one of the listed types.
    */
   // TODO(shakusa) Localize messages

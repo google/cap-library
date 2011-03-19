@@ -15,17 +15,15 @@
  the License.
 -->
 <project basedir="." default="all">
-  <!-- TODO(shakusa) Create jar_minimal that doesn't include the feed/ package,
-                     and thus doesn't need jdom, jing, and rome
-       TODO(shakusa) Javadoc target
-       TODO(shakusa) Source jar
-       TODO(shakusa) Zip containing source, jar and javadoc
-    -->
+  <property name="vendor" value="Google"/>
+  <property name="title" value="cap-library"/>
+  <property name="version" value="1"/>
 
   <property name="build" value="build"/>
   <property name="build.src" value="${build}/java"/>
   <property name="build.test" value="${build}/javatests"/>
   <property name="dist" value="dist"/>
+  <property name="docs" value="docs"/>
 
   <target name="clean">
     <delete dir="${build}"/>
@@ -42,7 +40,6 @@
 
   <target name="src_init">
     <mkdir dir="${build.src}"/>
-    <mkdir dir="${dist}"/>
   </target>
 
   <target name="src_compile" depends="src_init">
@@ -64,12 +61,13 @@
 
   <target name="jar_no_deps" depends="src_compile"
 	  description="Builds a jar without any external dependencies from lib/">
-    <jar jarfile="${dist}/cap-library_no-deps.jar" basedir="${build.src}">
+    <mkdir dir="${dist}"/>
+    <jar jarfile="${dist}/cap-library-no-deps-r${version}.jar" basedir="${build.src}">
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Implementation-Vendor" value="Google"/>
-        <attribute name="Implementation-Title" value="cap-library"/>
-        <attribute name="Implementation-Version" value="0.1"/>
+        <attribute name="Implementation-Vendor" value="${vendor}"/>
+        <attribute name="Implementation-Title" value="${title}"/>
+        <attribute name="Implementation-Version" value="${version}"/>
       </manifest>
     </jar>
   </target>
@@ -77,10 +75,14 @@
   <taskdef name="jarjar" classname="com.tonicsystems.jarjar.JarJarTask"
            classpath="lib/jarjar.jar"/>
 
+  <!-- TODO(shakusa) Might also want a jar_minimal that doesn't include the 
+       feed/ package, and thus doesn't need jdom, jing, and rome
+    -->
   <target name="jar" depends="src_compile"
 	  description="Builds a jar including external dependencies from lib. Note that this jar
 		       still relies on a service provider (like Xerces) for XML parsing">
-    <jarjar jarfile="${dist}/cap-library.jar" basedir="${build.src}">
+    <mkdir dir="${dist}"/>
+    <jarjar jarfile="${dist}/cap-library-r${version}.jar" basedir="${build.src}">
       <zipfileset src="lib/jdom.jar"/>
       <zipfileset src="lib/jing.jar"/>
       <zipfileset src="lib/json.jar"/>
@@ -88,11 +90,46 @@
       <zipfileset src="lib/rome.jar"/>
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
-        <attribute name="Implementation-Vendor" value="Google"/>
-        <attribute name="Implementation-Title" value="cap-library"/>
-        <attribute name="Implementation-Version" value="0.1"/>
+        <attribute name="Implementation-Vendor" value="${vendor}"/>
+        <attribute name="Implementation-Title" value="${title}"/>
+        <attribute name="Implementation-Version" value="${version}"/>
       </manifest>
     </jarjar>
+  </target>
+
+  <target name="javadoc">
+    <mkdir dir="${docs}"/>
+    <javadoc packagenames="com.google.publicalerts.*"
+	     sourcepath="src"
+	     defaultexcludes="yes"
+	     destdir="${docs}"
+	     author="false"
+	     version="true"
+	     use="true"
+	     windowtitle="CAP Library">
+      <doctitle><![CDATA[<h1>Common Alerting Protocol Library</h1>]]></doctitle>
+      <link href="http://download.oracle.com/javase/6/docs/api/"/>
+    </javadoc>
+  </target>
+
+  <target name="src_jar">
+    <mkdir dir="${dist}"/>
+    <jar jarfile="${dist}/cap-library-src-r${version}.jar" basedir="src">
+      <manifest>
+        <attribute name="Built-By" value="${user.name}"/>
+        <attribute name="Implementation-Vendor" value="${vendor}"/>
+        <attribute name="Implementation-Title" value="${title}"/>
+        <attribute name="Implementation-Version" value="${version}"/>
+      </manifest>
+    </jar>
+  </target>
+
+  <target name="java_release" depends="jar,javadoc,src_jar">
+    <mkdir dir="${dist}"/>
+    <zip destfile="${dist}/cap-library-r${version}.zip">
+      <zipfileset dir="${dist}" includes="cap-library-r*.jar,cap-library-src-r*.jar"/>
+      <zipfileset dir="${docs}" prefix="javadoc"/>
+    </zip>
   </target>
 
   <!-- Test Rules -->

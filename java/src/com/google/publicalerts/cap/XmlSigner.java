@@ -62,7 +62,8 @@ import javax.xml.crypto.dsig.spec.TransformParameterSpec;
 /**
  * Uses the java XML Digital Signature API to generate an enveloped XML
  * signature. Based on sample code at
- * http://download.oracle.com/javase/6/docs/technotes/guides/security/xmldsig/XMLDigitalSignature.html
+ * <a href="http://download.oracle.com/javase/6/docs/technotes/guides/security/xmldsig/XMLDigitalSignature.html">
+ * http://download.oracle.com/javase/6/docs/technotes/guides/security/xmldsig/XMLDigitalSignature.html</a>
  *
  * @author shakusa@google.com (Steve Hakusa)
  */

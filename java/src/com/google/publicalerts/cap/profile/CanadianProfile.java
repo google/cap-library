@@ -33,9 +33,11 @@ import com.google.publicalerts.cap.Info;
 import com.google.publicalerts.cap.ValuePair;
 
 /**
- * Canadian CAP profile, version 1.
+ * <a href="http://capan.ca/uploads/CAP-CP/CAP-CP_Intro_Rules_Beta_0.4.pdf">
+ * Canadian CAP profile, version 1</a>.
  *
- * Does not currently validate location codes, event codes, or event names.
+ * This class does not currently validate location codes, event codes, or
+ * event names.
  * <p>
  * Most of these checks are not possible to represent with an
  * xsd schema.
@@ -51,6 +53,12 @@ public class CanadianProfile extends AbstractCapProfile {
     super();
   }
 
+  /**
+   * @param strictXsdValidation if true, perform by-the-spec xsd schema
+   * validation, which does not check a number of properties specified
+   * elsewhere in the spec. If false (the default), attempt to do extra
+   * validation to conform to the text of the spec.
+   */
   public CanadianProfile(boolean strictXsdValidation) {
     super(strictXsdValidation);
   }

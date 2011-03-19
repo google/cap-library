@@ -44,7 +44,7 @@ public class CapFeedValidator {
    * Checks the given feed for errors. Assumes the given feed
    * has a non-null {@code originalWireFeed()}.
    *
-   * @param syndFeed the parsed feed to validate
+   * @param feed the parsed feed to validate
    * @throws CapFeedException if the feed is invalid
    */
   public void checkForErrors(SyndFeed feed) throws CapFeedException {
@@ -133,7 +133,7 @@ public class CapFeedValidator {
    * Checks the given feed for recommendations. Assumes the given feed
    * has a non-null {@code originalWireFeed()}.
    *
-   * @param syndFeed the feed to check
+   * @param feed the feed to check
    * @return a list of recommendations, empty list if there are none
    */
   public List<Reason> checkForRecommendations(SyndFeed feed) {

@@ -58,8 +58,8 @@ import com.google.publicalerts.cap.CapException.Type;
  * Ignores enveloped digital signature.  To validate the signature, use
  * {@link XmlSignatureValidator}.
  *
- * TODO(shakusa) Explicit XEE prevention here like Rome's WireFeedInput?
- * TODO(shakusa) Support input from javax.xml.transform.Source ?
+ * <p>TODO(shakusa) Explicit XEE prevention here like Rome's WireFeedInput?
+ * <p>TODO(shakusa) Support input from javax.xml.transform.Source ?
  *
  * @author shakusa@google.com (Steve Hakusa)
  */
@@ -96,7 +96,7 @@ public class CapXmlParser {
   /**
    * Creates a new parser.
    *
-   * @param validate if true, the {$code parseFrom} methods throw a
+   * @param validate if true, the {@code parseFrom} methods throw a
    * {@link CapException} if given invalid CAP XML. If false, no
    * {@link CapException} will be thrown, though a {@link SAXParseException}
    * or {@link NotCapException} could still be thrown if the XML is not
@@ -110,7 +110,7 @@ public class CapXmlParser {
   /**
    * Creates a new parser.
    *
-   * @param validate if true, the {$code parseFrom} methods throw a
+   * @param validate if true, the {@code parseFrom} methods throw a
    * {@link CapException} if given invalid CAP XML. If false, no
    * {@link CapException} will be thrown, though a {@link SAXParseException}
    * or {@link NotCapException} could still be thrown if the XML is not
