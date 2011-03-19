@@ -6,13 +6,19 @@ Install ant
 ===========
 You can download and install Apache Ant from http://ant.apache.org/
 
-Run tests
-=========
+Run all tests
+=============
 ant test
 
 Compile the library into a jar
 ==============================
+cd java
 ant jar
+
+Compile and run the validator
+=============================
+cd validator
+ant runserver
 
 Usage
 =====

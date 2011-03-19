@@ -37,9 +37,9 @@
 
   <target name="init">
     <mkdir dir="${src.classes}"/>
-    <ant dir="../" target="jar"/>
+    <ant dir="../java" target="jar"/>
     <copy toDir="${src.lib}" failonerror="true">
-      <fileset dir="../dist/">
+      <fileset dir="../java/dist/">
 	<include name="cap-library.jar"/>
       </fileset>
     </copy>
@@ -73,16 +73,16 @@
     <fileset dir=".">
       <include name="${test.lib}/*.jar"/>
     </fileset>
-    <fileset dir="../lib/java">
+    <fileset dir="../java/lib">
       <include name="junit.jar"/>
     </fileset>
   </path>
 
   <target name="test_init" depends="compile">
     <mkdir dir="${test.classes}"/>
-    <ant dir="../" target="jar_testlib"/>
+    <ant dir="../java/" target="jar_testlib"/>
     <copy toDir="${test.lib}" failonerror="true">
-      <fileset dir="../dist/">
+      <fileset dir="../java/dist/">
 	<include name="cap-library-testing.jar"/>
       </fileset>
     </copy>
