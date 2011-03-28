@@ -41,20 +41,14 @@ public class CapValidatorTest extends TestCase {
   public void testAlertParseErrors() {
     Alert.Builder alert = TestUtil.getValidAlertBuilder();
 
-
+    alert.setAddresses(Group.newBuilder().addValue("addresses").build());
     alert.setRestriction("restriction");
     assertValidateErrors(alert, Type.RESTRICTION_SCOPE_MISMATCH);
     alert.clearRestriction();
 
-    alert.setAddresses(Group.newBuilder().addValue("addresses").build());
-    assertValidateErrors(alert, Type.ADDRESSES_SCOPE_MISMATCH);
-    alert.setAddresses(Group.newBuilder().addValue("").build());
-    assertValidateErrors(alert, Type.ADDRESSES_SCOPE_MISMATCH);
-
     alert.getInfoBuilder(0).getAreaBuilder(0).clearCircle();
     alert.getInfoBuilder(0).getAreaBuilder(0).clearAltitude();
-    assertValidateErrors(alert, Type.ADDRESSES_SCOPE_MISMATCH, 
-        Type.INVALID_AREA);
+    assertValidateErrors(alert, Type.INVALID_AREA);
   }
 
   public void testInfoParseErrors() {

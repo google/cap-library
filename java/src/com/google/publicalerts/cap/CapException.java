@@ -257,8 +257,6 @@ public class CapException extends Exception {
    */
   // TODO(shakusa) Localize messages
   public enum Type implements ReasonType {
-    ADDRESSES_SCOPE_MISMATCH(
-        "<addresses> should be used only when <scope> is Private"),
     CERTAINTY_VERY_LIKELY_DEPRECATED("<certainty> \"Very Likely\" has been " +
         "deprecated. Use Likely instead"),
     DUPLICATE_ELEMENT("Invalid duplicate <{0}>, ignoring \"{1}\""),

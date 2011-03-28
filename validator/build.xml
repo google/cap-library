@@ -25,7 +25,7 @@
     <delete dir="build"/>
     <delete dir="${src.classes}"/>
     <delete>
-      <fileset dir="${src.lib}" includes="cap-library.jar"/>
+      <fileset dir="${src.lib}" includes="cap-library-r*.jar"/>
     </delete>
   </target>
 
@@ -40,7 +40,7 @@
     <ant dir="../java" target="jar"/>
     <copy toDir="${src.lib}" failonerror="true">
       <fileset dir="../java/dist/">
-	<include name="cap-library-r1.jar"/>
+	<include name="cap-library-r*.jar"/>
       </fileset>
     </copy>
   </target>
