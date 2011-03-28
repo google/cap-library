@@ -278,7 +278,7 @@ public class CapException extends Exception {
     		"[WGS 84] coordinates like: " +
     		"\"12.3,-4.2 12.3,-4.3 12.4,-4.3 12.3,-4.2\", " +
     		"where the first and last coordinates are equal."),
-    INVALID_REFERENCES("Invalid <references>: \"{0}\". Must be a " +
+    INVALID_REFERENCES("Invalid <references>: \"{0}\". Must be a non-empty, " +
     		"space-separated list of sender,identifier,sent triplets."),
     INVALID_RESOURCE_SIZE("Invalid size: \"{0}\""),
     INVALID_RESOURCE_URI("Invalid URI: \"{0}\""),
