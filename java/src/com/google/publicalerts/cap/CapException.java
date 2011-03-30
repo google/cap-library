@@ -257,8 +257,6 @@ public class CapException extends Exception {
    */
   // TODO(shakusa) Localize messages
   public enum Type implements ReasonType {
-    ADDRESSES_SCOPE_MISMATCH(
-        "<addresses> should be used only when <scope> is Private"),
     CERTAINTY_VERY_LIKELY_DEPRECATED("<certainty> \"Very Likely\" has been " +
         "deprecated. Use Likely instead"),
     DUPLICATE_ELEMENT("Invalid duplicate <{0}>, ignoring \"{1}\""),
@@ -280,7 +278,7 @@ public class CapException extends Exception {
     		"[WGS 84] coordinates like: " +
     		"\"12.3,-4.2 12.3,-4.3 12.4,-4.3 12.3,-4.2\", " +
     		"where the first and last coordinates are equal."),
-    INVALID_REFERENCES("Invalid <references>: \"{0}\". Must be a " +
+    INVALID_REFERENCES("Invalid <references>: \"{0}\". Must be a non-empty, " +
     		"space-separated list of sender,identifier,sent triplets."),
     INVALID_RESOURCE_SIZE("Invalid size: \"{0}\""),
     INVALID_RESOURCE_URI("Invalid URI: \"{0}\""),

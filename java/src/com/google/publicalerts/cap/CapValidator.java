@@ -101,16 +101,11 @@ class CapValidator {
   private List<Reason> validateAlert(
       AlertOrBuilder alert, boolean visitChildren) {
     List<Reason> reasons = new ArrayList<Reason>();
-    
+
     if (alert.hasRestriction()
         && !CapUtil.isEmptyOrWhitespace(alert.getRestriction())
         && alert.getScope() != Alert.Scope.Restricted) {
       reasons.add(new Reason("/alert", Type.RESTRICTION_SCOPE_MISMATCH));
-    }
-
-    if (alert.hasAddresses() && alert.getAddresses().getValueCount() > 0
-        && alert.getScope() != Alert.Scope.Private) {
-      reasons.add(new Reason("/alert", Type.ADDRESSES_SCOPE_MISMATCH));
     }
 
     if (visitChildren) {
