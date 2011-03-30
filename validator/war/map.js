@@ -146,6 +146,6 @@ function open(map, marker, alert) {
 function onload() {
   setupMap(document.getElementById('map'));
 }
-document.body.onload = onload;
+window.onload = onload;
 
 })();
