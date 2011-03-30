@@ -136,7 +136,7 @@ if (lines != null) {
 %>
 
 <div class=footer>
-  <p class="homeabout">&#xa9;2010 Google - <a href="http://code.google.com/p/cap-library">About the Common Alerting Protocol Validator</a> - <a href="http://www.google.com/intl/en/privacy.html">Privacy Policy</a></p>
+  <p class="homeabout">&#xa9;2011 Google - <a href="http://www.google.com/accounts/TOS">Terms of Service</a> - <a href="http://code.google.com/p/cap-library">About the Common Alerting Protocol Validator</a> - <a href="http://www.google.com/intl/en/privacy.html">Privacy Policy</a></p>
   <img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" height="30" width="120"/>
 </div>
 
