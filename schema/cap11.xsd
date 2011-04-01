@@ -81,6 +81,7 @@
                     <enumeration value="Prepare" />
                     <enumeration value="Execute" />
                     <enumeration value="Monitor" />
+                    <enumeration value="Assess" />
                     <enumeration value="None" />
                   </restriction>
                 </simpleType>
