@@ -331,7 +331,7 @@ public class CapXmlParserTest extends TestCase {
 
   public void testCap11() throws Exception {
     // Testing new status Draft, scope required, new category CBRNE,
-    // new responseType Evacuate, new derefUri in resource
+    // new responseType Assess, new derefUri in resource
     String alertStr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n"
         + "<alert xmlns=\"" + CapValidator.CAP11_XMLNS + "\">\n"
         + "  <identifier>43b080713727</identifier>\n"
@@ -343,7 +343,7 @@ public class CapXmlParserTest extends TestCase {
         + "  <info>\n"
         + "    <category>CBRNE</category>\n"
         + "    <event>Homeland Security Advisory System Update</event>\n"
-        + "    <responseType>Evacuate</responseType>\n"
+        + "    <responseType>Assess</responseType>\n"
         + "    <urgency>Unknown</urgency>\n"
         + "    <severity>Unknown</severity>\n"
         + "    <certainty>Likely</certainty>"
@@ -361,7 +361,7 @@ public class CapXmlParserTest extends TestCase {
     assertEquals(Alert.Status.Draft, alert.getStatus());
     assertEquals(Alert.Scope.Public, alert.getScope());
     assertEquals(Info.Category.CBRNE, info.getCategory(0));
-    assertEquals(Info.ResponseType.Evacuate, info.getResponseType(0));
+    assertEquals(Info.ResponseType.Assess, info.getResponseType(0));
     assertEquals("deref uri", info.getResource(0).getDerefUri());
   }
 
