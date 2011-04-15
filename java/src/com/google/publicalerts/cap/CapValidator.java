@@ -32,7 +32,7 @@ import com.google.publicalerts.cap.CapException.Type;
  *
  * @author shakusa@google.com (Steve Hakusa)
  */
-class CapValidator {
+public class CapValidator {
 
   public static final String CAP10_XMLNS =
       "http://www.incident.com/cap/1.0";
