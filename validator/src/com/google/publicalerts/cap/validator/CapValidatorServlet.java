@@ -302,12 +302,12 @@ public class CapValidatorServlet extends HttpServlet {
   private void render(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
     req.setAttribute("analyticsId", System.getProperty(GOOGLE_ANALYTICS_ID));
-    req.getRequestDispatcher("/validator.jsp").include(req, resp);
-    resp.setStatus(HttpServletResponse.SC_OK);
-
     resp.setCharacterEncoding("UTF-8");
     resp.setContentType("text/html");
     addNoCachableHeaders(resp);
+
+    resp.setStatus(HttpServletResponse.SC_OK);
+    req.getRequestDispatcher("/validator.jsp").include(req, resp);
   }
 
   private void addNoCachableHeaders(HttpServletResponse resp) {
