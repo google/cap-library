@@ -22,12 +22,18 @@
 validator is a free service that checks the syntax of CAP XML messages and
 Atom and RSS feeds of CAP messages.  It supports CAP v1.0, v1.1 and v1.2.
 </div>
-<form id=inputform action="/validate#r" method=post>
+<form id=inputform action="/validate#r" method=post enctype="multipart/form-data">
 <table cellpadding=0 cellspacing=0><tr><td>
 <h4>Input feed</h4>
 <div class=input><%
     String input = StringUtil.htmlEscape((String) request.getAttribute("input"));
-    %><textarea rows=28 cols=80 name=input><%= input %></textarea>
+    %><div id=inputdiv><textarea rows=28 cols=80 name=input><%= input %></textarea>
+      <div class=selectfile>Type an alert or <a href="#" onclick="swapTextareaFile(false)">upload a file</a>.</div>
+    </div>
+    <div id=filediv class=filediv style="display:none">
+      <div class=cancelfile><a href="#" onclick="swapTextareaFile(true)">Cancel</a></div>
+      <input type=file name=inputfile/>
+    </div>
     <a name="r"></a><%
     List<String[]> profiles = (List<String[]>) request.getAttribute("profiles");
     if (profiles != null) {
@@ -153,6 +159,12 @@ if (timing != null) {
   function submitExample(example) {
     document.getElementById('example').value = example;
     document.getElementById('inputform').submit();
+  }
+  function swapTextareaFile(showTextarea) {
+    var inputDiv = document.getElementById('inputdiv');
+    var fileDiv = document.getElementById('filediv');
+    inputDiv.style.display = showTextarea ? '' : 'none';
+    fileDiv.style.display = showTextarea ? 'none' : '';
   }
 </script>
 

@@ -112,3 +112,15 @@ textarea {
   font-size: 10pt;
   color: #ddd;
 }
+.filediv {
+  padding: 24px 12px;
+  border: 1px solid #ccc;
+  background-color: #efefef;
+  width: 35em;
+}
+.selectfile {
+  color: #666;
+}
+.cancelfile {
+  float: right;
+}

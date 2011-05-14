@@ -19,3 +19,10 @@ jar: xercesImplNoMetaInf.jar
     Local Modifications: the original xercesImpl.jar with META-INF/services/*
 stripped
     Download date: 2007-09-15
+
+jar: commons-fileupload.jar
+    URL: http://mirror.metrocast.net/apache//commons/fileupload/binaries/commons-fileupload-1.2.2-bin.zip
+    Version: 1.2.2
+    License: Apache License Version 2.0, January 2004
+    Local Modifications: 
+    Download date: 2011-05-12

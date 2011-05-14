@@ -32,6 +32,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.FileUploadException;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.json.JSONArray;
 
 import com.google.common.collect.ImmutableSet;
@@ -66,9 +70,11 @@ public class CapValidatorServlet extends HttpServlet {
   private static final String GOOGLE_ANALYTICS_ID = "google_analytics_id";
 
   private final CapFeedParser capParser;
+  private final ServletFileUpload upload;
 
   public CapValidatorServlet() {
     this.capParser = new CapFeedParser(true);
+    this.upload = new ServletFileUpload();
   }
 
   @Override
@@ -82,17 +88,41 @@ public class CapValidatorServlet extends HttpServlet {
   @Override
   public void doPost(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
-    String input = req.getParameter("input");
-    Set<CapProfile> profiles = getProfiles(req.getParameterValues("profile"));
-    if (!profiles.isEmpty()) {
-      log.info("CAPProfiles: " + profiles);
+    String input = null;
+    String fileInput = null;
+    String example = null;
+    Set<CapProfile> profiles = Sets.newHashSet();
+
+    try {
+      FileItemIterator itemItr = upload.getItemIterator(req);
+      while (itemItr.hasNext()) {
+        FileItemStream item = itemItr.next();
+        if ("input".equals(item.getFieldName())) {
+          input = readFully(item.openStream());
+        } else if (item.getFieldName().startsWith("inputfile")) {
+          fileInput = readFully(item.openStream());
+        } else if ("example".equals(item.getFieldName())) {
+          example = readFully(item.openStream());
+        } else if ("profile".equals(item.getFieldName())) {
+          String profileCode = readFully(item.openStream());
+          for (CapProfile profile : CapProfiles.getProfiles()) {
+          if (profile.getCode().equals(profileCode)) {
+              profiles.add(profile);
+            }
+          }
+        }
+      }
+    } catch (FileUploadException e) {
+      throw new ServletException(e);
     }
 
-    String example = req.getParameter("example");
     if (!CapUtil.isEmptyOrWhitespace(example)) {
       log.info("ExampleRequest: " + example);
       input = loadExample(example);
       profiles = ImmutableSet.of();
+    } else if (!CapUtil.isEmptyOrWhitespace(fileInput)) {
+      log.info("FileInput");
+      input = fileInput;
     }
 
     input = (input == null) ? "" : input.trim();
@@ -273,19 +303,10 @@ public class CapValidatorServlet extends HttpServlet {
     while ((line = br.readLine()) != null) {
       sb.append(line).append('\n');
     }
-    return sb.toString();
-  }
-
-  Set<CapProfile> getProfiles(String[] values) {
-    Set<String> valueSet = Sets.newHashSet(
-        values == null ? new String[]{} : values);
-    Set<CapProfile> ret = Sets.newHashSet();
-    for (CapProfile profile : CapProfiles.getProfiles()) {
-      if (valueSet.contains(profile.getCode())) {
-        ret.add(profile);
-      }
+    if (sb.length() > 0) {
+      sb.setLength(sb.length() - 1);
     }
-    return ret;
+    return sb.toString();
   }
 
   List<String[]> getProfilesJsp(Set<CapProfile> selected) {
