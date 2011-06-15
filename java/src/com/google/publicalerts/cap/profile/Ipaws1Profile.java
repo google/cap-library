@@ -229,7 +229,7 @@ public class Ipaws1Profile extends AbstractCapProfile {
   public enum ErrorType implements CapException.ReasonType {
     SENT_INCLUDE_TIMEZONE_OFFSET("<sent> should include the timezone offset. " +
         "An offset of 0 is unlikely for US alerts."),
-    EXPIRES_INCLUDE_TIMEZONE_OFFSET("<expires> should include the timezone" +
+    EXPIRES_INCLUDE_TIMEZONE_OFFSET("<expires> should include the timezone " +
         "offset. An offset of 0 is unlikely for US alerts."),
     VERSION_CODE_REQUIRED("<code>{0}</code> required"),
     UPDATE_OR_CANCEL_MUST_REFERENCE("All related messages that have not yet " +
