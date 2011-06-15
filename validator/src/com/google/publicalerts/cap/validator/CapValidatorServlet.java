@@ -67,6 +67,7 @@ public class CapValidatorServlet extends HttpServlet {
   private static final Logger log =
       Logger.getLogger(CapValidatorServlet.class.getName());
 
+  private static final Charset UTF8 = Charset.forName("UTF-8");
   private static final int REQUEST_DEADLINE_MS = 20000;
   private static final String GOOGLE_ANALYTICS_ID = "google_analytics_id";
 
@@ -299,7 +300,7 @@ public class CapValidatorServlet extends HttpServlet {
 
   String readFully(InputStream stream) throws IOException {
     BufferedReader br = new BufferedReader(new InputStreamReader(stream,
-        Charset.forName("UTF-8")));
+        UTF8));
     StringBuilder sb = new StringBuilder();
     String line;
     while ((line = br.readLine()) != null) {
