@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
@@ -297,7 +298,8 @@ public class CapValidatorServlet extends HttpServlet {
   }
 
   String readFully(InputStream stream) throws IOException {
-    BufferedReader br = new BufferedReader(new InputStreamReader(stream));
+    BufferedReader br = new BufferedReader(new InputStreamReader(stream,
+        Charset.forName("UTF-8")));
     StringBuilder sb = new StringBuilder();
     String line;
     while ((line = br.readLine()) != null) {
