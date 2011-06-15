@@ -170,6 +170,9 @@ public class Ipaws1Profile extends AbstractCapProfile {
     List<Reason> reasons = new ArrayList<Reason>();
 
     // sent should, but may not, include the timezone offset
+    // suggested here:
+    // www.oasis-open.org/committees/download.php/30714/CAP-v1.1-IPAWS-Public
+    //     -Review-Profile-1.0.doc
     checkZeroTimezone(reasons, alert.getSent(), "/alert/sent",
         RecommendationType.SENT_INCLUDE_TIMEZONE_OFFSET);
 
