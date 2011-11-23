@@ -70,7 +70,7 @@ public class CapXmlBuilderTest extends TestCase {
         + "  <incidents>incident1 incident2</incidents>\n"
         + "</alert>\n";
 
-    assertEquals(alertStr, builder.toXml(alert));
+    assertXmlString(alertStr, alert);
   }
 
   public void testInfo() throws Exception {
@@ -149,7 +149,7 @@ public class CapXmlBuilderTest extends TestCase {
         + "  </info>\n"
         + "</alert>\n";
 
-    assertEquals(alertStr, builder.toXml(alert));
+    assertXmlString(alertStr, alert);
   }
 
 
@@ -215,7 +215,7 @@ public class CapXmlBuilderTest extends TestCase {
         + "  </info>\n"
         + "</alert>\n";
 
-    assertEquals(alertStr, builder.toXml(alert));
+    assertXmlString(alertStr, alert);
   }
 
   public void testResource() throws Exception {
@@ -254,7 +254,7 @@ public class CapXmlBuilderTest extends TestCase {
         + "  </info>\n"
         + "</alert>\n";
 
-    assertEquals(alertStr, builder.toXml(alert));
+    assertXmlString(alertStr, alert);
   }
 
   @SuppressWarnings("deprecation")
@@ -290,7 +290,7 @@ public class CapXmlBuilderTest extends TestCase {
         + "  </info>\n"
         + "</alert>\n";
 
-    assertEquals(alertStr, builder.toXml(alert));
+    assertXmlString(alertStr, alert);
   }
 
   public void testCap11() throws Exception {
@@ -321,7 +321,7 @@ public class CapXmlBuilderTest extends TestCase {
         + "  </info>\n"
         + "</alert>\n";
 
-    assertEquals(alertStr, builder.toXml(alert));
+    assertXmlString(alertStr, alert);
   }
 
   public void testCap12() throws Exception {
@@ -341,7 +341,7 @@ public class CapXmlBuilderTest extends TestCase {
         + "  </info>\n"
         + "</alert>\n";
 
-    assertEquals(alertStr, builder.toXml(alert));
+    assertXmlString(alertStr, alert);
   }
 
   public void testNoPrettyPrint() {
@@ -357,7 +357,7 @@ public class CapXmlBuilderTest extends TestCase {
         + "<alert xmlns=\"" + CapValidator.CAP12_XMLNS + "\">"
         + "<info><headline>headline</headline></info></alert>";
 
-    assertEquals(alertStr, builder.toXml(alert));
+    assertXmlString(alertStr, alert);
   }
 
   public void testEscaping() {
@@ -370,7 +370,7 @@ public class CapXmlBuilderTest extends TestCase {
         + "  <note>&amp;&lt;&gt;&#0;</note>\n"
         + "</alert>\n";
 
-    assertEquals(alertStr, builder.toXml(alert));
+    assertXmlString(alertStr, alert);
   }
 
   public void testMaybeQuote() {
@@ -378,5 +378,10 @@ public class CapXmlBuilderTest extends TestCase {
     assertEquals("foo", builder.maybeQuote("foo"));
     assertEquals("\"foo bar\"", builder.maybeQuote("foo bar"));
     assertEquals("\"foo\tbar\"", builder.maybeQuote("foo\tbar"));
+  }
+
+  private void assertXmlString(String expected, Alert alert) {
+    String actual = builder.toXml(alert).replace("\r\n", "\n");
+    assertEquals(expected, actual);
   }
 }
