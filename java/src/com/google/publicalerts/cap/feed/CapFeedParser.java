@@ -325,15 +325,59 @@ public class CapFeedParser {
     return parseAlert(contents.get(0).getValue());
   }
 
+ /**
+  * Parses the CAP alerts assumed to be in the &lt;content&gt; bodies of the
+  * entry.
+  *
+  * @param entry the entry to process
+  * @param parseErrors a list to which to add non-fatal errors during parsing
+  * @return a list of CAP alerts (one per content body, usually just 1)
+  * @throws CapException if the alert is unparseable as XML
+  * @throws NotCapException if any of the &lt;content&gt;s do not contain a
+  * CAP alert
+  */
+  public Alert parseAlert(
+    SyndEntry entry, List<CapException.Reason> parseErrors)
+    throws CapException, NotCapException {
+  @SuppressWarnings("unchecked")
+  List<SyndContent> contents = entry.getContents();
+  if (contents.isEmpty()) {
+     throw new NotCapException();
+   }
+   return parseAlert(contents.get(0).getValue(), parseErrors);
+ }
+
+
   /**
    * Parses the given CAP alert.
    *
    * @param entryPayload the alert, as an XML string
+   * @return the parsed alert
    * @throws CapException if the alert is invalid
    * @throws com.google.publicalerts.cap.NotCapException if the string is not
    * a CAP alert
    */
   public Alert parseAlert(String entryPayload)
+     throws CapException, NotCapException {
+   List<Reason> parseErrors = new ArrayList<Reason>();
+   Alert alert = parseAlert(entryPayload, parseErrors);
+   if (validate && !parseErrors.isEmpty()) {
+      throw new CapException(parseErrors);
+    }
+    return alert;
+  }
+
+ /**
+  * Parses the given CAP alert.
+  *
+  * @param entryPayload the alert, as an XML string
+  * @param parseErrors a list to which to add non-fatal errors during parsing
+  * @return the parsed alert
+  * @throws CapException if the alert is unparseable as XML
+  * @throws com.google.publicalerts.cap.NotCapException if the string is not
+  * a CAP alert
+  */
+  public Alert parseAlert(String entryPayload, List<Reason> parseErrors)
       throws CapException, NotCapException {
     if (CapUtil.isEmptyOrWhitespace(entryPayload)) {
       throw new NotCapException();
@@ -342,11 +386,11 @@ public class CapFeedParser {
     CapXmlParser parser = new CapXmlParser(validate);
     Alert alert;
     try {
-      alert = parser.parseFrom(entryPayload);
+      alert = parser.parseFrom(entryPayload, parseErrors);
 
       if (validate && xmlSignatureValidator != null &&
           xmlSignatureValidator.isSignatureValid(entryPayload, false)) {
-        throw new CapException(new Reason("/alert/Signature", Type.OTHER,
+        parseErrors.add(new Reason("/alert/Signature", Type.OTHER,
             "Invalid Signature: " + entryPayload));
       }
     } catch (SAXParseException e) {

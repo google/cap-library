@@ -27,6 +27,9 @@ import junit.framework.TestCase;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXParseException;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 /**
  * Tests for {@link CapXmlParser}.
@@ -860,15 +863,23 @@ public class CapXmlParserTest extends TestCase {
     assertNull(handler.toGroup(""));
   }
   
-  private void assertCapException(CapXmlParser parser, String alertStr, ReasonType... types)
+  private void assertCapException(
+      CapXmlParser parser, String alertStr, ReasonType... types)
       throws Exception {
+    XercesCapExceptionMapper exceptionMapper = new XercesCapExceptionMapper();
+
     try {
       parser.parseFrom(alertStr);
       fail("Expected CapException");
     } catch (CapException e) {
-      e = new XercesCapExceptionMapper().map(e);
+      e = exceptionMapper.map(e);
       TestUtil.assertErrorTypes(e.getReasons(), types);
-    }    
+    }
+
+    List<CapException.Reason> reasons = new ArrayList<CapException.Reason>();
+    parser.parseFrom(alertStr, reasons);
+    reasons = exceptionMapper.map(reasons);
+    TestUtil.assertErrorTypes(reasons, types);
   }
   
   private static class FakeLocator implements Locator {

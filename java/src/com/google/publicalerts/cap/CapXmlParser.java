@@ -145,6 +145,20 @@ public class CapXmlParser {
   /**
    * Parse the given alert.
    *
+   * @param str the CAP XML to parse, as a string
+   * @param parseErrors a list to which to add non-fatal errors during parsing
+   * @return the parsed alert
+   * @throws NotCapException if the XML is not CAP XML
+   * @throws SAXParseException on XML parsing error
+   */
+  public Alert parseFrom(String str, List<Reason> parseErrors)
+      throws NotCapException, SAXParseException {
+    return parseFrom(new StringReader(str), parseErrors);
+  }
+
+  /**
+   * Parse the given alert.
+   *
    * @param reader the reader to read the CAP XML to parse
    * @return the parsed alert
    * @throws CapException if validate is true and there are parse-related
@@ -160,6 +174,20 @@ public class CapXmlParser {
   /**
    * Parse the given alert.
    *
+   * @param reader the reader to read the CAP XML to parse
+   * @param parseErrors a list to which to add non-fatal errors during parsing
+   * @return the parsed alert
+   * @throws NotCapException if the XML is not CAP XML
+   * @throws SAXParseException on XML parsing error
+   */
+  public Alert parseFrom(Reader reader, List<Reason> parseErrors)
+      throws NotCapException, SAXParseException {
+    return parseFrom(new InputSource(reader), parseErrors);
+  }
+
+  /**
+   * Parse the given alert.
+   *
    * @param is the input source to read the CAP XML to parse
    * @return the parsed alert
    * @throws CapException if validate is true and there are parse-related
@@ -169,6 +197,25 @@ public class CapXmlParser {
    */
   public Alert parseFrom(InputSource is)
       throws CapException, NotCapException, SAXParseException {
+    List<Reason> parseErrors = new ArrayList<Reason>();
+    Alert alert = parseFrom(is, parseErrors);
+    if (validate && !parseErrors.isEmpty()) {
+      throw new CapException(parseErrors);
+    }
+    return alert;
+  }
+
+  /**
+   * Parse the given alert.
+   *
+   * @param is the input source to read the CAP XML to parse
+   * @param parseErrors a list to which to add non-fatal errors during parsing
+   * @return the parsed alert
+   * @throws NotCapException if the XML is not CAP XML
+   * @throws SAXParseException on XML parsing error
+   */
+  public Alert parseFrom(InputSource is, List<Reason> parseErrors)
+      throws NotCapException, SAXParseException {   
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setNamespaceAware(true);
 
@@ -193,9 +240,7 @@ public class CapXmlParser {
     } catch (ParserConfigurationException e) {
       throw new RuntimeException(e);
     }
-    if (validate && !handler.getParseErrors().isEmpty()) {
-      throw new CapException(handler.getParseErrors());
-    }
+    parseErrors.addAll(handler.getParseErrors());
     return handler.getAlert();
   }
 

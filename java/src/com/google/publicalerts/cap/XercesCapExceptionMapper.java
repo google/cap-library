@@ -17,8 +17,10 @@
 package com.google.publicalerts.cap;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -42,9 +44,11 @@ import com.google.publicalerts.cap.CapException.Type;
  */
 public class XercesCapExceptionMapper {
   private static final Pattern XERCES_ONE_PARAM_PATTERN = Pattern.compile(
-  ".* '(.*)' .*");
+      ".* '(.*)' .*");
   private static final Pattern XERCES_TWO_PARAM_PATTERN = Pattern.compile(
       ".* '(.*)'.* '(.*)'.*");
+  private static final Pattern ANON_TYPE_PATTERN = Pattern.compile(
+       ".*AnonType_(.*)alert.*");
 
   private static final Set<String> VALID_TAGS = buildValidTagSet();
   private static final Set<String> DATE_TAGS = buildDateTags();
@@ -142,27 +146,29 @@ public class XercesCapExceptionMapper {
       }
     } else if ("cvc-pattern-valid".equals(code)) {
       // fail regex pattern match
-      if ("identifier".equals(tag)) {
-        type = Type.INVALID_IDENTIFIER;
-        args = new String[] { value };
-      } else if ("sender".equals(tag)) {
-        type = Type.INVALID_SENDER;
-        args = new String[] { value };
-      } else if ("references".equals(tag)) {
-        type = Type.INVALID_REFERENCES;
+      Map<String, Type> tagTypeMap = new HashMap<String, Type>();
+      tagTypeMap.put("identifier", Type.INVALID_IDENTIFIER);
+      tagTypeMap.put("sender", Type.INVALID_SENDER);
+      tagTypeMap.put("references", Type.INVALID_REFERENCES);
+      tagTypeMap.put("circle", Type.INVALID_CIRCLE);
+
+      if (tagTypeMap.containsKey(tag)) {
+        type = tagTypeMap.get(tag);
         args = new String[] { value };
       } else if ("polygon".equals(tag)) {
         type = Type.INVALID_POLYGON;
         args = new String[] {
             value.length() > 50 ? value.substring(0, 47) + "..." : value };
-      } else if ("circle".equals(tag)) {
-        type = Type.INVALID_CIRCLE;
-        args = new String[] { value };
       } else if (DATE_TAGS.contains(tag)) {
         type = Type.INVALID_DATE;
         args = new String[] { tag, value };
       } else {
-        type = Type.INVALID_VALUE;
+        Matcher matcher = ANON_TYPE_PATTERN.matcher(message);
+        if (matcher.matches()) {
+          tag = matcher.group(1);
+        }
+        type = tagTypeMap.containsKey(tag) ?
+            tagTypeMap.get(tag) : Type.INVALID_VALUE;
         args = new String[] { tag, value };
       }
     } else if ("cvc-type.3.1.2".equals(code)) {
