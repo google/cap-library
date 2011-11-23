@@ -70,10 +70,6 @@ public class Ipaws1ProfileTest extends CapProfileTestCase {
         ErrorType.EXPIRES_IS_REQUIRED,
         ErrorType.AREA_IS_REQUIRED,
         ErrorType.SAME_EVENT_CODE_REQUIRED);
-
-    alert = loadAlert("earthquake.cap").toBuilder();
-    alert.getInfoBuilder(0).setExpires("2002-01-01T00:00:00+00:00");
-    assertErrors(alert, ErrorType.EXPIRES_INCLUDE_TIMEZONE_OFFSET);
   }
 
   public void testCheckForRecommendations() throws Exception {
@@ -89,6 +85,7 @@ public class Ipaws1ProfileTest extends CapProfileTestCase {
     alert.getInfoBuilder(0)
         .setEffective("2002-01-01T00:00:00+00:00")
         .setOnset("2002-01-01T00:00:00+00:00")
+        .setExpires("2002-01-01T00:00:00+00:00")
         .clearDescription()
         .clearInstruction()
         .getAreaBuilder(0)
@@ -98,6 +95,7 @@ public class Ipaws1ProfileTest extends CapProfileTestCase {
         RecommendationType.INFO_ONSET_IS_IGNORED,
         RecommendationType.INFO_DESCRIPTION_RECOMMENDED,
         RecommendationType.INFO_INSTRUCTION_RECOMMENDED,
-        RecommendationType.AREA_SAME_GEOCODE_RECOMMENDED);
+        RecommendationType.AREA_SAME_GEOCODE_RECOMMENDED,
+        RecommendationType.EXPIRES_INCLUDE_TIMEZONE_OFFSET);
   }
 }
