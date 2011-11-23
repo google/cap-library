@@ -163,6 +163,24 @@ public class CapFeedParserTest extends TestCase {
     }
   }
 
+  public void testParseInvalidAlert() throws Exception {
+    String alertStr = TestResources.load("invalid.cap");
+
+    // Try both the version that throws an exception and the one that doesn't
+
+    try {
+      parser.parseAlert(alertStr);
+      fail("Excpected CapException");
+    } catch (CapException expected) {
+      // expected
+    }
+
+    List<CapException.Reason> reasons = new ArrayList<CapException.Reason>();
+    Alert alert = parser.parseAlert(alertStr, reasons);
+    assertNotNull(alert);
+    assertFalse(reasons.isEmpty());
+  }
+
   public void testGetCapUrl() {
     SyndEntry entry = new SyndEntryImpl();
     assertNull(parser.getCapUrl(entry));
