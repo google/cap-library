@@ -1,7 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"
-%><%@ page import="com.google.publicalerts.cap.validator.ValidationError"
 %><%@ page import="com.google.publicalerts.cap.validator.StringUtil"
-%><%@ page import="com.google.common.collect.Multimap"
 %><%@ page import="java.util.List"
 %><!DOCTYPE html>
 <html>
@@ -64,82 +62,7 @@ Atom and RSS feeds of CAP messages.  It supports CAP v1.0, v1.1 and v1.2.
 </div></td></tr></table>
 </form>
 
-<%
-Multimap<Integer, ValidationError> errors = (Multimap<Integer, ValidationError>) request.getAttribute("errors");
-if (errors != null) {
-  if (errors.isEmpty()) {
-    %><h4>Result</h4>
-    <div class=valid>Valid!</div><%
-    String alertsJs = (String) request.getAttribute("alertsJs");
-    if (alertsJs != null) {
-      %><div id=map style="margin: 1em; padding: 1ex;"></div>
-      <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
-      <script>var alerts = <%= alertsJs %>;</script>
-	  <script src="/map.js"></script><%
-    }
-  } else {
-    %><h4>Error</h4>
-    <div class=error>
-      <table cellpadding=0 cellspacing=0><%
-    for (ValidationError error : errors.values()) {
-      %><tr>
-        <td class=linenum><a href="#l<%= error.getLineNumber() %>"/><%= error.getLineNumber() %></td>
-        <td class=line><%= error.getEscapedMessage() %></td>
-      </tr><%
-    }
-    %></table>
-  </div><%
-  }
-}
-%>
-
-<%
-Multimap<Integer, ValidationError> recommendations = (Multimap<Integer, ValidationError>) request.getAttribute("recommendations");
-if (recommendations != null && !recommendations.isEmpty()) {
-  %><h4>Recommendations</h4>
-     <div class=recommendation>
-       <table cellpadding=0 cellspacing=0><%
-  for (ValidationError recommendation : recommendations.values()) {
-       %><tr>
-           <td class=linenum><a href="#l<%= recommendation.getLineNumber() %>"/><%= recommendation.getLineNumber() %></td>
-           <td class=line><%= recommendation.getEscapedMessage() %></td>
-         </tr><%
-  }
-     %></table>
-  </div><%
-}
-%>
-
-<% 
-List<String> lines = (List<String>) request.getAttribute("lines");
-if (lines != null) {
-  %><h4>File</h4>
-  <div><div class=lines>
-  <table cellpadding=0 cellspacing=0><%
-  for (int i = 0; i < lines.size(); i++) {
-    int line = i + 1;
-    String cssClass = errors.containsKey(line) ? "errorline"
-               : recommendations.containsKey(line) ? "recommendline"
-               : "";
-    %><tr class="<%= cssClass %>">
-      <td class=linenum><a name="l<%= i+1 %>"/><%= i+1 %></td>
-      <td class=line><%= StringUtil.htmlEscape(lines.get(i)) %></td>
-    </tr><%
-    for (ValidationError error : errors.get(line)) {
-      %><tr class="errorline">
-        <td class=linenum></td><td class="line errormsg"><%= error.getEscapedMessage() %></td>
-      </tr><%
-    }
-    for (ValidationError recommendation : recommendations.get(line)) {
-      %><tr class="recommendline">
-        <td class=linenum></td><td class="line recommendmsg"><%= recommendation.getEscapedMessage() %></td>
-      </tr><%
-    }
-  }
-  %></table>
-  </div></div><%
-}
-%>
+<jsp:include page="validation_result.jsp"/>
 
 <div class=footer>
   <p class="homeabout">&#xa9;2011 Google - <a href="http://www.google.com/accounts/TOS">Terms of Service</a> - <a href="http://code.google.com/p/cap-library">About the Common Alerting Protocol Validator</a> - <a href="http://www.google.com/intl/en/privacy.html">Privacy Policy</a></p>

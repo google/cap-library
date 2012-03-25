@@ -50,8 +50,13 @@ public class AllTests {
     TestSuite suite = new TestSuite();
 
     suite.addTestSuite(CapValidatorServletTest.class);
+    suite.addTestSuite(CapValidatorTest.class);
     suite.addTestSuite(LineOffsetParserTest.class);
     suite.addTestSuite(MapVisualizerTest.class);
+    suite.addTestSuite(PshbAuthenticatorTest.class);
+    suite.addTestSuite(PshbServletTest.class);
+    suite.addTestSuite(SubscribeServletTest.class);
+    suite.addTestSuite(ValidatorUtilTest.class);
 
     return suite;
   }
