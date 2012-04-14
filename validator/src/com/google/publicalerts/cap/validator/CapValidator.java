@@ -16,13 +16,9 @@
 
 package com.google.publicalerts.cap.validator;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -52,7 +48,6 @@ public class CapValidator {
       Logger.getLogger(CapValidator.class.getName());
 
   private static final int REQUEST_DEADLINE_MS = 20000;
-  private static final Charset UTF8 = Charset.forName("UTF-8");
 
   private final CapFeedParser capParser;
 
@@ -60,9 +55,16 @@ public class CapValidator {
     this.capParser = new CapFeedParser(true);
   }
 
+  /**
+   * Validates the given input
+   *
+   * @param input the input content to validate. Input can be a feed of CAP
+   *   alerts, a feed of links to CAP alerts, a list of CAP alerts, a URL
+   *   pointing to any of the above, or gibberish.
+   * @param profiles an optional set of CAP profiles to apply during
+   *   validation; can be empty.
+   */
   public ValidationResult validate(String input, Set<CapProfile> profiles) {
-    // Input could be a feed of CAP alerts, a feed of links to CAP alerts,
-    // a list of CAP alerts, a URL pointing to any of the above, or gibberish
 
     ValidationResult result = new ValidationResult(input);
 
@@ -106,7 +108,8 @@ public class CapValidator {
       try {
         Alert alert = capParser.parseAlert(input);
         log.info("CAPRequest: Success");
-        checkProfiles(alert, result, profiles, -1, null);
+        checkProfiles(
+            alert, result, profiles, -1 /* entryIndex */, null /* linkUrl */);
       } catch (CapException ce) {
         log.info("CAPRequest: Error");
         result.addError(ce);
@@ -199,20 +202,6 @@ public class CapValidator {
 
   String loadUrl(String capUrl) throws IOException {
     URL url = new URL(capUrl);
-    return readFully(url.openStream());
-  }
-
-  public String readFully(InputStream stream) throws IOException {
-    BufferedReader br = new BufferedReader(new InputStreamReader(stream,
-        UTF8));
-    StringBuilder sb = new StringBuilder();
-    String line;
-    while ((line = br.readLine()) != null) {
-      sb.append(line).append('\n');
-    }
-    if (sb.length() > 0) {
-      sb.setLength(sb.length() - 1);
-    }
-    return sb.toString();
+    return ValidatorUtil.readFully(url.openStream());
   }
 }

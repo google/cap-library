@@ -88,13 +88,13 @@ public class CapValidatorServlet extends HttpServlet {
       while (itemItr.hasNext()) {
         FileItemStream item = itemItr.next();
         if ("input".equals(item.getFieldName())) {
-          input = capValidator.readFully(item.openStream());
+          input = ValidatorUtil.readFully(item.openStream());
         } else if (item.getFieldName().startsWith("inputfile")) {
-          fileInput = capValidator.readFully(item.openStream());
+          fileInput = ValidatorUtil.readFully(item.openStream());
         } else if ("example".equals(item.getFieldName())) {
-          example = capValidator.readFully(item.openStream());
+          example = ValidatorUtil.readFully(item.openStream());
         } else if ("profile".equals(item.getFieldName())) {
-          String profileCode = capValidator.readFully(item.openStream());
+          String profileCode = ValidatorUtil.readFully(item.openStream());
           profiles = ValidatorUtil.parseProfiles(profileCode);
         }
       }
@@ -138,7 +138,7 @@ public class CapValidatorServlet extends HttpServlet {
   String loadExample(String filename) throws IOException {
     InputStream stream = CapValidatorServlet.class.getResourceAsStream(
         "examples/" + filename);
-    return stream == null ? "" : capValidator.readFully(stream);
+    return stream == null ? "" : ValidatorUtil.readFully(stream);
   }
 
   private void render(HttpServletRequest req, HttpServletResponse resp)

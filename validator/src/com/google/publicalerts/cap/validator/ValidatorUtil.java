@@ -16,8 +16,13 @@
 
 package com.google.publicalerts.cap.validator;
 
-import java.net.URLEncoder;
+import java.io.BufferedReader;
 import java.io.UnsupportedEncodingException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URLEncoder;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Set;
 
@@ -43,6 +48,15 @@ public class ValidatorUtil {
   public static final String ALERT_HUB_SECRET = "alert_hub_secret";
   public static final String ALERT_HUB_URL = "alert_hub_url";
 
+  private static final Charset UTF8 = Charset.forName("UTF-8");
+
+  /**
+   * Returns the given set of selected cap profiles in a format
+   * suitable for displaying in the validator JSPs.
+   *
+   * @param selected the selected CAP profiles, may be empty
+   * @return the JSP-formatted profiles
+   */
   public static List<String[]> getProfilesJsp(Set<CapProfile> selected) {
     selected = selected == null ? ImmutableSet.<CapProfile>of() : selected;
     List<String[]> ret = Lists.newArrayList();
@@ -54,6 +68,11 @@ public class ValidatorUtil {
     return ret;
   }
 
+  /**
+   * 
+   * @param profileStr
+   * @return
+   */
   public static Set<CapProfile> parseProfiles(String profileStr) {
     if (CapUtil.isEmptyOrWhitespace(profileStr)) {
       return ImmutableSet.of();
@@ -72,6 +91,11 @@ public class ValidatorUtil {
     return profiles;
   }
 
+  /**
+   * Adds headers to the given response to mark it as not cacheable.
+   *
+   * @param resp the response to add headers to.
+   */
   public static void addNoCachableHeaders(HttpServletResponse resp) {
     resp.setHeader("Cache-Control",
         "no-cache, no-store, max-age=0, must-revalidate");
@@ -80,6 +104,14 @@ public class ValidatorUtil {
     resp.setDateHeader("Date", System.currentTimeMillis());
   }
 
+  /**
+   * Creates a PSHB callback url given the request url, topic url, and email.
+   *
+   * @param reqUrl the URL of the request to the validator
+   * @param topic the URL of the feed on whose behalf we are subscribing the
+   *   validator
+   * @param email the email address to send errors
+   */
   public static String toCallbackUrl(String reqUrl, String topic, String email) {
     try {
       return reqUrl + "?topic=" + URLEncoder.encode(topic, "UTF-8") +
@@ -88,6 +120,28 @@ public class ValidatorUtil {
       throw new RuntimeException(e);
     }
   }
+
+  /**
+   * Reads the given stream to a string and closes it.
+   *
+   * @param stream the stream to read
+   * @throws IOException on error reading from the stream
+   */
+  public static String readFully(InputStream stream) throws IOException {
+    BufferedReader br = new BufferedReader(new InputStreamReader(stream,
+        UTF8));
+    StringBuilder sb = new StringBuilder();
+    String line;
+    while ((line = br.readLine()) != null) {
+      sb.append(line).append('\n');
+    }
+    if (sb.length() > 0) {
+      sb.setLength(sb.length() - 1);
+    }
+    stream.close();
+    return sb.toString();
+  }
+
 
   private ValidatorUtil() {}
 }

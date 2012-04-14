@@ -195,6 +195,21 @@ public class PshbServlet extends HttpServlet {
     }
   }
 
+  /**
+   * Renders the validation result to a string to be included in the email.
+   * To render, we re-use the same JSP used in the mail validator, but wrap
+   * the HttpServletResponse to redirect and grab the string instead of
+   * writing the output to the stream (since the request comes from
+   * PSHB, we don't bother rendering it to the stream as well).
+   * 
+   * @param req the current request
+   * @param resp the current response
+   * @param email where to send the mail
+   * @param topic the current topic
+   * @param profiles the set of optional profiles to validate against
+   * @param result the valiation result
+   * @return the rendered validation result
+   */
   private String renderMessage(
       HttpServletRequest req, HttpServletResponse resp, String email,
       String topic, Set<CapProfile> profiles, ValidationResult result) {
