@@ -16,16 +16,11 @@
 
 package com.google.publicalerts.cap.validator;
 
-import java.io.IOException;
-import java.util.Set;
+import static org.mockito.Mockito.mock;
 
 import junit.framework.TestCase;
 
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Sets;
-import com.google.publicalerts.cap.feed.TestResources;
-import com.google.publicalerts.cap.profile.CapProfile;
-import com.google.publicalerts.cap.profile.Ipaws1Profile;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
 
 /**
  * Tests for {@link CapValidatorServlet}.
@@ -33,9 +28,9 @@ import com.google.publicalerts.cap.profile.Ipaws1Profile;
  * @author shakusa@google.com (Steve Hakusa)
  */
 public class CapValidatorServletTest extends TestCase {
-  private static final Set<CapProfile> NO_PROFILES = ImmutableSet.of();
-
-  private TestCapValidatorServlet servlet;
+  private CapValidator capValidator;
+  private ServletFileUpload upload;
+  private CapValidatorServlet servlet;
 
   public CapValidatorServletTest(String name) {
     super(name);
@@ -44,141 +39,15 @@ public class CapValidatorServletTest extends TestCase {
   @Override
   public void setUp() throws Exception {
     super.setUp();
-    this.servlet = new TestCapValidatorServlet("earthquake.cap");
+    this.capValidator = mock(CapValidator.class);
+    this.upload = mock(ServletFileUpload.class);
+    this.servlet = new CapValidatorServlet(capValidator, upload);
   }
 
-  public void testNotXml() {
-    ValidationResult result = servlet.handleInput("invalid", NO_PROFILES);
-    assertFalse(result.getByLineErrorMap().isEmpty());
-    assertFalse(result.getByLineErrorMap().get(1).isEmpty());
+  public void testLoadExample() throws Exception {
+    String earthquake = servlet.loadExample("earthquake.cap");
+    assertNotNull(earthquake);
   }
 
-  public void testUnsupportedXml() {
-    ValidationResult result = servlet.handleInput(
-        "<?xml version='1.0' encoding='UTF-8' standalone='yes'?><test></test>",
-        NO_PROFILES);
-    // expect an error on line 1
-    assertFalse(result.getByLineErrorMap().isEmpty());
-    assertFalse(result.getByLineErrorMap().get(1).isEmpty());
-  }
-
-  public void testInvalidCapXml() throws Exception {
-    String cap = TestResources.load("earthquake.cap");
-    cap = cap.replaceAll("identifier", "invalid");
-    ValidationResult result = servlet.handleInput(cap, NO_PROFILES);
-    // Expect an error on line 4 (where <identifier> was in the alert)
-    assertFalse(result.getByLineErrorMap().isEmpty());
-    assertFalse(result.getByLineErrorMap().get(4).isEmpty());
-  }
-
-  public void testInvalidFeedXml() throws Exception {
-    String cap = TestResources.load("earthquake_index.atom");
-    cap = cap.replaceAll("author", "authors");
-    ValidationResult result = servlet.handleInput(cap, NO_PROFILES);
-    // Expect an error on line 7 (where <author> was in the alert)
-    assertFalse(result.getByLineErrorMap().isEmpty());
-    assertFalse(result.getByLineErrorMap().get(7).isEmpty());
-  }
-
-  public void testRssFeed() throws Exception {
-    String cap = TestResources.load("ny_index.rss");
-    ValidationResult result = servlet.handleInput(cap, NO_PROFILES);
-    // Expect no errors
-    assertTrue(result.getByLineErrorMap().isEmpty());
-    assertTrue(result.getByLineRecommendationMap().isEmpty());
-    assertEquals(2, result.getValidAlerts().size());
-  }
-
-  public void testThinAtomFeed() throws Exception {
-    String cap = TestResources.load("earthquake_index.atom");
-    ValidationResult result = servlet.handleInput(cap, NO_PROFILES);
-    // Expect no errors
-    assertTrue(result.getByLineErrorMap().isEmpty());
-    assertTrue(result.getByLineRecommendationMap().isEmpty());
-    assertEquals(1, result.getValidAlerts().size());
-  }
-
-  public void testThinAtomFeedCapError() throws Exception {
-    servlet.setFeed("invalid.cap");
-    String cap = TestResources.load("earthquake_index.atom");
-    ValidationResult result = servlet.handleInput(cap, NO_PROFILES);
-    // Expect an error at line 10, where the <link> appears
-    assertFalse(result.getByLineErrorMap().isEmpty());
-    assertFalse(result.getByLineErrorMap().get(10).isEmpty());
-  }
-
-  public void testFatAtomFeed() throws Exception {
-    String cap = TestResources.load("amber.atom");
-    ValidationResult result = servlet.handleInput(cap, NO_PROFILES);
-    // Expect no errors
-    assertTrue(result.getByLineErrorMap().isEmpty());
-    assertTrue(result.getByLineRecommendationMap().isEmpty());
-    assertEquals(1, result.getValidAlerts().size());
-  }
-
-  public void testCap() throws Exception {
-    String cap = TestResources.load("earthquake.cap");
-    ValidationResult result = servlet.handleInput(cap, NO_PROFILES);
-    // Expect no errors
-    assertTrue(result.getByLineErrorMap().isEmpty());
-    assertTrue(result.getByLineRecommendationMap().isEmpty());
-    assertEquals(1, result.getValidAlerts().size());
-  }
-
-  public void testCapProfile() throws Exception {
-    String cap = TestResources.load("earthquake.cap");
-    ValidationResult result = servlet.handleInput(cap,
-        Sets.<CapProfile>newHashSet(new Ipaws1Profile()));
-    // Expect no errors, 2 recommendations from the profile
-    assertTrue(result.getByLineErrorMap().isEmpty());
-    assertEquals(4, result.getByLineRecommendationMap().size());
-    assertFalse(result.getByLineRecommendationMap().get(11).isEmpty());
-    assertFalse(result.getByLineRecommendationMap().get(72).isEmpty());
-  }
-
-  public void testFatAtomFeedCapProfile() throws Exception {
-    String cap = TestResources.load("amber.atom");
-    ValidationResult result = servlet.handleInput(cap,
-        Sets.<CapProfile>newHashSet(new Ipaws1Profile()));
-    // Expect 2 errors, 2 recommendations
-    assertEquals(2, result.getByLineErrorMap().size());
-    assertFalse(result.getByLineErrorMap().get(16).isEmpty());
-    assertFalse(result.getByLineErrorMap().get(24).isEmpty());
-    assertEquals(2, result.getByLineRecommendationMap().size());
-    assertFalse(result.getByLineRecommendationMap().get(24).isEmpty());
-    assertFalse(result.getByLineRecommendationMap().get(41).isEmpty());
-  }
-
-  public void testThinFeedWithCapProfile() throws Exception {
-    String cap = TestResources.load("earthquake_index.atom");
-    ValidationResult result = servlet.handleInput(cap,
-        Sets.<CapProfile>newHashSet(new Ipaws1Profile()));
-    // Expect no errors, ! aggregate recommendation entry at the link line
-    assertTrue(result.getByLineErrorMap().isEmpty());
-    assertEquals(1, result.getByLineRecommendationMap().size());
-    assertFalse(result.getByLineRecommendationMap().get(10).isEmpty());
-  }
-
-  private static class TestCapValidatorServlet extends CapValidatorServlet {
-    private static final long serialVersionUID = 1L;
-
-    private String feed;
-
-    public TestCapValidatorServlet(String feed) {
-      this.feed = feed;
-    }
-
-    public void setFeed(String feed) {
-      this.feed = feed;
-    }
-
-    @Override
-    String loadUrl(String capUrl) {
-      try {
-        return TestResources.load(feed);
-      } catch (IOException e) {
-        throw new RuntimeException(e);
-      }
-    }
-  }
+  // TODO(shakusa) Test loading from file
 }

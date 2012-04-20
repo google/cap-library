@@ -16,7 +16,7 @@
 -->
 <appengine-web-app xmlns="http://appengine.google.com/ns/1.0">
   <application>cap-validator</application>
-  <version>2</version>
+  <version>3</version>
 	
   <system-properties>
     <!-- Configure java.util.logging -->
@@ -25,5 +25,10 @@
     <!-- Registered for http://cap-validator.appspot.com
          Change if using on a different domain. -->
     <property name="google_analytics_id" value="UA-21677042-1" />
+
+    <property name="alert_hub_url" value="http://alert-hub.appspot.com" />
+
+    <!-- Change before deploying. -->
+    <property name="alert_hub_secret" value="secret12345" />
   </system-properties>
 </appengine-web-app>

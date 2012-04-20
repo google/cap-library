@@ -1,6 +1,6 @@
 body {
   color: #333;
-  font-family: arial, san-serif;
+  font-family: arial, sans-serif;
   padding-left: 1em;
 }
 td {
@@ -17,53 +17,11 @@ td {
 .example {
   line-height: 1.5em;
 }
-.lines {
-  background-color: #ffc;
-  display: inline-block;
-  margin-left: 1em;
-  padding: 1ex;
-  font-size: 80%;
-}
-td.linenum {
-  padding-left: 4px;
-  padding-right: 6px;
-  text-align: right;
-  vertical-align: top;
-}
-td.line {
-  padding-right: 4px;  
-}
-td.errormsg {
-  font-weight: bold; 
-}
-td.errormsg, td.recommendmsg {
-  padding: 4px;
-}
 .valid {
   background-color: #cfc;
   display: inline-block;
   margin-left: 1em;
   padding: 1ex;
-}
-.error {
-  background-color: #fcc;
-  display: inline-block;
-  margin-left: 1em;
-  padding: 1ex;
-  font-size: 80%;
-}
-tr.errorline td {
-  background-color: #fcc;
-}
-.recommendation {
-  background-color: #ccf;
-  display: inline-block;
-  margin-left: 1em;
-  padding: 1ex;
-  font-size: 80%;
-}
-tr.recommendline td {
-  background-color: #ccf;
 }
 .render {
   margin-left: 1em;
@@ -123,4 +81,12 @@ textarea {
 }
 .cancelfile {
   float: right;
+}
+.def {
+  font-size: 83%;
+  color: #999;
+}
+.banner {
+  margin: -1em 1em 1em;
+  color: red;
 }

@@ -27,6 +27,25 @@ http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
     <servlet-name>CapValidator</servlet-name>
     <url-pattern>/validate</url-pattern>
   </servlet-mapping>
+
+  <servlet>
+    <servlet-name>Subscribe</servlet-name>
+    <servlet-class>com.google.publicalerts.cap.validator.SubscribeServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Subscribe</servlet-name>
+    <url-pattern>/subscribe</url-pattern>
+  </servlet-mapping>
+
+  <servlet>
+    <servlet-name>Pshb</servlet-name>
+    <servlet-class>com.google.publicalerts.cap.validator.PshbServlet</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>Pshb</servlet-name>
+    <url-pattern>/pshb</url-pattern>
+  </servlet-mapping>
+
   <welcome-file-list>
     <welcome-file>validate</welcome-file>
   </welcome-file-list>

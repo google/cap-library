@@ -1,9 +1,9 @@
 jar: guava.jar
-    URL: http://guava-libraries.googlecode.com/files/guava-r08.zip
-    Version: r08
+    URL: http://search.maven.org/remotecontent?filepath=com/google/guava/guava/11.0.2/guava-11.0.2.jar
+    Version: 11.0.2
     License: Apache 2.0
     Local Modifications: None
-    Download date: 2011-02-25
+    Download date: 2012-01-09
 
 jar: servlet-api.jar
     URL: http://apache.inetbridge.net/tomcat/tomcat-6/v6.0.20/
@@ -26,3 +26,10 @@ jar: commons-fileupload.jar
     License: Apache License Version 2.0, January 2004
     Local Modifications: 
     Download date: 2011-05-12
+
+jar: mockito.jar
+    URL: http://mockito.googlecode.com/files/mockito-all-1.9.0.jar
+    Version: 1.9.0
+    License: MIT license
+    Local Modifications:
+    Download date: 2012-03-24

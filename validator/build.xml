@@ -26,6 +26,7 @@
     <delete dir="${src.classes}"/>
     <delete>
       <fileset dir="${src.lib}" includes="cap-library-r*.jar"/>
+      <fileset dir="${src.lib}" includes="appengine-api.jar"/>
     </delete>
   </target>
 
@@ -41,6 +42,12 @@
     <copy toDir="${src.lib}" failonerror="true">
       <fileset dir="../java/dist/">
 	<include name="cap-library-r*.jar"/>
+      </fileset>
+    </copy>
+    <copy toDir="${src.lib}" failonerror="true">
+      <!-- For mail api -->
+      <fileset dir="${env.APPENGINE_JAVA_SDK}/lib/impl">
+	<include name="appengine-api.jar"/>
       </fileset>
     </copy>
   </target>
@@ -75,6 +82,9 @@
     </fileset>
     <fileset dir="../java/lib">
       <include name="junit.jar"/>
+    </fileset>
+    <fileset dir="testlib">
+      <include name="*.jar"/>
     </fileset>
   </path>
 
