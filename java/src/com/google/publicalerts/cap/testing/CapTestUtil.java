@@ -14,33 +14,43 @@
  * the License.
  */
 
-package com.google.publicalerts.cap;
+package com.google.publicalerts.cap.testing;
+
+import com.google.publicalerts.cap.Alert;
+import com.google.publicalerts.cap.Area;
+import com.google.publicalerts.cap.CapException.Reason;
+import com.google.publicalerts.cap.CapException.ReasonType;
+import com.google.publicalerts.cap.CapValidator;
+import com.google.publicalerts.cap.Circle;
+import com.google.publicalerts.cap.Group;
+import com.google.publicalerts.cap.Info;
+import com.google.publicalerts.cap.Point;
+import com.google.publicalerts.cap.Polygon;
+import com.google.publicalerts.cap.Resource;
+import com.google.publicalerts.cap.ValuePair;
+
+import junit.framework.Assert;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import junit.framework.Assert;
-
-import com.google.publicalerts.cap.CapException.Reason;
-import com.google.publicalerts.cap.CapException.ReasonType;
 
 /**
  * Test utilities.
  *
 * @author shakusa@google.com (Steve Hakusa)
  */
-public class TestUtil {
+public class CapTestUtil {
   public static Alert.Builder getValidAlertBuilder() {
     return Alert.newBuilder()
         .setXmlns(CapValidator.CAP_LATEST_XMLNS)
         .setIdentifier("43b080713727")
         .setSender("hsas@dhs.gov")
         .setSent("2003-04-02T14:39:01-05:00")
-        .setStatus(Alert.Status.Actual)
-        .setMsgType(Alert.MsgType.Alert)
+        .setStatus(Alert.Status.ACTUAL)
+        .setMsgType(Alert.MsgType.ALERT)
         .setSource("a source")
-        .setScope(Alert.Scope.Public)
+        .setScope(Alert.Scope.PUBLIC)
         .addCode("abcde")
         .setNote("a note")
         .setReferences(Group.newBuilder()
@@ -53,12 +63,12 @@ public class TestUtil {
 
   public static Info.Builder getValidInfoBuilder() {
     return Info.newBuilder()
-        .addCategory(Info.Category.Security)
-        .addCategory(Info.Category.Safety)
+        .addCategory(Info.Category.SECURITY)
+        .addCategory(Info.Category.SAFETY)
         .setEvent("Homeland Security Advisory System Update")
-        .setUrgency(Info.Urgency.Immediate)
-        .setSeverity(Info.Severity.Severe)
-        .setCertainty(Info.Certainty.Likely)
+        .setUrgency(Info.Urgency.IMMEDIATE)
+        .setSeverity(Info.Severity.SEVERE)
+        .setCertainty(Info.Certainty.LIKELY)
         .setSenderName("Department of Homeland Security")
         .setHeadline("Homeland Security Sets Code ORANGE")
         .setDescription("DHS has set the threat level to ORANGE.")
@@ -124,5 +134,5 @@ public class TestUtil {
     Assert.assertTrue(msg, "".equals(msg));
   }
   
-  private TestUtil() {}
+  private CapTestUtil() {}
 }

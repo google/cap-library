@@ -95,7 +95,7 @@ public class CapValidatorServlet extends HttpServlet {
           example = ValidatorUtil.readFully(item.openStream());
         } else if ("profile".equals(item.getFieldName())) {
           String profileCode = ValidatorUtil.readFully(item.openStream());
-          profiles = ValidatorUtil.parseProfiles(profileCode);
+          profiles.addAll(ValidatorUtil.parseProfiles(profileCode));
         }
       }
     } catch (FileUploadException e) {

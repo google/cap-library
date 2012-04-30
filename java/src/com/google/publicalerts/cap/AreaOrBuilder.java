@@ -9,7 +9,7 @@ public interface AreaOrBuilder
   boolean hasAreaDesc();
   String getAreaDesc();
   
-  // repeated .alerts.cap.Polygon polygon = 2;
+  // repeated .publicalerts.cap.Polygon polygon = 2;
   java.util.List<com.google.publicalerts.cap.Polygon> 
       getPolygonList();
   com.google.publicalerts.cap.Polygon getPolygon(int index);
@@ -19,7 +19,7 @@ public interface AreaOrBuilder
   com.google.publicalerts.cap.PolygonOrBuilder getPolygonOrBuilder(
       int index);
   
-  // repeated .alerts.cap.Circle circle = 3;
+  // repeated .publicalerts.cap.Circle circle = 3;
   java.util.List<com.google.publicalerts.cap.Circle> 
       getCircleList();
   com.google.publicalerts.cap.Circle getCircle(int index);
@@ -29,7 +29,7 @@ public interface AreaOrBuilder
   com.google.publicalerts.cap.CircleOrBuilder getCircleOrBuilder(
       int index);
   
-  // repeated .alerts.cap.ValuePair geocode = 4;
+  // repeated .publicalerts.cap.ValuePair geocode = 4;
   java.util.List<com.google.publicalerts.cap.ValuePair> 
       getGeocodeList();
   com.google.publicalerts.cap.ValuePair getGeocode(int index);

@@ -22,60 +22,60 @@ public  final class Info extends
   
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Info_descriptor;
+    return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Info_descriptor;
   }
   
   protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Info_fieldAccessorTable;
+    return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Info_fieldAccessorTable;
   }
   
   public enum Category
       implements com.google.protobuf.ProtocolMessageEnum {
-    Geo(0, 0),
-    Met(1, 1),
-    Safety(2, 2),
-    Security(3, 3),
-    Rescue(4, 4),
-    Fire(5, 5),
-    Health(6, 6),
-    Env(7, 7),
-    Transport(8, 8),
-    Infra(9, 9),
+    GEO(0, 0),
+    MET(1, 1),
+    SAFETY(2, 2),
+    SECURITY(3, 3),
+    RESCUE(4, 4),
+    FIRE(5, 5),
+    HEALTH(6, 6),
+    ENV(7, 7),
+    TRANSPORT(8, 8),
+    INFRA(9, 9),
     CBRNE(10, 10),
-    Other(11, 11),
+    OTHER(11, 11),
     ;
     
-    public static final int Geo_VALUE = 0;
-    public static final int Met_VALUE = 1;
-    public static final int Safety_VALUE = 2;
-    public static final int Security_VALUE = 3;
-    public static final int Rescue_VALUE = 4;
-    public static final int Fire_VALUE = 5;
-    public static final int Health_VALUE = 6;
-    public static final int Env_VALUE = 7;
-    public static final int Transport_VALUE = 8;
-    public static final int Infra_VALUE = 9;
+    public static final int GEO_VALUE = 0;
+    public static final int MET_VALUE = 1;
+    public static final int SAFETY_VALUE = 2;
+    public static final int SECURITY_VALUE = 3;
+    public static final int RESCUE_VALUE = 4;
+    public static final int FIRE_VALUE = 5;
+    public static final int HEALTH_VALUE = 6;
+    public static final int ENV_VALUE = 7;
+    public static final int TRANSPORT_VALUE = 8;
+    public static final int INFRA_VALUE = 9;
     public static final int CBRNE_VALUE = 10;
-    public static final int Other_VALUE = 11;
+    public static final int OTHER_VALUE = 11;
     
     
     public final int getNumber() { return value; }
     
     public static Category valueOf(int value) {
       switch (value) {
-        case 0: return Geo;
-        case 1: return Met;
-        case 2: return Safety;
-        case 3: return Security;
-        case 4: return Rescue;
-        case 5: return Fire;
-        case 6: return Health;
-        case 7: return Env;
-        case 8: return Transport;
-        case 9: return Infra;
+        case 0: return GEO;
+        case 1: return MET;
+        case 2: return SAFETY;
+        case 3: return SECURITY;
+        case 4: return RESCUE;
+        case 5: return FIRE;
+        case 6: return HEALTH;
+        case 7: return ENV;
+        case 8: return TRANSPORT;
+        case 9: return INFRA;
         case 10: return CBRNE;
-        case 11: return Other;
+        case 11: return OTHER;
         default: return null;
       }
     }
@@ -106,7 +106,7 @@ public  final class Info extends
     }
     
     private static final Category[] VALUES = {
-      Geo, Met, Safety, Security, Rescue, Fire, Health, Env, Transport, Infra, CBRNE, Other, 
+      GEO, MET, SAFETY, SECURITY, RESCUE, FIRE, HEALTH, ENV, TRANSPORT, INFRA, CBRNE, OTHER, 
     };
     
     public static Category valueOf(
@@ -126,46 +126,46 @@ public  final class Info extends
       this.value = value;
     }
     
-    // @@protoc_insertion_point(enum_scope:alerts.cap.Info.Category)
+    // @@protoc_insertion_point(enum_scope:publicalerts.cap.Info.Category)
   }
   
   public enum ResponseType
       implements com.google.protobuf.ProtocolMessageEnum {
-    Shelter(0, 0),
-    Evacuate(1, 1),
-    Prepare(2, 2),
-    Execute(3, 3),
-    Avoid(4, 4),
-    Monitor(5, 5),
-    Assess(6, 6),
-    AllClear(7, 7),
-    None(8, 8),
+    SHELTER(0, 0),
+    EVACUATE(1, 1),
+    PREPARE(2, 2),
+    EXECUTE(3, 3),
+    AVOID(4, 4),
+    MONITOR(5, 5),
+    ASSESS(6, 6),
+    ALL_CLEAR(7, 7),
+    NONE(8, 8),
     ;
     
-    public static final int Shelter_VALUE = 0;
-    public static final int Evacuate_VALUE = 1;
-    public static final int Prepare_VALUE = 2;
-    public static final int Execute_VALUE = 3;
-    public static final int Avoid_VALUE = 4;
-    public static final int Monitor_VALUE = 5;
-    public static final int Assess_VALUE = 6;
-    public static final int AllClear_VALUE = 7;
-    public static final int None_VALUE = 8;
+    public static final int SHELTER_VALUE = 0;
+    public static final int EVACUATE_VALUE = 1;
+    public static final int PREPARE_VALUE = 2;
+    public static final int EXECUTE_VALUE = 3;
+    public static final int AVOID_VALUE = 4;
+    public static final int MONITOR_VALUE = 5;
+    public static final int ASSESS_VALUE = 6;
+    public static final int ALL_CLEAR_VALUE = 7;
+    public static final int NONE_VALUE = 8;
     
     
     public final int getNumber() { return value; }
     
     public static ResponseType valueOf(int value) {
       switch (value) {
-        case 0: return Shelter;
-        case 1: return Evacuate;
-        case 2: return Prepare;
-        case 3: return Execute;
-        case 4: return Avoid;
-        case 5: return Monitor;
-        case 6: return Assess;
-        case 7: return AllClear;
-        case 8: return None;
+        case 0: return SHELTER;
+        case 1: return EVACUATE;
+        case 2: return PREPARE;
+        case 3: return EXECUTE;
+        case 4: return AVOID;
+        case 5: return MONITOR;
+        case 6: return ASSESS;
+        case 7: return ALL_CLEAR;
+        case 8: return NONE;
         default: return null;
       }
     }
@@ -196,7 +196,7 @@ public  final class Info extends
     }
     
     private static final ResponseType[] VALUES = {
-      Shelter, Evacuate, Prepare, Execute, Avoid, Monitor, Assess, AllClear, None, 
+      SHELTER, EVACUATE, PREPARE, EXECUTE, AVOID, MONITOR, ASSESS, ALL_CLEAR, NONE, 
     };
     
     public static ResponseType valueOf(
@@ -216,34 +216,34 @@ public  final class Info extends
       this.value = value;
     }
     
-    // @@protoc_insertion_point(enum_scope:alerts.cap.Info.ResponseType)
+    // @@protoc_insertion_point(enum_scope:publicalerts.cap.Info.ResponseType)
   }
   
   public enum Urgency
       implements com.google.protobuf.ProtocolMessageEnum {
-    Immediate(0, 0),
-    Expected(1, 1),
-    Future(2, 2),
-    Past(3, 3),
-    Unknown_Urgency(4, 4),
+    IMMEDIATE(0, 0),
+    EXPECTED(1, 1),
+    FUTURE(2, 2),
+    PAST(3, 3),
+    UNKNOWN_URGENCY(4, 4),
     ;
     
-    public static final int Immediate_VALUE = 0;
-    public static final int Expected_VALUE = 1;
-    public static final int Future_VALUE = 2;
-    public static final int Past_VALUE = 3;
-    public static final int Unknown_Urgency_VALUE = 4;
+    public static final int IMMEDIATE_VALUE = 0;
+    public static final int EXPECTED_VALUE = 1;
+    public static final int FUTURE_VALUE = 2;
+    public static final int PAST_VALUE = 3;
+    public static final int UNKNOWN_URGENCY_VALUE = 4;
     
     
     public final int getNumber() { return value; }
     
     public static Urgency valueOf(int value) {
       switch (value) {
-        case 0: return Immediate;
-        case 1: return Expected;
-        case 2: return Future;
-        case 3: return Past;
-        case 4: return Unknown_Urgency;
+        case 0: return IMMEDIATE;
+        case 1: return EXPECTED;
+        case 2: return FUTURE;
+        case 3: return PAST;
+        case 4: return UNKNOWN_URGENCY;
         default: return null;
       }
     }
@@ -274,7 +274,7 @@ public  final class Info extends
     }
     
     private static final Urgency[] VALUES = {
-      Immediate, Expected, Future, Past, Unknown_Urgency, 
+      IMMEDIATE, EXPECTED, FUTURE, PAST, UNKNOWN_URGENCY, 
     };
     
     public static Urgency valueOf(
@@ -294,34 +294,34 @@ public  final class Info extends
       this.value = value;
     }
     
-    // @@protoc_insertion_point(enum_scope:alerts.cap.Info.Urgency)
+    // @@protoc_insertion_point(enum_scope:publicalerts.cap.Info.Urgency)
   }
   
   public enum Severity
       implements com.google.protobuf.ProtocolMessageEnum {
-    Extreme(0, 0),
-    Severe(1, 1),
-    Moderate(2, 2),
-    Minor(3, 3),
-    Unknown_Severity(4, 4),
+    EXTREME(0, 0),
+    SEVERE(1, 1),
+    MODERATE(2, 2),
+    MINOR(3, 3),
+    UNKNOWN_SEVERITY(4, 4),
     ;
     
-    public static final int Extreme_VALUE = 0;
-    public static final int Severe_VALUE = 1;
-    public static final int Moderate_VALUE = 2;
-    public static final int Minor_VALUE = 3;
-    public static final int Unknown_Severity_VALUE = 4;
+    public static final int EXTREME_VALUE = 0;
+    public static final int SEVERE_VALUE = 1;
+    public static final int MODERATE_VALUE = 2;
+    public static final int MINOR_VALUE = 3;
+    public static final int UNKNOWN_SEVERITY_VALUE = 4;
     
     
     public final int getNumber() { return value; }
     
     public static Severity valueOf(int value) {
       switch (value) {
-        case 0: return Extreme;
-        case 1: return Severe;
-        case 2: return Moderate;
-        case 3: return Minor;
-        case 4: return Unknown_Severity;
+        case 0: return EXTREME;
+        case 1: return SEVERE;
+        case 2: return MODERATE;
+        case 3: return MINOR;
+        case 4: return UNKNOWN_SEVERITY;
         default: return null;
       }
     }
@@ -352,7 +352,7 @@ public  final class Info extends
     }
     
     private static final Severity[] VALUES = {
-      Extreme, Severe, Moderate, Minor, Unknown_Severity, 
+      EXTREME, SEVERE, MODERATE, MINOR, UNKNOWN_SEVERITY, 
     };
     
     public static Severity valueOf(
@@ -372,37 +372,37 @@ public  final class Info extends
       this.value = value;
     }
     
-    // @@protoc_insertion_point(enum_scope:alerts.cap.Info.Severity)
+    // @@protoc_insertion_point(enum_scope:publicalerts.cap.Info.Severity)
   }
   
   public enum Certainty
       implements com.google.protobuf.ProtocolMessageEnum {
-    Observed(0, 0),
-    VeryLikely(1, 1),
-    Likely(2, 2),
-    Possible(3, 3),
-    Unlikely(4, 4),
-    Unknown_Certainty(5, 5),
+    OBSERVED(0, 0),
+    VERY_LIKELY(1, 1),
+    LIKELY(2, 2),
+    POSSIBLE(3, 3),
+    UNLIKELY(4, 4),
+    UNKNOWN_CERTAINTY(5, 5),
     ;
     
-    public static final int Observed_VALUE = 0;
-    public static final int VeryLikely_VALUE = 1;
-    public static final int Likely_VALUE = 2;
-    public static final int Possible_VALUE = 3;
-    public static final int Unlikely_VALUE = 4;
-    public static final int Unknown_Certainty_VALUE = 5;
+    public static final int OBSERVED_VALUE = 0;
+    public static final int VERY_LIKELY_VALUE = 1;
+    public static final int LIKELY_VALUE = 2;
+    public static final int POSSIBLE_VALUE = 3;
+    public static final int UNLIKELY_VALUE = 4;
+    public static final int UNKNOWN_CERTAINTY_VALUE = 5;
     
     
     public final int getNumber() { return value; }
     
     public static Certainty valueOf(int value) {
       switch (value) {
-        case 0: return Observed;
-        case 1: return VeryLikely;
-        case 2: return Likely;
-        case 3: return Possible;
-        case 4: return Unlikely;
-        case 5: return Unknown_Certainty;
+        case 0: return OBSERVED;
+        case 1: return VERY_LIKELY;
+        case 2: return LIKELY;
+        case 3: return POSSIBLE;
+        case 4: return UNLIKELY;
+        case 5: return UNKNOWN_CERTAINTY;
         default: return null;
       }
     }
@@ -433,7 +433,7 @@ public  final class Info extends
     }
     
     private static final Certainty[] VALUES = {
-      Observed, VeryLikely, Likely, Possible, Unlikely, Unknown_Certainty, 
+      OBSERVED, VERY_LIKELY, LIKELY, POSSIBLE, UNLIKELY, UNKNOWN_CERTAINTY, 
     };
     
     public static Certainty valueOf(
@@ -453,18 +453,18 @@ public  final class Info extends
       this.value = value;
     }
     
-    // @@protoc_insertion_point(enum_scope:alerts.cap.Info.Certainty)
+    // @@protoc_insertion_point(enum_scope:publicalerts.cap.Info.Certainty)
   }
   
   private int bitField0_;
   // optional string language = 1 [default = "en-US"];
   public static final int LANGUAGE_FIELD_NUMBER = 1;
-  private Object language_;
+  private java.lang.Object language_;
   public boolean hasLanguage() {
     return ((bitField0_ & 0x00000001) == 0x00000001);
   }
   public String getLanguage() {
-    Object ref = language_;
+    java.lang.Object ref = language_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -478,7 +478,7 @@ public  final class Info extends
     }
   }
   private com.google.protobuf.ByteString getLanguageBytes() {
-    Object ref = language_;
+    java.lang.Object ref = language_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -489,7 +489,7 @@ public  final class Info extends
     }
   }
   
-  // repeated .alerts.cap.Info.Category category = 2;
+  // repeated .publicalerts.cap.Info.Category category = 2;
   public static final int CATEGORY_FIELD_NUMBER = 2;
   private java.util.List<com.google.publicalerts.cap.Info.Category> category_;
   public java.util.List<com.google.publicalerts.cap.Info.Category> getCategoryList() {
@@ -504,12 +504,12 @@ public  final class Info extends
   
   // required string event = 3;
   public static final int EVENT_FIELD_NUMBER = 3;
-  private Object event_;
+  private java.lang.Object event_;
   public boolean hasEvent() {
     return ((bitField0_ & 0x00000002) == 0x00000002);
   }
   public String getEvent() {
-    Object ref = event_;
+    java.lang.Object ref = event_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -523,7 +523,7 @@ public  final class Info extends
     }
   }
   private com.google.protobuf.ByteString getEventBytes() {
-    Object ref = event_;
+    java.lang.Object ref = event_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -534,7 +534,7 @@ public  final class Info extends
     }
   }
   
-  // repeated .alerts.cap.Info.ResponseType response_type = 4;
+  // repeated .publicalerts.cap.Info.ResponseType response_type = 4;
   public static final int RESPONSE_TYPE_FIELD_NUMBER = 4;
   private java.util.List<com.google.publicalerts.cap.Info.ResponseType> responseType_;
   public java.util.List<com.google.publicalerts.cap.Info.ResponseType> getResponseTypeList() {
@@ -547,7 +547,7 @@ public  final class Info extends
     return responseType_.get(index);
   }
   
-  // required .alerts.cap.Info.Urgency urgency = 5;
+  // required .publicalerts.cap.Info.Urgency urgency = 5;
   public static final int URGENCY_FIELD_NUMBER = 5;
   private com.google.publicalerts.cap.Info.Urgency urgency_;
   public boolean hasUrgency() {
@@ -557,7 +557,7 @@ public  final class Info extends
     return urgency_;
   }
   
-  // required .alerts.cap.Info.Severity severity = 6;
+  // required .publicalerts.cap.Info.Severity severity = 6;
   public static final int SEVERITY_FIELD_NUMBER = 6;
   private com.google.publicalerts.cap.Info.Severity severity_;
   public boolean hasSeverity() {
@@ -567,7 +567,7 @@ public  final class Info extends
     return severity_;
   }
   
-  // required .alerts.cap.Info.Certainty certainty = 7;
+  // required .publicalerts.cap.Info.Certainty certainty = 7;
   public static final int CERTAINTY_FIELD_NUMBER = 7;
   private com.google.publicalerts.cap.Info.Certainty certainty_;
   public boolean hasCertainty() {
@@ -579,12 +579,12 @@ public  final class Info extends
   
   // optional string audience = 8;
   public static final int AUDIENCE_FIELD_NUMBER = 8;
-  private Object audience_;
+  private java.lang.Object audience_;
   public boolean hasAudience() {
     return ((bitField0_ & 0x00000020) == 0x00000020);
   }
   public String getAudience() {
-    Object ref = audience_;
+    java.lang.Object ref = audience_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -598,7 +598,7 @@ public  final class Info extends
     }
   }
   private com.google.protobuf.ByteString getAudienceBytes() {
-    Object ref = audience_;
+    java.lang.Object ref = audience_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -609,7 +609,7 @@ public  final class Info extends
     }
   }
   
-  // repeated .alerts.cap.ValuePair event_code = 9;
+  // repeated .publicalerts.cap.ValuePair event_code = 9;
   public static final int EVENT_CODE_FIELD_NUMBER = 9;
   private java.util.List<com.google.publicalerts.cap.ValuePair> eventCode_;
   public java.util.List<com.google.publicalerts.cap.ValuePair> getEventCodeList() {
@@ -632,12 +632,12 @@ public  final class Info extends
   
   // optional string effective = 10;
   public static final int EFFECTIVE_FIELD_NUMBER = 10;
-  private Object effective_;
+  private java.lang.Object effective_;
   public boolean hasEffective() {
     return ((bitField0_ & 0x00000040) == 0x00000040);
   }
   public String getEffective() {
-    Object ref = effective_;
+    java.lang.Object ref = effective_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -651,7 +651,7 @@ public  final class Info extends
     }
   }
   private com.google.protobuf.ByteString getEffectiveBytes() {
-    Object ref = effective_;
+    java.lang.Object ref = effective_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -664,12 +664,12 @@ public  final class Info extends
   
   // optional string onset = 11;
   public static final int ONSET_FIELD_NUMBER = 11;
-  private Object onset_;
+  private java.lang.Object onset_;
   public boolean hasOnset() {
     return ((bitField0_ & 0x00000080) == 0x00000080);
   }
   public String getOnset() {
-    Object ref = onset_;
+    java.lang.Object ref = onset_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -683,7 +683,7 @@ public  final class Info extends
     }
   }
   private com.google.protobuf.ByteString getOnsetBytes() {
-    Object ref = onset_;
+    java.lang.Object ref = onset_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -696,12 +696,12 @@ public  final class Info extends
   
   // optional string expires = 12;
   public static final int EXPIRES_FIELD_NUMBER = 12;
-  private Object expires_;
+  private java.lang.Object expires_;
   public boolean hasExpires() {
     return ((bitField0_ & 0x00000100) == 0x00000100);
   }
   public String getExpires() {
-    Object ref = expires_;
+    java.lang.Object ref = expires_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -715,7 +715,7 @@ public  final class Info extends
     }
   }
   private com.google.protobuf.ByteString getExpiresBytes() {
-    Object ref = expires_;
+    java.lang.Object ref = expires_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -728,12 +728,12 @@ public  final class Info extends
   
   // optional string sender_name = 13;
   public static final int SENDER_NAME_FIELD_NUMBER = 13;
-  private Object senderName_;
+  private java.lang.Object senderName_;
   public boolean hasSenderName() {
     return ((bitField0_ & 0x00000200) == 0x00000200);
   }
   public String getSenderName() {
-    Object ref = senderName_;
+    java.lang.Object ref = senderName_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -747,7 +747,7 @@ public  final class Info extends
     }
   }
   private com.google.protobuf.ByteString getSenderNameBytes() {
-    Object ref = senderName_;
+    java.lang.Object ref = senderName_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -760,12 +760,12 @@ public  final class Info extends
   
   // optional string headline = 14;
   public static final int HEADLINE_FIELD_NUMBER = 14;
-  private Object headline_;
+  private java.lang.Object headline_;
   public boolean hasHeadline() {
     return ((bitField0_ & 0x00000400) == 0x00000400);
   }
   public String getHeadline() {
-    Object ref = headline_;
+    java.lang.Object ref = headline_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -779,7 +779,7 @@ public  final class Info extends
     }
   }
   private com.google.protobuf.ByteString getHeadlineBytes() {
-    Object ref = headline_;
+    java.lang.Object ref = headline_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -792,12 +792,12 @@ public  final class Info extends
   
   // optional string description = 15;
   public static final int DESCRIPTION_FIELD_NUMBER = 15;
-  private Object description_;
+  private java.lang.Object description_;
   public boolean hasDescription() {
     return ((bitField0_ & 0x00000800) == 0x00000800);
   }
   public String getDescription() {
-    Object ref = description_;
+    java.lang.Object ref = description_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -811,7 +811,7 @@ public  final class Info extends
     }
   }
   private com.google.protobuf.ByteString getDescriptionBytes() {
-    Object ref = description_;
+    java.lang.Object ref = description_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -824,12 +824,12 @@ public  final class Info extends
   
   // optional string instruction = 16;
   public static final int INSTRUCTION_FIELD_NUMBER = 16;
-  private Object instruction_;
+  private java.lang.Object instruction_;
   public boolean hasInstruction() {
     return ((bitField0_ & 0x00001000) == 0x00001000);
   }
   public String getInstruction() {
-    Object ref = instruction_;
+    java.lang.Object ref = instruction_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -843,7 +843,7 @@ public  final class Info extends
     }
   }
   private com.google.protobuf.ByteString getInstructionBytes() {
-    Object ref = instruction_;
+    java.lang.Object ref = instruction_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -856,12 +856,12 @@ public  final class Info extends
   
   // optional string web = 17;
   public static final int WEB_FIELD_NUMBER = 17;
-  private Object web_;
+  private java.lang.Object web_;
   public boolean hasWeb() {
     return ((bitField0_ & 0x00002000) == 0x00002000);
   }
   public String getWeb() {
-    Object ref = web_;
+    java.lang.Object ref = web_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -875,7 +875,7 @@ public  final class Info extends
     }
   }
   private com.google.protobuf.ByteString getWebBytes() {
-    Object ref = web_;
+    java.lang.Object ref = web_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -888,12 +888,12 @@ public  final class Info extends
   
   // optional string contact = 18;
   public static final int CONTACT_FIELD_NUMBER = 18;
-  private Object contact_;
+  private java.lang.Object contact_;
   public boolean hasContact() {
     return ((bitField0_ & 0x00004000) == 0x00004000);
   }
   public String getContact() {
-    Object ref = contact_;
+    java.lang.Object ref = contact_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -907,7 +907,7 @@ public  final class Info extends
     }
   }
   private com.google.protobuf.ByteString getContactBytes() {
-    Object ref = contact_;
+    java.lang.Object ref = contact_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -918,7 +918,7 @@ public  final class Info extends
     }
   }
   
-  // repeated .alerts.cap.ValuePair parameter = 19;
+  // repeated .publicalerts.cap.ValuePair parameter = 19;
   public static final int PARAMETER_FIELD_NUMBER = 19;
   private java.util.List<com.google.publicalerts.cap.ValuePair> parameter_;
   public java.util.List<com.google.publicalerts.cap.ValuePair> getParameterList() {
@@ -939,7 +939,7 @@ public  final class Info extends
     return parameter_.get(index);
   }
   
-  // repeated .alerts.cap.Resource resource = 20;
+  // repeated .publicalerts.cap.Resource resource = 20;
   public static final int RESOURCE_FIELD_NUMBER = 20;
   private java.util.List<com.google.publicalerts.cap.Resource> resource_;
   public java.util.List<com.google.publicalerts.cap.Resource> getResourceList() {
@@ -960,7 +960,7 @@ public  final class Info extends
     return resource_.get(index);
   }
   
-  // repeated .alerts.cap.Area area = 21;
+  // repeated .publicalerts.cap.Area area = 21;
   public static final int AREA_FIELD_NUMBER = 21;
   private java.util.List<com.google.publicalerts.cap.Area> area_;
   public java.util.List<com.google.publicalerts.cap.Area> getAreaList() {
@@ -986,9 +986,9 @@ public  final class Info extends
     category_ = java.util.Collections.emptyList();
     event_ = "";
     responseType_ = java.util.Collections.emptyList();
-    urgency_ = com.google.publicalerts.cap.Info.Urgency.Immediate;
-    severity_ = com.google.publicalerts.cap.Info.Severity.Extreme;
-    certainty_ = com.google.publicalerts.cap.Info.Certainty.Observed;
+    urgency_ = com.google.publicalerts.cap.Info.Urgency.IMMEDIATE;
+    severity_ = com.google.publicalerts.cap.Info.Severity.EXTREME;
+    certainty_ = com.google.publicalerts.cap.Info.Certainty.OBSERVED;
     audience_ = "";
     eventCode_ = java.util.Collections.emptyList();
     effective_ = "";
@@ -1227,13 +1227,15 @@ public  final class Info extends
     return size;
   }
   
+  private static final long serialVersionUID = 0L;
   @java.lang.Override
-  protected Object writeReplace() throws java.io.ObjectStreamException {
+  protected java.lang.Object writeReplace()
+      throws java.io.ObjectStreamException {
     return super.writeReplace();
   }
   
   @java.lang.Override
-  public boolean equals(final Object obj) {
+  public boolean equals(final java.lang.Object obj) {
     if (obj == this) {
      return true;
     }
@@ -1512,12 +1514,12 @@ public  final class Info extends
      implements com.google.publicalerts.cap.InfoOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Info_descriptor;
+      return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Info_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Info_fieldAccessorTable;
+      return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Info_fieldAccessorTable;
     }
     
     // Construct using com.google.publicalerts.cap.Info.newBuilder()
@@ -1551,11 +1553,11 @@ public  final class Info extends
       bitField0_ = (bitField0_ & ~0x00000004);
       responseType_ = java.util.Collections.emptyList();
       bitField0_ = (bitField0_ & ~0x00000008);
-      urgency_ = com.google.publicalerts.cap.Info.Urgency.Immediate;
+      urgency_ = com.google.publicalerts.cap.Info.Urgency.IMMEDIATE;
       bitField0_ = (bitField0_ & ~0x00000010);
-      severity_ = com.google.publicalerts.cap.Info.Severity.Extreme;
+      severity_ = com.google.publicalerts.cap.Info.Severity.EXTREME;
       bitField0_ = (bitField0_ & ~0x00000020);
-      certainty_ = com.google.publicalerts.cap.Info.Certainty.Observed;
+      certainty_ = com.google.publicalerts.cap.Info.Certainty.OBSERVED;
       bitField0_ = (bitField0_ & ~0x00000040);
       audience_ = "";
       bitField0_ = (bitField0_ & ~0x00000080);
@@ -2175,12 +2177,12 @@ public  final class Info extends
     private int bitField0_;
     
     // optional string language = 1 [default = "en-US"];
-    private Object language_ = "en-US";
+    private java.lang.Object language_ = "en-US";
     public boolean hasLanguage() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     public String getLanguage() {
-      Object ref = language_;
+      java.lang.Object ref = language_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         language_ = s;
@@ -2210,7 +2212,7 @@ public  final class Info extends
       onChanged();
     }
     
-    // repeated .alerts.cap.Info.Category category = 2;
+    // repeated .publicalerts.cap.Info.Category category = 2;
     private java.util.List<com.google.publicalerts.cap.Info.Category> category_ =
       java.util.Collections.emptyList();
     private void ensureCategoryIsMutable() {
@@ -2262,12 +2264,12 @@ public  final class Info extends
     }
     
     // required string event = 3;
-    private Object event_ = "";
+    private java.lang.Object event_ = "";
     public boolean hasEvent() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     public String getEvent() {
-      Object ref = event_;
+      java.lang.Object ref = event_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         event_ = s;
@@ -2297,7 +2299,7 @@ public  final class Info extends
       onChanged();
     }
     
-    // repeated .alerts.cap.Info.ResponseType response_type = 4;
+    // repeated .publicalerts.cap.Info.ResponseType response_type = 4;
     private java.util.List<com.google.publicalerts.cap.Info.ResponseType> responseType_ =
       java.util.Collections.emptyList();
     private void ensureResponseTypeIsMutable() {
@@ -2348,8 +2350,8 @@ public  final class Info extends
       return this;
     }
     
-    // required .alerts.cap.Info.Urgency urgency = 5;
-    private com.google.publicalerts.cap.Info.Urgency urgency_ = com.google.publicalerts.cap.Info.Urgency.Immediate;
+    // required .publicalerts.cap.Info.Urgency urgency = 5;
+    private com.google.publicalerts.cap.Info.Urgency urgency_ = com.google.publicalerts.cap.Info.Urgency.IMMEDIATE;
     public boolean hasUrgency() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
@@ -2367,13 +2369,13 @@ public  final class Info extends
     }
     public Builder clearUrgency() {
       bitField0_ = (bitField0_ & ~0x00000010);
-      urgency_ = com.google.publicalerts.cap.Info.Urgency.Immediate;
+      urgency_ = com.google.publicalerts.cap.Info.Urgency.IMMEDIATE;
       onChanged();
       return this;
     }
     
-    // required .alerts.cap.Info.Severity severity = 6;
-    private com.google.publicalerts.cap.Info.Severity severity_ = com.google.publicalerts.cap.Info.Severity.Extreme;
+    // required .publicalerts.cap.Info.Severity severity = 6;
+    private com.google.publicalerts.cap.Info.Severity severity_ = com.google.publicalerts.cap.Info.Severity.EXTREME;
     public boolean hasSeverity() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
@@ -2391,13 +2393,13 @@ public  final class Info extends
     }
     public Builder clearSeverity() {
       bitField0_ = (bitField0_ & ~0x00000020);
-      severity_ = com.google.publicalerts.cap.Info.Severity.Extreme;
+      severity_ = com.google.publicalerts.cap.Info.Severity.EXTREME;
       onChanged();
       return this;
     }
     
-    // required .alerts.cap.Info.Certainty certainty = 7;
-    private com.google.publicalerts.cap.Info.Certainty certainty_ = com.google.publicalerts.cap.Info.Certainty.Observed;
+    // required .publicalerts.cap.Info.Certainty certainty = 7;
+    private com.google.publicalerts.cap.Info.Certainty certainty_ = com.google.publicalerts.cap.Info.Certainty.OBSERVED;
     public boolean hasCertainty() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
@@ -2415,18 +2417,18 @@ public  final class Info extends
     }
     public Builder clearCertainty() {
       bitField0_ = (bitField0_ & ~0x00000040);
-      certainty_ = com.google.publicalerts.cap.Info.Certainty.Observed;
+      certainty_ = com.google.publicalerts.cap.Info.Certainty.OBSERVED;
       onChanged();
       return this;
     }
     
     // optional string audience = 8;
-    private Object audience_ = "";
+    private java.lang.Object audience_ = "";
     public boolean hasAudience() {
       return ((bitField0_ & 0x00000080) == 0x00000080);
     }
     public String getAudience() {
-      Object ref = audience_;
+      java.lang.Object ref = audience_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         audience_ = s;
@@ -2456,7 +2458,7 @@ public  final class Info extends
       onChanged();
     }
     
-    // repeated .alerts.cap.ValuePair event_code = 9;
+    // repeated .publicalerts.cap.ValuePair event_code = 9;
     private java.util.List<com.google.publicalerts.cap.ValuePair> eventCode_ =
       java.util.Collections.emptyList();
     private void ensureEventCodeIsMutable() {
@@ -2643,12 +2645,12 @@ public  final class Info extends
     }
     
     // optional string effective = 10;
-    private Object effective_ = "";
+    private java.lang.Object effective_ = "";
     public boolean hasEffective() {
       return ((bitField0_ & 0x00000200) == 0x00000200);
     }
     public String getEffective() {
-      Object ref = effective_;
+      java.lang.Object ref = effective_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         effective_ = s;
@@ -2679,12 +2681,12 @@ public  final class Info extends
     }
     
     // optional string onset = 11;
-    private Object onset_ = "";
+    private java.lang.Object onset_ = "";
     public boolean hasOnset() {
       return ((bitField0_ & 0x00000400) == 0x00000400);
     }
     public String getOnset() {
-      Object ref = onset_;
+      java.lang.Object ref = onset_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         onset_ = s;
@@ -2715,12 +2717,12 @@ public  final class Info extends
     }
     
     // optional string expires = 12;
-    private Object expires_ = "";
+    private java.lang.Object expires_ = "";
     public boolean hasExpires() {
       return ((bitField0_ & 0x00000800) == 0x00000800);
     }
     public String getExpires() {
-      Object ref = expires_;
+      java.lang.Object ref = expires_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         expires_ = s;
@@ -2751,12 +2753,12 @@ public  final class Info extends
     }
     
     // optional string sender_name = 13;
-    private Object senderName_ = "";
+    private java.lang.Object senderName_ = "";
     public boolean hasSenderName() {
       return ((bitField0_ & 0x00001000) == 0x00001000);
     }
     public String getSenderName() {
-      Object ref = senderName_;
+      java.lang.Object ref = senderName_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         senderName_ = s;
@@ -2787,12 +2789,12 @@ public  final class Info extends
     }
     
     // optional string headline = 14;
-    private Object headline_ = "";
+    private java.lang.Object headline_ = "";
     public boolean hasHeadline() {
       return ((bitField0_ & 0x00002000) == 0x00002000);
     }
     public String getHeadline() {
-      Object ref = headline_;
+      java.lang.Object ref = headline_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         headline_ = s;
@@ -2823,12 +2825,12 @@ public  final class Info extends
     }
     
     // optional string description = 15;
-    private Object description_ = "";
+    private java.lang.Object description_ = "";
     public boolean hasDescription() {
       return ((bitField0_ & 0x00004000) == 0x00004000);
     }
     public String getDescription() {
-      Object ref = description_;
+      java.lang.Object ref = description_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         description_ = s;
@@ -2859,12 +2861,12 @@ public  final class Info extends
     }
     
     // optional string instruction = 16;
-    private Object instruction_ = "";
+    private java.lang.Object instruction_ = "";
     public boolean hasInstruction() {
       return ((bitField0_ & 0x00008000) == 0x00008000);
     }
     public String getInstruction() {
-      Object ref = instruction_;
+      java.lang.Object ref = instruction_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         instruction_ = s;
@@ -2895,12 +2897,12 @@ public  final class Info extends
     }
     
     // optional string web = 17;
-    private Object web_ = "";
+    private java.lang.Object web_ = "";
     public boolean hasWeb() {
       return ((bitField0_ & 0x00010000) == 0x00010000);
     }
     public String getWeb() {
-      Object ref = web_;
+      java.lang.Object ref = web_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         web_ = s;
@@ -2931,12 +2933,12 @@ public  final class Info extends
     }
     
     // optional string contact = 18;
-    private Object contact_ = "";
+    private java.lang.Object contact_ = "";
     public boolean hasContact() {
       return ((bitField0_ & 0x00020000) == 0x00020000);
     }
     public String getContact() {
-      Object ref = contact_;
+      java.lang.Object ref = contact_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         contact_ = s;
@@ -2966,7 +2968,7 @@ public  final class Info extends
       onChanged();
     }
     
-    // repeated .alerts.cap.ValuePair parameter = 19;
+    // repeated .publicalerts.cap.ValuePair parameter = 19;
     private java.util.List<com.google.publicalerts.cap.ValuePair> parameter_ =
       java.util.Collections.emptyList();
     private void ensureParameterIsMutable() {
@@ -3152,7 +3154,7 @@ public  final class Info extends
       return parameterBuilder_;
     }
     
-    // repeated .alerts.cap.Resource resource = 20;
+    // repeated .publicalerts.cap.Resource resource = 20;
     private java.util.List<com.google.publicalerts.cap.Resource> resource_ =
       java.util.Collections.emptyList();
     private void ensureResourceIsMutable() {
@@ -3338,7 +3340,7 @@ public  final class Info extends
       return resourceBuilder_;
     }
     
-    // repeated .alerts.cap.Area area = 21;
+    // repeated .publicalerts.cap.Area area = 21;
     private java.util.List<com.google.publicalerts.cap.Area> area_ =
       java.util.Collections.emptyList();
     private void ensureAreaIsMutable() {
@@ -3524,7 +3526,7 @@ public  final class Info extends
       return areaBuilder_;
     }
     
-    // @@protoc_insertion_point(builder_scope:alerts.cap.Info)
+    // @@protoc_insertion_point(builder_scope:publicalerts.cap.Info)
   }
   
   static {
@@ -3532,6 +3534,6 @@ public  final class Info extends
     defaultInstance.initFields();
   }
   
-  // @@protoc_insertion_point(class_scope:alerts.cap.Info)
+  // @@protoc_insertion_point(class_scope:publicalerts.cap.Info)
 }
 

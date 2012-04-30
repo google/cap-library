@@ -16,28 +16,34 @@
 
 package com.google.publicalerts.cap.profile;
 
+import com.google.publicalerts.cap.profile.au.AustralianProfile;
+import com.google.publicalerts.cap.profile.ca.CanadianProfile;
+import com.google.publicalerts.cap.profile.us.Ipaws1Profile;
+
 import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Repository of all {@link CapProfile}s.
- * 
+ *
  * @author shakusa@google.com (Steve Hakusa)
  */
 public class CapProfiles {
-  
+
   private static final List<CapProfile> PROFILES = initProfiles();
-  
+
   private static List<CapProfile> initProfiles() {
     List<CapProfile> profiles = new ArrayList<CapProfile>();
     profiles.add(new Ipaws1Profile());
     profiles.add(new CanadianProfile());
+    profiles.add(new AustralianProfile());
+    profiles.add(new GoogleProfile());
     return profiles;
   }
-  
+
   public static List<CapProfile> getProfiles() {
     return PROFILES;
   }
-  
+
   private CapProfiles() {}
 }

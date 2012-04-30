@@ -14,14 +14,15 @@
  * the License.
  */
 
-package com.google.publicalerts.cap.profile;
+package com.google.publicalerts.cap.profile.us;
 
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.Alert.MsgType;
 import com.google.publicalerts.cap.Info.Category;
 import com.google.publicalerts.cap.ValuePair;
-import com.google.publicalerts.cap.profile.Ipaws1Profile.ErrorType;
-import com.google.publicalerts.cap.profile.Ipaws1Profile.RecommendationType;
+import com.google.publicalerts.cap.profile.CapProfileTestCase;
+import com.google.publicalerts.cap.profile.us.Ipaws1Profile.ErrorType;
+import com.google.publicalerts.cap.profile.us.Ipaws1Profile.RecommendationType;
 
 /**
  * Tests for {@link Ipaws1Profile}.
@@ -51,7 +52,7 @@ public class Ipaws1ProfileTest extends CapProfileTestCase {
     assertErrors(alert, ErrorType.VERSION_CODE_REQUIRED);
 
     alert = loadAlert("earthquake.cap").toBuilder();
-    alert.setMsgType(MsgType.Update);
+    alert.setMsgType(MsgType.UPDATE);
     alert.clearReferences();
     assertErrors(alert, ErrorType.UPDATE_OR_CANCEL_MUST_REFERENCE);
 
@@ -70,6 +71,10 @@ public class Ipaws1ProfileTest extends CapProfileTestCase {
         ErrorType.EXPIRES_IS_REQUIRED,
         ErrorType.AREA_IS_REQUIRED,
         ErrorType.SAME_EVENT_CODE_REQUIRED);
+
+    alert = loadAlert("earthquake.cap").toBuilder();
+    alert.getInfoBuilder(0).setExpires("2002-01-01T00:00:00+00:00");
+    assertErrors(alert, ErrorType.EXPIRES_INCLUDE_TIMEZONE_OFFSET);
   }
 
   public void testCheckForRecommendations() throws Exception {
@@ -85,7 +90,6 @@ public class Ipaws1ProfileTest extends CapProfileTestCase {
     alert.getInfoBuilder(0)
         .setEffective("2002-01-01T00:00:00+00:00")
         .setOnset("2002-01-01T00:00:00+00:00")
-        .setExpires("2002-01-01T00:00:00+00:00")
         .clearDescription()
         .clearInstruction()
         .getAreaBuilder(0)
@@ -95,7 +99,6 @@ public class Ipaws1ProfileTest extends CapProfileTestCase {
         RecommendationType.INFO_ONSET_IS_IGNORED,
         RecommendationType.INFO_DESCRIPTION_RECOMMENDED,
         RecommendationType.INFO_INSTRUCTION_RECOMMENDED,
-        RecommendationType.AREA_SAME_GEOCODE_RECOMMENDED,
-        RecommendationType.EXPIRES_INCLUDE_TIMEZONE_OFFSET);
+        RecommendationType.AREA_SAME_GEOCODE_RECOMMENDED);
   }
 }

@@ -14,23 +14,23 @@
  * the License.
  */
 
-package com.google.publicalerts.cap.profile;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+package com.google.publicalerts.cap.profile.us;
 
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.AlertOrBuilder;
 import com.google.publicalerts.cap.Area;
 import com.google.publicalerts.cap.CapException;
 import com.google.publicalerts.cap.CapException.Reason;
-import com.google.publicalerts.cap.CapException.ReasonType;
 import com.google.publicalerts.cap.CapUtil;
 import com.google.publicalerts.cap.Info;
 import com.google.publicalerts.cap.ValuePair;
+import com.google.publicalerts.cap.profile.AbstractCapProfile;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * US FEMA Integrated Public Alert and Warning System
@@ -81,6 +81,10 @@ public class Ipaws1Profile extends AbstractCapProfile {
   public List<Reason> checkForErrors(AlertOrBuilder alert) {
     List<Reason> reasons = new ArrayList<Reason>();
 
+    // sent SHALL include the timezone offset
+    checkZeroTimezone(reasons, alert.getSent(), "/alert/sent",
+        ErrorType.SENT_INCLUDE_TIMEZONE_OFFSET);
+
     // code SHALL include the string "IPAWSv1.0" to indicate the profile
     // version in use.
     boolean hasVersionCode = false;
@@ -96,8 +100,8 @@ public class Ipaws1Profile extends AbstractCapProfile {
 
     // if Update or Cancel, references should contain all
     // non-expired messages
-    if ((alert.getMsgType() == Alert.MsgType.Update
-        || alert.getMsgType() == Alert.MsgType.Cancel)
+    if ((alert.getMsgType() == Alert.MsgType.UPDATE
+        || alert.getMsgType() == Alert.MsgType.CANCEL)
         && alert.getReferences().getValueCount() == 0) {
       reasons.add(new Reason(
           "/alert/msgType", ErrorType.UPDATE_OR_CANCEL_MUST_REFERENCE));
@@ -126,9 +130,12 @@ public class Ipaws1Profile extends AbstractCapProfile {
         }
       }
 
-      // expires is required.
+      // expires is required.  The value MUST include the timezone offset.
       if (CapUtil.isEmptyOrWhitespace(info.getExpires())) {
         reasons.add(new Reason(xpath, ErrorType.EXPIRES_IS_REQUIRED));
+      } else {
+        checkZeroTimezone(reasons, info.getExpires(), xpath + "/expires",
+            ErrorType.EXPIRES_INCLUDE_TIMEZONE_OFFSET);
       }
 
       // MUST have one and only one eventCode with valueName of "SAME"
@@ -169,13 +176,6 @@ public class Ipaws1Profile extends AbstractCapProfile {
   public List<Reason> checkForRecommendations(AlertOrBuilder alert) {
     List<Reason> reasons = new ArrayList<Reason>();
 
-    // sent should, but may not, include the timezone offset
-    // suggested here:
-    // www.oasis-open.org/committees/download.php/30714/CAP-v1.1-IPAWS-Public
-    //     -Review-Profile-1.0.doc
-    checkZeroTimezone(reasons, alert.getSent(), "/alert/sent",
-        RecommendationType.SENT_INCLUDE_TIMEZONE_OFFSET);
-
     for (int i = 0; i < alert.getInfoCount(); i++) {
       Info info = alert.getInfo(i);
       String xpath = "/alert/info[" + i + "]";
@@ -200,15 +200,6 @@ public class Ipaws1Profile extends AbstractCapProfile {
       if (CapUtil.isEmptyOrWhitespace(info.getInstruction())) {
         reasons.add(new Reason(xpath,
             RecommendationType.INFO_INSTRUCTION_RECOMMENDED));
-      }
-
-      // expires should include a timezone offset
-      // suggested here:
-      // www.oasis-open.org/committees/download.php/30714/CAP-v1.1-IPAWS-Public
-      //     -Review-Profile-1.0.doc
-      if (!CapUtil.isEmptyOrWhitespace(info.getExpires())) {
-        checkZeroTimezone(reasons, info.getExpires(), xpath + "/expires",
-            RecommendationType.EXPIRES_INCLUDE_TIMEZONE_OFFSET);
       }
 
       for (int j = 0; j < info.getAreaCount(); j++) {
@@ -236,6 +227,10 @@ public class Ipaws1Profile extends AbstractCapProfile {
 
   // TODO(shakusa) Localize messages
   public enum ErrorType implements CapException.ReasonType {
+    SENT_INCLUDE_TIMEZONE_OFFSET("<sent> should include the timezone offset. " +
+        "An offset of 0 is unlikely for US alerts."),
+    EXPIRES_INCLUDE_TIMEZONE_OFFSET("<expires> should include the timezone" +
+        "offset. An offset of 0 is unlikely for US alerts."),
     VERSION_CODE_REQUIRED("<code>{0}</code> required"),
     UPDATE_OR_CANCEL_MUST_REFERENCE("All related messages that have not yet " +
     "expired MUST be referenced for \"Update\" and \"Cancel\" messages."),
@@ -265,10 +260,6 @@ public class Ipaws1Profile extends AbstractCapProfile {
 
   // TODO(shakusa) Localize messages
   public enum RecommendationType implements CapException.ReasonType {
-    SENT_INCLUDE_TIMEZONE_OFFSET("<sent> should include the timezone offset. " +
-        "An offset of 0 is unlikely for US alerts."),
-    EXPIRES_INCLUDE_TIMEZONE_OFFSET("<expires> should include the timezone " +
-        "offset. An offset of 0 is unlikely for US alerts."),
     INFO_EFFECTIVE_IS_IGNORED("<effective> is ignored if present.  Alerts " +
         "SHALL be effective upon issuance."),
     INFO_ONSET_IS_IGNORED("<onset> is ignored if present.  Alerts " +

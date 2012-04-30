@@ -16,20 +16,27 @@
 
 package com.google.publicalerts.cap.feed;
 
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import com.google.publicalerts.cap.CapException;
 import com.google.publicalerts.cap.CapException.Reason;
-import com.google.publicalerts.cap.TestUtil;
+import com.google.publicalerts.cap.edxl.DistributionFeed;
+import com.google.publicalerts.cap.edxl.types.ContentObject;
+import com.google.publicalerts.cap.edxl.types.NonXmlContent;
+import com.google.publicalerts.cap.edxl.types.XmlContent;
 import com.google.publicalerts.cap.feed.CapFeedException.FeedErrorType;
 import com.google.publicalerts.cap.feed.CapFeedException.FeedRecommendationType;
+import com.google.publicalerts.cap.testing.CapTestUtil;
+import com.google.publicalerts.cap.testing.TestResources;
+
 import com.sun.syndication.feed.atom.Entry;
 import com.sun.syndication.feed.atom.Feed;
 import com.sun.syndication.feed.rss.Channel;
 import com.sun.syndication.feed.rss.Item;
 import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.feed.synd.SyndFeedImpl;
+
+import junit.framework.TestCase;
+
+import java.util.List;
 
 /**
  * Tests for {@link CapFeedValidator}.
@@ -49,24 +56,24 @@ public class CapFeedValidatorTest extends TestCase {
     super.setUp();
     validator = new CapFeedValidator();
   }
-    
+
   public void testAtomErrors() throws Exception {
     SyndFeed syndFeed = loadFeed("earthquake_index.atom");
     assertNoErrors(syndFeed);
-    
+
     Feed feed = (Feed) syndFeed.originalWireFeed();
     Entry entry = (Entry) feed.getEntries().get(0);
     entry.getOtherLinks().clear();
     entry.getAlternateLinks().clear();
     assertErrors(syndFeed, FeedErrorType.ATOM_ENTRY_MISSING_CAP_LINK);
   }
-  
+
   public void testRssErrors() throws Exception {
     SyndFeed syndFeed = loadFeed("ny_index.rss");
     assertNoErrors(syndFeed);
-    
-    Channel channel = (Channel) syndFeed.originalWireFeed();    
-    
+
+    Channel channel = (Channel) syndFeed.originalWireFeed();
+
     Item item = (Item) channel.getItems().get(1);
     item.setTitle(null);
     item.setDescription(null);
@@ -74,27 +81,86 @@ public class CapFeedValidatorTest extends TestCase {
     assertErrors(syndFeed, FeedErrorType.RSS_ITEM_TITLE_OR_DESCRIPTION_IS_REQUIRED,
         FeedErrorType.RSS_ITEM_MISSING_CAP_LINK);
   }
-  
+
   public void testAtomRecommendations() throws Exception {
     SyndFeed syndFeed = loadFeed("earthquake_index.atom");
     assertNoRecommendations(syndFeed);
   }
-  
+
   public void testRssRecommendations() throws Exception {
     SyndFeed syndFeed = loadFeed("ny_index.rss");
     assertNoRecommendations(syndFeed);
 
     Channel channel = (Channel) syndFeed.originalWireFeed();
     channel.setPubDate(null);
-    
+
     Item item = (Item) channel.getItems().get(1);
     item.setGuid(null);
-    
+
     assertRecommendations(syndFeed,
         FeedRecommendationType.RSS_PUBDATE_IS_RECOMMENDED,
         FeedRecommendationType.RSS_ITEM_GUID_IS_RECOMMENDED);
   }
-  
+
+  public void testEdxldeErrors_missingContentObjects() throws Exception {
+    DistributionFeed feed = new DistributionFeed("edxlde_1.0");
+    feed.setDateTimeSent("2011-10-17T11:18:00-00:00");
+    SyndFeed syndFeed = new SyndFeedImpl(feed, true);
+    assertErrors(syndFeed, FeedErrorType.EDXLDE_CONTENT_OBJECT_IS_REQUIRED);
+  }
+
+  public void testEdxldeErrors_invalidXml() throws Exception {
+    DistributionFeed feed = new DistributionFeed("edxlde_1.0");
+    feed.setDateTimeSent("2011-10-17T11:18:00-00:00");
+    ContentObject content = new ContentObject();
+    XmlContent xml = new XmlContent();
+    xml.addEmbeddedXmlContent("non-cap xml");
+    content.setXmlContent(xml);
+    feed.addContentObject(content);
+    SyndFeed syndFeed = new SyndFeedImpl(feed, true);
+    assertErrors(syndFeed, FeedErrorType.EDXLDE_NO_CAP_IN_CONTENT_OBJECT);
+  }
+
+  public void testEdxldeErrors_validXml() throws Exception {
+    SyndFeed syndFeed = loadFeed("bushfire_valid.edxlde");
+    assertNoErrors(syndFeed);
+  }
+
+  public void testEdxldeErrors_validNonXml() throws Exception {
+    DistributionFeed feed = new DistributionFeed("edxlde_1.0");
+    feed.setDateTimeSent("2011-10-17T11:18:00-00:00");
+    ContentObject content = new ContentObject();
+    NonXmlContent nonXml = new NonXmlContent(CapFeedParser.CAP_CONTENT_TYPE);
+    nonXml.setUri("capUri");
+    content.setNonXmlContent(nonXml);
+    feed.addContentObject(content);
+    SyndFeed syndFeed = new SyndFeedImpl(feed, true);
+    assertNoErrors(syndFeed);
+  }
+
+  public void testEdxldeErrors_invalidNonXmlUri() throws Exception {
+    DistributionFeed feed = new DistributionFeed("edxlde_1.0");
+    feed.setDateTimeSent("2011-10-17T11:18:00-00:00");
+    ContentObject content = new ContentObject();
+    NonXmlContent nonXml = new NonXmlContent(CapFeedParser.CAP_CONTENT_TYPE);
+    content.setNonXmlContent(nonXml);
+    feed.addContentObject(content);
+    SyndFeed syndFeed = new SyndFeedImpl(feed, true);
+    assertErrors(syndFeed, FeedErrorType.EDXLDE_NO_CAP_IN_CONTENT_OBJECT);
+  }
+
+  public void testEdxldeErrors_invalidNonXmlMimeType() throws Exception {
+    DistributionFeed feed = new DistributionFeed("edxlde_1.0");
+    feed.setDateTimeSent("2011-10-17T11:18:00-00:00");
+    ContentObject content = new ContentObject();
+    NonXmlContent nonXml = new NonXmlContent("foo");
+    nonXml.setUri("capUri");
+    content.setNonXmlContent(nonXml);
+    feed.addContentObject(content);
+    SyndFeed syndFeed = new SyndFeedImpl(feed, true);
+    assertErrors(syndFeed, FeedErrorType.EDXLDE_NO_CAP_IN_CONTENT_OBJECT);
+  }
+
   private SyndFeed loadFeed(String file) throws Exception {
     return new CapFeedParser(false).parseFeed(TestResources.load(file));
   }
@@ -107,10 +173,10 @@ public class CapFeedValidatorTest extends TestCase {
     try {
       validator.checkForErrors(feed);
     } catch (CapException e) {
-      TestUtil.assertErrorTypes(e.getReasons(), types);      
+      CapTestUtil.assertErrorTypes(e.getReasons(), types);
     }
   }
-  
+
   private void assertNoRecommendations(SyndFeed feed) {
     assertRecommendations(feed, new FeedRecommendationType[] {});
   }
@@ -118,7 +184,7 @@ public class CapFeedValidatorTest extends TestCase {
   private void assertRecommendations(
       SyndFeed feed, FeedRecommendationType...types) {
     List<Reason> reasons = validator.checkForRecommendations(feed);
-    TestUtil.assertErrorTypes(reasons, types);
+    CapTestUtil.assertErrorTypes(reasons, types);
 
   }
 }

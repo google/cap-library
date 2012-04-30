@@ -5,7 +5,7 @@ package com.google.publicalerts.cap;
 public interface PolygonOrBuilder
     extends com.google.protobuf.MessageOrBuilder {
   
-  // repeated .alerts.cap.Point point = 1;
+  // repeated .publicalerts.cap.Point point = 1;
   java.util.List<com.google.publicalerts.cap.Point> 
       getPointList();
   com.google.publicalerts.cap.Point getPoint(int index);

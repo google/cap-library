@@ -16,19 +16,17 @@
 
 package com.google.publicalerts.cap.profile;
 
-import java.util.Date;
-import java.util.List;
-
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXParseException;
-
 import com.google.publicalerts.cap.Alert;
-import com.google.publicalerts.cap.CapException;
+import com.google.publicalerts.cap.CachedSaxInputSource;
 import com.google.publicalerts.cap.CapException.Reason;
 import com.google.publicalerts.cap.CapException.ReasonType;
 import com.google.publicalerts.cap.CapUtil;
 import com.google.publicalerts.cap.CapXmlParser;
 import com.google.publicalerts.cap.NotCapException;
+
+import org.xml.sax.SAXParseException;
+
+import java.util.List;
 
 /**
  * Abstract base class for CAP profiles.
@@ -52,13 +50,10 @@ public abstract class AbstractCapProfile extends CapXmlParser implements CapProf
   }
 
   @Override
-  public Alert parseFrom(InputSource is)
-      throws CapException, NotCapException, SAXParseException {
-    Alert alert = super.parseFrom(is);
-    List<Reason> reasons = checkForErrors(alert);
-    if (!reasons.isEmpty()) {
-      throw new CapException(reasons);
-    }
+  protected Alert parseFromInternal(CachedSaxInputSource is, List<Reason> parseErrors)
+      throws NotCapException, SAXParseException {
+    Alert alert = super.parseFromInternal(is, parseErrors);
+    parseErrors.addAll(checkForErrors(alert));
     return alert;
   }
 

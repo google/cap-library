@@ -18,7 +18,7 @@ package com.google.publicalerts.cap.validator;
 
 import junit.framework.TestCase;
 
-import com.google.publicalerts.cap.feed.TestResources;
+import com.google.publicalerts.cap.testing.TestResources;
 import com.google.publicalerts.cap.validator.LineOffsetParser.LineOffsets;
 
 /**

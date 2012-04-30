@@ -23,10 +23,12 @@ import org.xml.sax.SAXParseException;
 
 import java.io.Reader;
 import java.io.StringReader;
-import java.security.Key;
 import java.security.KeyException;
 import java.security.PublicKey;
+import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.xml.crypto.AlgorithmMethod;
 import javax.xml.crypto.KeySelector;
@@ -49,91 +51,146 @@ import javax.xml.crypto.dsig.keyinfo.KeyValue;
  * <a href="http://download.oracle.com/javase/6/docs/technotes/guides/security/xmldsig/XMLDigitalSignature.html">
  * http://download.oracle.com/javase/6/docs/technotes/guides/security/xmldsig/XMLDigitalSignature.html</a>
  *
- * <p>TODO(shakusa) This class is not yet fully ready; it needs to accept
- * a KeyStore and validate that the KeyInfo parsed from the XML is trusted.
- *
  * @author shakusa@google.com (Steve Hakusa)
  */
 public class XmlSignatureValidator {
+  private final TrustStrategy trustStrategy;
+
+  public XmlSignatureValidator(TrustStrategy trustStrategy) {
+    this.trustStrategy = trustStrategy;
+  }
 
   /**
-   * If the given XML document contains an XML signature and it is valid,
-   * return true. Else, if {@code missingSignatureIsValid} is true
-   * and the XML document is missing a signature, return true.  Otherwise,
-   * return false.
+   * Encapsulates the result a call to {@link #validate}.
+   *
+   * <p>To determine whether the XML signature was valid, use
+   * {@link #isSignatureValid()}.
+   */
+  public static class Result {
+    public enum Detail {
+      SIGNATURE_INVALID,
+      SIGNATURE_MISSING,
+      KEY_MISSING,
+      KEY_UNTRUSTED,
+    }
+    private final boolean isSignatureValid;
+    private final Set<Detail> details;
+
+    Result(boolean isSignatureValid, Detail... details) {
+      this.isSignatureValid = isSignatureValid;
+      Set<Detail> mutableDetails = new HashSet<Detail>();
+      for (Detail detail : details) {
+        mutableDetails.add(detail);
+      }
+      this.details = Collections.unmodifiableSet(mutableDetails);
+    }
+
+    /**
+     * Determines whether the XML document contained a valid XML signature
+     * signed by a trusted key as defined by {@link TrustStrategy#isKeyTrusted}
+     * - if so, return {@code true}.
+     *
+     * <p>If the signature was valid but key was not trusted, return
+     * {@code true} iff {@link TrustStrategy#allowUntrustedCredentials} is
+     * true.
+     *
+     * <p>If the signature was missing or a suitable validation Key could not be
+     * found, return {@code true} iff
+     * {@link TrustStrategy#allowMissingSignatures} is true.
+     *
+     * <p>Otherwise, return {@code false}.
+     */
+    public boolean isSignatureValid() {
+      return isSignatureValid;
+    }
+
+    /**
+     * Returns zero or more details to elaborate on the reason for validation
+     * failure (if {@link #isSignatureValid()} is {@code false}), or things we
+     * permitted because {@link TrustStrategy} allowed leniency
+     * (if {@link #isSignatureValid()} is {@code true}.
+     */
+    public Set<Detail> details() {
+      return details;
+    }
+  }
+
+  /**
+   * Validates the given XML document's digital signature.
+   * See {@link Result#isSignatureValid()} for details.
    *
    * @param str the string containing the xml document
-   * @param missingSignatureIsValid true if a missing signature is considered
-   * valid
    * @return a boolean as described above
    * @throws SAXParseException on error parsing the XML document
    */
-  public boolean isSignatureValid(String str, boolean missingSignatureIsValid)
-      throws SAXParseException {
-    return isSignatureValid(new StringReader(str), missingSignatureIsValid);
+  public Result validate(String str) throws SAXParseException {
+    return validate(new StringReader(str));
   }
 
   /**
-   * If the given XML document contains an XML signature and it is valid,
-   * return true. Else, if {@code missingSignatureIsValid} is true
-   * and the XML document is missing a signature, return true.  Otherwise,
-   * return false.
+   * Validates the given XML document's digital signature.
+   * See {@link Result#isSignatureValid()} for details.
    *
    * @param reader the reader containing the XML document
-   * @param missingSignatureIsValid true if a missing signature is considered
-   * valid
    * @return a boolean as described above
    * @throws SAXParseException on error parsing the XML document
    */
-  public boolean isSignatureValid(Reader reader,
-      boolean missingSignatureIsValid) throws SAXParseException {
-    return isSignatureValid(new InputSource(reader), missingSignatureIsValid);
+  public Result validate(Reader reader) throws SAXParseException {
+    return validate(new InputSource(reader));
   }
 
   /**
-   * If the given XML document contains an XML signature and it is valid,
-   * return true. Else, if {@code missingSignatureIsValid} is true
-   * and the XML document is missing a signature, return true.  Otherwise,
-   * return false.
+   * Validates the given XML document's digital signature.
+   * See {@link Result#isSignatureValid()} for details.
    *
    * @param is the input source containing the XML document
-   * @param missingSignatureIsValid true if a missing signature is considered
-   * valid
    * @return a boolean as described above
    * @throws SAXParseException on error parsing the XML document
    */
-  public boolean isSignatureValid(InputSource is,
-      boolean missingSignatureIsValid) throws SAXParseException {
+  public Result validate(InputSource is) throws SAXParseException {
     Document doc = XmlUtil.parseDocument(is);
     NodeList nl = doc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
     if (nl.getLength() == 0) {
-      return missingSignatureIsValid;
+      return new Result(trustStrategy.allowMissingSignatures(), Result.Detail.SIGNATURE_MISSING);
     }
 
-    DOMValidateContext valContext = new DOMValidateContext(
-        new KeyValueKeySelector(), nl.item(0));
+    DOMValidateContext context = new DOMValidateContext(new KeyValueKeySelector(), nl.item(0));
     XMLSignatureFactory factory = XMLSignatureFactory.getInstance("DOM");
 
     try {
-      XMLSignature signature = factory.unmarshalXMLSignature(valContext);
-      return signature.validate(valContext);
+      // Is the signature valid?
+      XMLSignature signature = factory.unmarshalXMLSignature(context);
+      boolean valid = signature.validate(context);
+      if (!valid) {
+        return new Result(false, Result.Detail.SIGNATURE_INVALID);
+      }
+
+      // Do we trust the PublicKey used to validate the signature?
+      SimpleKeySelectorResult keySelectorResult = SimpleKeySelectorResult.getCachedResult(context);
+      return trustStrategy.isKeyTrusted(keySelectorResult.getKey())
+          ? new Result(true)
+          : new Result(trustStrategy.allowUntrustedCredentials(), Result.Detail.KEY_UNTRUSTED);
     } catch (MarshalException e) {
       throw new RuntimeException(e);
     } catch (XMLSignatureException e) {
+      // This can mean an error happened during PublicKey acquisition OR during Signature validation
+
+      SimpleKeySelectorResult keySelectorResult = SimpleKeySelectorResult.getCachedResult(context);
+      if (keySelectorResult != null && keySelectorResult.getKey() == null) {
+        // Our KeySelector got as far as caching a Result, so we know the XMLSignatureException
+        // was thrown because we couldn't find a PublicKey to use.
+        // Treat this the same as a "missing signature" and let it slide iff TrustStrategy says to.
+        return new Result(trustStrategy.allowMissingSignatures(), Result.Detail.KEY_MISSING);
+      }
+
+      // XMLSignatureException thrown for some other reason; propagate.
       throw new RuntimeException(e);
     }
   }
 
-  /**
-   * TODO(shakusa) This is a very simple KeySelector implementation,
-   * designed for illustration rather than real-world usage.
-   * A more practical example of a KeySelector is one that searches a KeyStore
-   * for trusted keys that match X509Data information (for example,
-   * X509SubjectName, X509IssuerSerial, X509SKI, or X509Certificate elements)
-   * contained in a KeyInfo.
-   */
   private static class KeyValueKeySelector extends KeySelector {
 
+    @Override
     public KeySelectorResult select(KeyInfo keyInfo,
         KeySelector.Purpose purpose,
         AlgorithmMethod method,
@@ -141,32 +198,32 @@ public class XmlSignatureValidator {
         throws KeySelectorException {
 
       if (keyInfo == null) {
-        throw new KeySelectorException("Null KeyInfo object!");
+        return SimpleKeySelectorResult.cacheKeyResult((PublicKey) null, context);
       }
       SignatureMethod sm = (SignatureMethod) method;
-      @SuppressWarnings("unchecked")
-      List<XMLStructure> list = (List<XMLStructure>) keyInfo.getContent();
 
-      for (int i = 0; i < list.size(); i++) {
-        XMLStructure xmlStructure = list.get(i);
-        if (xmlStructure instanceof KeyValue) {
+      @SuppressWarnings("unchecked") // KeyInfo#getContent javadoc guarantees XmlStructure
+      List<XMLStructure> keyInfoChildNodes = keyInfo.getContent();
+      for (XMLStructure keyInfoChildNode : keyInfoChildNodes) {
+        if (keyInfoChildNode instanceof KeyValue) {
           PublicKey pk;
           try {
-            pk = ((KeyValue)xmlStructure).getPublicKey();
+            pk = ((KeyValue) keyInfoChildNode).getPublicKey();
           } catch (KeyException ke) {
             throw new KeySelectorException(ke);
           }
-          // make sure algorithm is compatible with method
-          if (algEquals(sm.getAlgorithm(), pk.getAlgorithm())) {
 
-            return new SimpleKeySelectorResult(pk);
+          // Make sure algorithm is compatible with method
+          if (algEquals(sm.getAlgorithm(), pk.getAlgorithm())) {
+            return SimpleKeySelectorResult.cacheKeyResult(pk, context);
           }
         }
       }
-      throw new KeySelectorException("No KeyValue element found!");
+
+      return SimpleKeySelectorResult.cacheKeyResult((PublicKey) null, context);
     }
 
-    static boolean algEquals(String algUri, String algName) {
+    private static boolean algEquals(String algUri, String algName) {
       if (algName.equalsIgnoreCase("DSA") &&
           algUri.equalsIgnoreCase(SignatureMethod.DSA_SHA1)) {
         return true;
@@ -179,15 +236,40 @@ public class XmlSignatureValidator {
   }
 
   private static class SimpleKeySelectorResult implements KeySelectorResult {
+    /** Property name used to stash this Result in an XmlCryptoContext */
+    private static final String PROPERTY_NAME =
+        SimpleKeySelectorResult.class.getName() + ".property";
+    private final PublicKey key;
 
-    private final Key key;
-
-    public SimpleKeySelectorResult(Key key) {
+    /** Don't instantiate directly -- use {@link #cacheKeyResult} */
+    private SimpleKeySelectorResult(PublicKey key) {
       this.key = key;
     }
 
-    public Key getKey() {
+    @Override
+    public PublicKey getKey() {
       return key;
+    }
+
+    /**
+     * Instantiates a new Result with the given key, caches it in the given context,
+     * then returns the result.
+     *
+     * Use this method rather than the constructor so code that executes after
+     * {@link XMLSignature#validate} may gain access to this Result.
+     */
+    static SimpleKeySelectorResult cacheKeyResult(/* Nullable */ PublicKey key,
+        XMLCryptoContext context) {
+      SimpleKeySelectorResult result = new SimpleKeySelectorResult(key);
+      context.put(PROPERTY_NAME, result);
+      return result;
+    }
+
+    /**
+     * Returns a SimpleKeySelectorResult cached in the given context, or {@code null} if none
+     */
+    static SimpleKeySelectorResult getCachedResult(XMLCryptoContext context) {
+      return (SimpleKeySelectorResult) context.get(PROPERTY_NAME);
     }
   }
 }

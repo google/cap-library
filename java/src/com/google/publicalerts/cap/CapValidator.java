@@ -16,15 +16,16 @@
 
 package com.google.publicalerts.cap;
 
+import com.google.protobuf.MessageOrBuilder;
+import com.google.publicalerts.cap.CapException.Reason;
+import com.google.publicalerts.cap.CapException.Type;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import com.google.protobuf.MessageOrBuilder;
-import com.google.publicalerts.cap.CapException.Reason;
-import com.google.publicalerts.cap.CapException.Type;
+import java.util.regex.Pattern;
 
 /**
  * Validates portions of the CAP spec that are not possible to
@@ -48,6 +49,10 @@ public class CapValidator {
     CAP_XML_NAMESPACES.add(CAP11_XMLNS);
     CAP_XML_NAMESPACES.add(CAP12_XMLNS);
   }
+
+  /** See http://www.ietf.org/rfc/rfc3066.txt */
+  private static final Pattern RFC_3066_LANGUAGE =
+      Pattern.compile("^[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*$");
 
   /**
    * Validates the given message.
@@ -91,7 +96,7 @@ public class CapValidator {
    * @throws CapException if there are validation errors
    */
   public void validateAlert(AlertOrBuilder alert) throws CapException {
-  	List<Reason> reasons = validateAlert(alert, true);
+    List<Reason> reasons = validateAlert(alert, true);
     if (!reasons.isEmpty()) {
       throw new CapException(reasons);
     }
@@ -104,7 +109,7 @@ public class CapValidator {
 
     if (alert.hasRestriction()
         && !CapUtil.isEmptyOrWhitespace(alert.getRestriction())
-        && alert.getScope() != Alert.Scope.Restricted) {
+        && alert.getScope() != Alert.Scope.RESTRICTED) {
       reasons.add(new Reason("/alert", Type.RESTRICTION_SCOPE_MISMATCH));
     }
 
@@ -123,6 +128,10 @@ public class CapValidator {
       int version, boolean visitChildren) {
     List<Reason> reasons = new ArrayList<Reason>();
 
+    if (info.hasLanguage()) {
+      reasons.addAll(validateLanguage(info.getLanguage(), xpath, version));
+    }
+
     if (visitChildren) {
       for (int i = 0; i < info.getAreaOrBuilderList().size(); ++i) {
         reasons.addAll(validateArea(info.getAreaOrBuilderList().get(i),
@@ -137,14 +146,29 @@ public class CapValidator {
     return reasons;
   }
 
+  List<Reason> validateLanguage(String language, String xpath, int version) {
+    if (CapUtil.isEmptyOrWhitespace(language)) {
+      return Collections.emptyList();
+    }
+
+    language = language.trim();
+
+    if (RFC_3066_LANGUAGE.matcher(language).matches()) {
+      return Collections.emptyList();
+    }
+
+    return Collections.singletonList(
+        new Reason(xpath + "/langauge", Type.INVALID_LANGUAGE, language));
+  }
+
   List<Reason> validateArea(AreaOrBuilder area, String xpath,
-                            int version, boolean visitChildren) {
+      int version, boolean visitChildren) {
     List<Reason> reasons = new ArrayList<Reason>();
 
     if (visitChildren) {
       for (int i = 0; i < area.getPolygonOrBuilderList().size(); i++) {
-      	reasons.addAll(validatePolygon(
-      	    area.getPolygonOrBuilder(i), xpath + "/polygon[" + i + "]"));
+        reasons.addAll(validatePolygon(
+            area.getPolygonOrBuilder(i), xpath + "/polygon[" + i + "]"));
       }
     }
 

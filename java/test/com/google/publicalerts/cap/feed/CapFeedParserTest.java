@@ -16,22 +16,25 @@
 
 package com.google.publicalerts.cap.feed;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import junit.framework.TestCase;
-
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.CapException;
 import com.google.publicalerts.cap.NotCapException;
-import com.google.publicalerts.cap.TestUtil;
 import com.google.publicalerts.cap.feed.CapFeedException.FeedErrorType;
+import com.google.publicalerts.cap.testing.CapTestUtil;
+import com.google.publicalerts.cap.testing.TestResources;
+
+import com.sun.syndication.feed.synd.SyndContent;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndEntryImpl;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.feed.synd.SyndLink;
 import com.sun.syndication.feed.synd.SyndLinkImpl;
 import com.sun.syndication.io.FeedException;
+
+import junit.framework.TestCase;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Tests for {@link CapFeedParser}.
@@ -57,13 +60,19 @@ public class CapFeedParserTest extends TestCase {
     SyndFeed feed = parser.parseFeed(feedStr);
     assertEquals(1, feed.getEntries().size());
   }
-  
+
   public void testParseRssFeed() throws Exception {
     String feedStr = TestResources.load("ny_index.rss");
     SyndFeed feed = parser.parseFeed(feedStr);
-    assertEquals(2, feed.getEntries().size());    
+    assertEquals(2, feed.getEntries().size());
   }
-  
+
+  public void testParseEdxldeFeed() throws Exception {
+    String feedStr = TestResources.load("bushfire_valid.edxlde");
+    SyndFeed feed = parser.parseFeed(feedStr);
+    assertEquals(7, feed.getEntries().size());
+  }
+
   public void testParseMalformedFeed() throws Exception {
     try {
       parser.parseFeed("invalid");
@@ -98,7 +107,7 @@ public class CapFeedParserTest extends TestCase {
     assertCapException("no_title.atom",
         FeedErrorType.ATOM_ENTRY_TITLE_IS_REQUIRED);
   }
-  
+
   public void testParseInvalidFeed4() throws Exception {
     assertCapException("no_link.atom",
         FeedErrorType.ATOM_ENTRY_MISSING_CAP_LINK);
@@ -127,7 +136,7 @@ public class CapFeedParserTest extends TestCase {
       // expected
     }
   }
-  
+
   public void testParseAlerts() throws Exception {
     String feedStr = TestResources.load("weather.atom");
     SyndFeed feed = parser.parseFeed(feedStr);
@@ -147,11 +156,30 @@ public class CapFeedParserTest extends TestCase {
         alert.getSender());
     assertEquals(2, alert.getInfoCount());
   }
-  
+
   public void testParseAlert2() throws Exception {
     String alertStr = TestResources.load("canada.cap");
     Alert alert = parser.parseAlert(alertStr);
     assertEquals(2, alert.getInfoCount());
+  }
+
+  public void testParseEdxldeAlert() throws Exception {
+    String alertStr = TestResources.load("bushfire_valid.edxlde");
+    SyndFeed syndFeed = parser.parseFeed(alertStr);
+    assertEquals(syndFeed.getEntries().size(), 7);
+
+    @SuppressWarnings("unchecked")
+    List<SyndEntry> syndEntries = syndFeed.getEntries();
+    for (SyndEntry entry : syndEntries) {
+      assertEquals(1, entry.getContents().size());
+      @SuppressWarnings("unchecked")
+      SyndContent content = ((List<SyndContent>) entry.getContents()).get(0);
+      Alert capAlert = parser.parseAlert(entry);
+      assertNotNull(content.getValue());
+      assertTrue(content.getValue().contains("<cap:alert"));
+      assertNotNull(capAlert);
+      assertEquals(1, capAlert.getInfoCount());
+    }
   }
 
   public void testParseEmptyAlert() throws Exception {
@@ -181,9 +209,11 @@ public class CapFeedParserTest extends TestCase {
     assertFalse(reasons.isEmpty());
   }
 
-  public void testGetCapUrl() {
+  public void testGetCapUrl_atom() {
     SyndEntry entry = new SyndEntryImpl();
-    assertNull(parser.getCapUrl(entry));
+
+    // For atom, both "link" and "links" is set
+    entry.setLink("http://example.org/cap?id=123");
 
     SyndLink link1 = new SyndLinkImpl();
     link1.setHref("http://example.org/cap?id=123");
@@ -192,14 +222,34 @@ public class CapFeedParserTest extends TestCase {
     entry.setLinks(links);
     assertEquals(link1.getHref(), parser.getCapUrl(entry));
 
+    link1.setType(CapFeedParser.CAP_CONTENT_TYPE);
+    assertEquals(link1.getHref(), parser.getCapUrl(entry));
+
+    link1.setType("text/html");
+    assertNull(parser.getCapUrl(entry));
+
     SyndLink link2 = new SyndLinkImpl();
     link2.setHref("http://example.org/cap?id=456");
     links.add(link2);
     entry.setLinks(links);
+    assertEquals(link2.getHref(), parser.getCapUrl(entry));
+
+    link2.setType("text/html");
     assertNull(parser.getCapUrl(entry));
 
     link2.setType(CapFeedParser.CAP_CONTENT_TYPE);
     assertEquals(link2.getHref(), parser.getCapUrl(entry));
+
+    link1.setType(CapFeedParser.CAP_CONTENT_TYPE);
+    assertEquals(link1.getHref(), parser.getCapUrl(entry));
+  }
+
+  public void testGetCapUrl_rss() {
+    SyndEntry entry = new SyndEntryImpl();
+    assertNull(parser.getCapUrl(entry));
+
+    entry.setLink("http://example.org/cap?id=123");
+    assertEquals(entry.getLink(), parser.getCapUrl(entry));
   }
 
   private void assertCapException(String feedFile, FeedErrorType... types)
@@ -209,7 +259,7 @@ public class CapFeedParserTest extends TestCase {
       parser.parseFeed(feed);
       fail("Expected CapException");
     } catch (CapException e) {
-      TestUtil.assertErrorTypes(e.getReasons(), types);
+      CapTestUtil.assertErrorTypes(e.getReasons(), types);
     }
   }
 }

@@ -14,17 +14,15 @@
  * the License.
  */
 
-package com.google.publicalerts.cap.profile;
+package com.google.publicalerts.cap.profile.ca;
 
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.Alert.MsgType;
 import com.google.publicalerts.cap.Area;
-import com.google.publicalerts.cap.CapException;
-import com.google.publicalerts.cap.CapXmlParser;
 import com.google.publicalerts.cap.Info;
-import com.google.publicalerts.cap.feed.TestResources;
-import com.google.publicalerts.cap.profile.CanadianProfile.ErrorType;
-import com.google.publicalerts.cap.profile.CanadianProfile.RecommendationType;
+import com.google.publicalerts.cap.profile.CapProfileTestCase;
+import com.google.publicalerts.cap.profile.ca.CanadianProfile.ErrorType;
+import com.google.publicalerts.cap.profile.ca.CanadianProfile.RecommendationType;
 
 /**
  * Tests for {@link CanadianProfile}.
@@ -53,7 +51,7 @@ public class CanadianProfileTest extends CapProfileTestCase {
     alert.clearCode();
     assertErrors(alert, ErrorType.VERSION_CODE_REQUIRED);
 
-    alert.setMsgType(MsgType.Update)
+    alert.setMsgType(MsgType.UPDATE)
         .clearReferences();
     assertErrors(alert, ErrorType.VERSION_CODE_REQUIRED,
         ErrorType.UPDATE_OR_CANCEL_MUST_REFERENCE);
@@ -73,7 +71,7 @@ public class CanadianProfileTest extends CapProfileTestCase {
     alert = loadAlert("canada.cap").toBuilder();
     alert.clearInfo();
     assertErrors(alert, ErrorType.IS_REQUIRED);
-    alert.setMsgType(MsgType.Ack);
+    alert.setMsgType(MsgType.ACK);
     assertNoErrors(alert);
   }
 

@@ -22,23 +22,23 @@ public  final class Area extends
   
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Area_descriptor;
+    return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Area_descriptor;
   }
   
   protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Area_fieldAccessorTable;
+    return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Area_fieldAccessorTable;
   }
   
   private int bitField0_;
   // required string area_desc = 1;
   public static final int AREA_DESC_FIELD_NUMBER = 1;
-  private Object areaDesc_;
+  private java.lang.Object areaDesc_;
   public boolean hasAreaDesc() {
     return ((bitField0_ & 0x00000001) == 0x00000001);
   }
   public String getAreaDesc() {
-    Object ref = areaDesc_;
+    java.lang.Object ref = areaDesc_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -52,7 +52,7 @@ public  final class Area extends
     }
   }
   private com.google.protobuf.ByteString getAreaDescBytes() {
-    Object ref = areaDesc_;
+    java.lang.Object ref = areaDesc_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -63,7 +63,7 @@ public  final class Area extends
     }
   }
   
-  // repeated .alerts.cap.Polygon polygon = 2;
+  // repeated .publicalerts.cap.Polygon polygon = 2;
   public static final int POLYGON_FIELD_NUMBER = 2;
   private java.util.List<com.google.publicalerts.cap.Polygon> polygon_;
   public java.util.List<com.google.publicalerts.cap.Polygon> getPolygonList() {
@@ -84,7 +84,7 @@ public  final class Area extends
     return polygon_.get(index);
   }
   
-  // repeated .alerts.cap.Circle circle = 3;
+  // repeated .publicalerts.cap.Circle circle = 3;
   public static final int CIRCLE_FIELD_NUMBER = 3;
   private java.util.List<com.google.publicalerts.cap.Circle> circle_;
   public java.util.List<com.google.publicalerts.cap.Circle> getCircleList() {
@@ -105,7 +105,7 @@ public  final class Area extends
     return circle_.get(index);
   }
   
-  // repeated .alerts.cap.ValuePair geocode = 4;
+  // repeated .publicalerts.cap.ValuePair geocode = 4;
   public static final int GEOCODE_FIELD_NUMBER = 4;
   private java.util.List<com.google.publicalerts.cap.ValuePair> geocode_;
   public java.util.List<com.google.publicalerts.cap.ValuePair> getGeocodeList() {
@@ -244,13 +244,15 @@ public  final class Area extends
     return size;
   }
   
+  private static final long serialVersionUID = 0L;
   @java.lang.Override
-  protected Object writeReplace() throws java.io.ObjectStreamException {
+  protected java.lang.Object writeReplace()
+      throws java.io.ObjectStreamException {
     return super.writeReplace();
   }
   
   @java.lang.Override
-  public boolean equals(final Object obj) {
+  public boolean equals(final java.lang.Object obj) {
     if (obj == this) {
      return true;
     }
@@ -403,12 +405,12 @@ public  final class Area extends
      implements com.google.publicalerts.cap.AreaOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Area_descriptor;
+      return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Area_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Area_fieldAccessorTable;
+      return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Area_fieldAccessorTable;
     }
     
     // Construct using com.google.publicalerts.cap.Area.newBuilder()
@@ -730,12 +732,12 @@ public  final class Area extends
     private int bitField0_;
     
     // required string area_desc = 1;
-    private Object areaDesc_ = "";
+    private java.lang.Object areaDesc_ = "";
     public boolean hasAreaDesc() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     public String getAreaDesc() {
-      Object ref = areaDesc_;
+      java.lang.Object ref = areaDesc_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         areaDesc_ = s;
@@ -765,7 +767,7 @@ public  final class Area extends
       onChanged();
     }
     
-    // repeated .alerts.cap.Polygon polygon = 2;
+    // repeated .publicalerts.cap.Polygon polygon = 2;
     private java.util.List<com.google.publicalerts.cap.Polygon> polygon_ =
       java.util.Collections.emptyList();
     private void ensurePolygonIsMutable() {
@@ -951,7 +953,7 @@ public  final class Area extends
       return polygonBuilder_;
     }
     
-    // repeated .alerts.cap.Circle circle = 3;
+    // repeated .publicalerts.cap.Circle circle = 3;
     private java.util.List<com.google.publicalerts.cap.Circle> circle_ =
       java.util.Collections.emptyList();
     private void ensureCircleIsMutable() {
@@ -1137,7 +1139,7 @@ public  final class Area extends
       return circleBuilder_;
     }
     
-    // repeated .alerts.cap.ValuePair geocode = 4;
+    // repeated .publicalerts.cap.ValuePair geocode = 4;
     private java.util.List<com.google.publicalerts.cap.ValuePair> geocode_ =
       java.util.Collections.emptyList();
     private void ensureGeocodeIsMutable() {
@@ -1365,7 +1367,7 @@ public  final class Area extends
       return this;
     }
     
-    // @@protoc_insertion_point(builder_scope:alerts.cap.Area)
+    // @@protoc_insertion_point(builder_scope:publicalerts.cap.Area)
   }
   
   static {
@@ -1373,6 +1375,6 @@ public  final class Area extends
     defaultInstance.initFields();
   }
   
-  // @@protoc_insertion_point(class_scope:alerts.cap.Area)
+  // @@protoc_insertion_point(class_scope:publicalerts.cap.Area)
 }
 

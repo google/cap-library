@@ -14,23 +14,23 @@
  * the License.
  */
 
-package com.google.publicalerts.cap.profile;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+package com.google.publicalerts.cap.profile.ca;
 
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.AlertOrBuilder;
 import com.google.publicalerts.cap.Area;
 import com.google.publicalerts.cap.CapException;
 import com.google.publicalerts.cap.CapException.Reason;
-import com.google.publicalerts.cap.CapException.ReasonType;
 import com.google.publicalerts.cap.CapUtil;
 import com.google.publicalerts.cap.Info;
 import com.google.publicalerts.cap.ValuePair;
+import com.google.publicalerts.cap.profile.AbstractCapProfile;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
 
 /**
  * <a href="http://capan.ca/uploads/CAP-CP/CAP-CP_Intro_Rules_Beta_0.4.pdf">
@@ -104,16 +104,16 @@ public class CanadianProfile extends AbstractCapProfile {
 
     // 5. Alert messages intended for public distribution must include
     // an <info> block
-    if (alert.getMsgType() != Alert.MsgType.Ack
-        && alert.getMsgType() != Alert.MsgType.Error
+    if (alert.getMsgType() != Alert.MsgType.ACK
+        && alert.getMsgType() != Alert.MsgType.ERROR
         && alert.getInfoCount() == 0) {
       reasons.add(new Reason("/alert", ErrorType.IS_REQUIRED));
     }
 
     // 12. An Update or Cancel message should minimally include
     // references to all active messages
-    if ((alert.getMsgType() == Alert.MsgType.Update
-        || alert.getMsgType() == Alert.MsgType.Cancel)
+    if ((alert.getMsgType() == Alert.MsgType.UPDATE
+        || alert.getMsgType() == Alert.MsgType.CANCEL)
         && alert.getReferences().getValueCount() == 0) {
       reasons.add(new Reason("/alert/msgType",
           ErrorType.UPDATE_OR_CANCEL_MUST_REFERENCE));

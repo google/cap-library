@@ -22,39 +22,39 @@ public  final class Alert extends
   
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Alert_descriptor;
+    return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Alert_descriptor;
   }
   
   protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Alert_fieldAccessorTable;
+    return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Alert_fieldAccessorTable;
   }
   
   public enum Status
       implements com.google.protobuf.ProtocolMessageEnum {
-    Actual(0, 0),
-    Exercise(1, 1),
-    System(2, 2),
-    Test(3, 3),
-    Draft(4, 4),
+    ACTUAL(0, 0),
+    EXERCISE(1, 1),
+    SYSTEM(2, 2),
+    TEST(3, 3),
+    DRAFT(4, 4),
     ;
     
-    public static final int Actual_VALUE = 0;
-    public static final int Exercise_VALUE = 1;
-    public static final int System_VALUE = 2;
-    public static final int Test_VALUE = 3;
-    public static final int Draft_VALUE = 4;
+    public static final int ACTUAL_VALUE = 0;
+    public static final int EXERCISE_VALUE = 1;
+    public static final int SYSTEM_VALUE = 2;
+    public static final int TEST_VALUE = 3;
+    public static final int DRAFT_VALUE = 4;
     
     
     public final int getNumber() { return value; }
     
     public static Status valueOf(int value) {
       switch (value) {
-        case 0: return Actual;
-        case 1: return Exercise;
-        case 2: return System;
-        case 3: return Test;
-        case 4: return Draft;
+        case 0: return ACTUAL;
+        case 1: return EXERCISE;
+        case 2: return SYSTEM;
+        case 3: return TEST;
+        case 4: return DRAFT;
         default: return null;
       }
     }
@@ -85,7 +85,7 @@ public  final class Alert extends
     }
     
     private static final Status[] VALUES = {
-      Actual, Exercise, System, Test, Draft, 
+      ACTUAL, EXERCISE, SYSTEM, TEST, DRAFT, 
     };
     
     public static Status valueOf(
@@ -105,34 +105,34 @@ public  final class Alert extends
       this.value = value;
     }
     
-    // @@protoc_insertion_point(enum_scope:alerts.cap.Alert.Status)
+    // @@protoc_insertion_point(enum_scope:publicalerts.cap.Alert.Status)
   }
   
   public enum MsgType
       implements com.google.protobuf.ProtocolMessageEnum {
-    Alert(0, 0),
-    Update(1, 1),
-    Cancel(2, 2),
-    Ack(3, 3),
-    Error(4, 4),
+    ALERT(0, 0),
+    UPDATE(1, 1),
+    CANCEL(2, 2),
+    ACK(3, 3),
+    ERROR(4, 4),
     ;
     
-    public static final int Alert_VALUE = 0;
-    public static final int Update_VALUE = 1;
-    public static final int Cancel_VALUE = 2;
-    public static final int Ack_VALUE = 3;
-    public static final int Error_VALUE = 4;
+    public static final int ALERT_VALUE = 0;
+    public static final int UPDATE_VALUE = 1;
+    public static final int CANCEL_VALUE = 2;
+    public static final int ACK_VALUE = 3;
+    public static final int ERROR_VALUE = 4;
     
     
     public final int getNumber() { return value; }
     
     public static MsgType valueOf(int value) {
       switch (value) {
-        case 0: return Alert;
-        case 1: return Update;
-        case 2: return Cancel;
-        case 3: return Ack;
-        case 4: return Error;
+        case 0: return ALERT;
+        case 1: return UPDATE;
+        case 2: return CANCEL;
+        case 3: return ACK;
+        case 4: return ERROR;
         default: return null;
       }
     }
@@ -163,7 +163,7 @@ public  final class Alert extends
     }
     
     private static final MsgType[] VALUES = {
-      Alert, Update, Cancel, Ack, Error, 
+      ALERT, UPDATE, CANCEL, ACK, ERROR, 
     };
     
     public static MsgType valueOf(
@@ -183,28 +183,28 @@ public  final class Alert extends
       this.value = value;
     }
     
-    // @@protoc_insertion_point(enum_scope:alerts.cap.Alert.MsgType)
+    // @@protoc_insertion_point(enum_scope:publicalerts.cap.Alert.MsgType)
   }
   
   public enum Scope
       implements com.google.protobuf.ProtocolMessageEnum {
-    Public(0, 0),
-    Restricted(1, 1),
-    Private(2, 2),
+    PUBLIC(0, 0),
+    RESTRICTED(1, 1),
+    PRIVATE(2, 2),
     ;
     
-    public static final int Public_VALUE = 0;
-    public static final int Restricted_VALUE = 1;
-    public static final int Private_VALUE = 2;
+    public static final int PUBLIC_VALUE = 0;
+    public static final int RESTRICTED_VALUE = 1;
+    public static final int PRIVATE_VALUE = 2;
     
     
     public final int getNumber() { return value; }
     
     public static Scope valueOf(int value) {
       switch (value) {
-        case 0: return Public;
-        case 1: return Restricted;
-        case 2: return Private;
+        case 0: return PUBLIC;
+        case 1: return RESTRICTED;
+        case 2: return PRIVATE;
         default: return null;
       }
     }
@@ -235,7 +235,7 @@ public  final class Alert extends
     }
     
     private static final Scope[] VALUES = {
-      Public, Restricted, Private, 
+      PUBLIC, RESTRICTED, PRIVATE, 
     };
     
     public static Scope valueOf(
@@ -255,18 +255,18 @@ public  final class Alert extends
       this.value = value;
     }
     
-    // @@protoc_insertion_point(enum_scope:alerts.cap.Alert.Scope)
+    // @@protoc_insertion_point(enum_scope:publicalerts.cap.Alert.Scope)
   }
   
   private int bitField0_;
   // required string xmlns = 1;
   public static final int XMLNS_FIELD_NUMBER = 1;
-  private Object xmlns_;
+  private java.lang.Object xmlns_;
   public boolean hasXmlns() {
     return ((bitField0_ & 0x00000001) == 0x00000001);
   }
   public String getXmlns() {
-    Object ref = xmlns_;
+    java.lang.Object ref = xmlns_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -280,7 +280,7 @@ public  final class Alert extends
     }
   }
   private com.google.protobuf.ByteString getXmlnsBytes() {
-    Object ref = xmlns_;
+    java.lang.Object ref = xmlns_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -293,12 +293,12 @@ public  final class Alert extends
   
   // required string identifier = 2;
   public static final int IDENTIFIER_FIELD_NUMBER = 2;
-  private Object identifier_;
+  private java.lang.Object identifier_;
   public boolean hasIdentifier() {
     return ((bitField0_ & 0x00000002) == 0x00000002);
   }
   public String getIdentifier() {
-    Object ref = identifier_;
+    java.lang.Object ref = identifier_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -312,7 +312,7 @@ public  final class Alert extends
     }
   }
   private com.google.protobuf.ByteString getIdentifierBytes() {
-    Object ref = identifier_;
+    java.lang.Object ref = identifier_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -325,12 +325,12 @@ public  final class Alert extends
   
   // required string sender = 3;
   public static final int SENDER_FIELD_NUMBER = 3;
-  private Object sender_;
+  private java.lang.Object sender_;
   public boolean hasSender() {
     return ((bitField0_ & 0x00000004) == 0x00000004);
   }
   public String getSender() {
-    Object ref = sender_;
+    java.lang.Object ref = sender_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -344,7 +344,7 @@ public  final class Alert extends
     }
   }
   private com.google.protobuf.ByteString getSenderBytes() {
-    Object ref = sender_;
+    java.lang.Object ref = sender_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -357,12 +357,12 @@ public  final class Alert extends
   
   // optional string password = 4 [deprecated = true];
   public static final int PASSWORD_FIELD_NUMBER = 4;
-  private Object password_;
+  private java.lang.Object password_;
   @java.lang.Deprecated public boolean hasPassword() {
     return ((bitField0_ & 0x00000008) == 0x00000008);
   }
   @java.lang.Deprecated public String getPassword() {
-    Object ref = password_;
+    java.lang.Object ref = password_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -376,7 +376,7 @@ public  final class Alert extends
     }
   }
   private com.google.protobuf.ByteString getPasswordBytes() {
-    Object ref = password_;
+    java.lang.Object ref = password_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -389,12 +389,12 @@ public  final class Alert extends
   
   // required string sent = 5;
   public static final int SENT_FIELD_NUMBER = 5;
-  private Object sent_;
+  private java.lang.Object sent_;
   public boolean hasSent() {
     return ((bitField0_ & 0x00000010) == 0x00000010);
   }
   public String getSent() {
-    Object ref = sent_;
+    java.lang.Object ref = sent_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -408,7 +408,7 @@ public  final class Alert extends
     }
   }
   private com.google.protobuf.ByteString getSentBytes() {
-    Object ref = sent_;
+    java.lang.Object ref = sent_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -419,7 +419,7 @@ public  final class Alert extends
     }
   }
   
-  // required .alerts.cap.Alert.Status status = 6;
+  // required .publicalerts.cap.Alert.Status status = 6;
   public static final int STATUS_FIELD_NUMBER = 6;
   private com.google.publicalerts.cap.Alert.Status status_;
   public boolean hasStatus() {
@@ -429,7 +429,7 @@ public  final class Alert extends
     return status_;
   }
   
-  // required .alerts.cap.Alert.MsgType msg_type = 7;
+  // required .publicalerts.cap.Alert.MsgType msg_type = 7;
   public static final int MSG_TYPE_FIELD_NUMBER = 7;
   private com.google.publicalerts.cap.Alert.MsgType msgType_;
   public boolean hasMsgType() {
@@ -441,12 +441,12 @@ public  final class Alert extends
   
   // optional string source = 8;
   public static final int SOURCE_FIELD_NUMBER = 8;
-  private Object source_;
+  private java.lang.Object source_;
   public boolean hasSource() {
     return ((bitField0_ & 0x00000080) == 0x00000080);
   }
   public String getSource() {
-    Object ref = source_;
+    java.lang.Object ref = source_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -460,7 +460,7 @@ public  final class Alert extends
     }
   }
   private com.google.protobuf.ByteString getSourceBytes() {
-    Object ref = source_;
+    java.lang.Object ref = source_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -471,7 +471,7 @@ public  final class Alert extends
     }
   }
   
-  // optional .alerts.cap.Alert.Scope scope = 9;
+  // optional .publicalerts.cap.Alert.Scope scope = 9;
   public static final int SCOPE_FIELD_NUMBER = 9;
   private com.google.publicalerts.cap.Alert.Scope scope_;
   public boolean hasScope() {
@@ -483,12 +483,12 @@ public  final class Alert extends
   
   // optional string restriction = 10;
   public static final int RESTRICTION_FIELD_NUMBER = 10;
-  private Object restriction_;
+  private java.lang.Object restriction_;
   public boolean hasRestriction() {
     return ((bitField0_ & 0x00000200) == 0x00000200);
   }
   public String getRestriction() {
-    Object ref = restriction_;
+    java.lang.Object ref = restriction_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -502,7 +502,7 @@ public  final class Alert extends
     }
   }
   private com.google.protobuf.ByteString getRestrictionBytes() {
-    Object ref = restriction_;
+    java.lang.Object ref = restriction_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -513,7 +513,7 @@ public  final class Alert extends
     }
   }
   
-  // optional .alerts.cap.Group addresses = 11;
+  // optional .publicalerts.cap.Group addresses = 11;
   public static final int ADDRESSES_FIELD_NUMBER = 11;
   private com.google.publicalerts.cap.Group addresses_;
   public boolean hasAddresses() {
@@ -542,12 +542,12 @@ public  final class Alert extends
   
   // optional string note = 13;
   public static final int NOTE_FIELD_NUMBER = 13;
-  private Object note_;
+  private java.lang.Object note_;
   public boolean hasNote() {
     return ((bitField0_ & 0x00000800) == 0x00000800);
   }
   public String getNote() {
-    Object ref = note_;
+    java.lang.Object ref = note_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -561,7 +561,7 @@ public  final class Alert extends
     }
   }
   private com.google.protobuf.ByteString getNoteBytes() {
-    Object ref = note_;
+    java.lang.Object ref = note_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -572,7 +572,7 @@ public  final class Alert extends
     }
   }
   
-  // optional .alerts.cap.Group references = 14;
+  // optional .publicalerts.cap.Group references = 14;
   public static final int REFERENCES_FIELD_NUMBER = 14;
   private com.google.publicalerts.cap.Group references_;
   public boolean hasReferences() {
@@ -585,7 +585,7 @@ public  final class Alert extends
     return references_;
   }
   
-  // optional .alerts.cap.Group incidents = 15;
+  // optional .publicalerts.cap.Group incidents = 15;
   public static final int INCIDENTS_FIELD_NUMBER = 15;
   private com.google.publicalerts.cap.Group incidents_;
   public boolean hasIncidents() {
@@ -598,7 +598,7 @@ public  final class Alert extends
     return incidents_;
   }
   
-  // repeated .alerts.cap.Info info = 16;
+  // repeated .publicalerts.cap.Info info = 16;
   public static final int INFO_FIELD_NUMBER = 16;
   private java.util.List<com.google.publicalerts.cap.Info> info_;
   public java.util.List<com.google.publicalerts.cap.Info> getInfoList() {
@@ -625,10 +625,10 @@ public  final class Alert extends
     sender_ = "";
     password_ = "";
     sent_ = "";
-    status_ = com.google.publicalerts.cap.Alert.Status.Actual;
-    msgType_ = com.google.publicalerts.cap.Alert.MsgType.Alert;
+    status_ = com.google.publicalerts.cap.Alert.Status.ACTUAL;
+    msgType_ = com.google.publicalerts.cap.Alert.MsgType.ALERT;
     source_ = "";
-    scope_ = com.google.publicalerts.cap.Alert.Scope.Public;
+    scope_ = com.google.publicalerts.cap.Alert.Scope.PUBLIC;
     restriction_ = "";
     addresses_ = com.google.publicalerts.cap.Group.getDefaultInstance();
     code_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -810,13 +810,15 @@ public  final class Alert extends
     return size;
   }
   
+  private static final long serialVersionUID = 0L;
   @java.lang.Override
-  protected Object writeReplace() throws java.io.ObjectStreamException {
+  protected java.lang.Object writeReplace()
+      throws java.io.ObjectStreamException {
     return super.writeReplace();
   }
   
   @java.lang.Override
-  public boolean equals(final Object obj) {
+  public boolean equals(final java.lang.Object obj) {
     if (obj == this) {
      return true;
     }
@@ -1062,12 +1064,12 @@ public  final class Alert extends
      implements com.google.publicalerts.cap.AlertOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Alert_descriptor;
+      return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Alert_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Alert_fieldAccessorTable;
+      return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Alert_fieldAccessorTable;
     }
     
     // Construct using com.google.publicalerts.cap.Alert.newBuilder()
@@ -1103,13 +1105,13 @@ public  final class Alert extends
       bitField0_ = (bitField0_ & ~0x00000008);
       sent_ = "";
       bitField0_ = (bitField0_ & ~0x00000010);
-      status_ = com.google.publicalerts.cap.Alert.Status.Actual;
+      status_ = com.google.publicalerts.cap.Alert.Status.ACTUAL;
       bitField0_ = (bitField0_ & ~0x00000020);
-      msgType_ = com.google.publicalerts.cap.Alert.MsgType.Alert;
+      msgType_ = com.google.publicalerts.cap.Alert.MsgType.ALERT;
       bitField0_ = (bitField0_ & ~0x00000040);
       source_ = "";
       bitField0_ = (bitField0_ & ~0x00000080);
-      scope_ = com.google.publicalerts.cap.Alert.Scope.Public;
+      scope_ = com.google.publicalerts.cap.Alert.Scope.PUBLIC;
       bitField0_ = (bitField0_ & ~0x00000100);
       restriction_ = "";
       bitField0_ = (bitField0_ & ~0x00000200);
@@ -1535,12 +1537,12 @@ public  final class Alert extends
     private int bitField0_;
     
     // required string xmlns = 1;
-    private Object xmlns_ = "";
+    private java.lang.Object xmlns_ = "";
     public boolean hasXmlns() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     public String getXmlns() {
-      Object ref = xmlns_;
+      java.lang.Object ref = xmlns_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         xmlns_ = s;
@@ -1571,12 +1573,12 @@ public  final class Alert extends
     }
     
     // required string identifier = 2;
-    private Object identifier_ = "";
+    private java.lang.Object identifier_ = "";
     public boolean hasIdentifier() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public String getIdentifier() {
-      Object ref = identifier_;
+      java.lang.Object ref = identifier_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         identifier_ = s;
@@ -1607,12 +1609,12 @@ public  final class Alert extends
     }
     
     // required string sender = 3;
-    private Object sender_ = "";
+    private java.lang.Object sender_ = "";
     public boolean hasSender() {
       return ((bitField0_ & 0x00000004) == 0x00000004);
     }
     public String getSender() {
-      Object ref = sender_;
+      java.lang.Object ref = sender_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         sender_ = s;
@@ -1643,12 +1645,12 @@ public  final class Alert extends
     }
     
     // optional string password = 4 [deprecated = true];
-    private Object password_ = "";
+    private java.lang.Object password_ = "";
     @java.lang.Deprecated public boolean hasPassword() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     @java.lang.Deprecated public String getPassword() {
-      Object ref = password_;
+      java.lang.Object ref = password_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         password_ = s;
@@ -1679,12 +1681,12 @@ public  final class Alert extends
     }
     
     // required string sent = 5;
-    private Object sent_ = "";
+    private java.lang.Object sent_ = "";
     public boolean hasSent() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     public String getSent() {
-      Object ref = sent_;
+      java.lang.Object ref = sent_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         sent_ = s;
@@ -1714,8 +1716,8 @@ public  final class Alert extends
       onChanged();
     }
     
-    // required .alerts.cap.Alert.Status status = 6;
-    private com.google.publicalerts.cap.Alert.Status status_ = com.google.publicalerts.cap.Alert.Status.Actual;
+    // required .publicalerts.cap.Alert.Status status = 6;
+    private com.google.publicalerts.cap.Alert.Status status_ = com.google.publicalerts.cap.Alert.Status.ACTUAL;
     public boolean hasStatus() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
@@ -1733,13 +1735,13 @@ public  final class Alert extends
     }
     public Builder clearStatus() {
       bitField0_ = (bitField0_ & ~0x00000020);
-      status_ = com.google.publicalerts.cap.Alert.Status.Actual;
+      status_ = com.google.publicalerts.cap.Alert.Status.ACTUAL;
       onChanged();
       return this;
     }
     
-    // required .alerts.cap.Alert.MsgType msg_type = 7;
-    private com.google.publicalerts.cap.Alert.MsgType msgType_ = com.google.publicalerts.cap.Alert.MsgType.Alert;
+    // required .publicalerts.cap.Alert.MsgType msg_type = 7;
+    private com.google.publicalerts.cap.Alert.MsgType msgType_ = com.google.publicalerts.cap.Alert.MsgType.ALERT;
     public boolean hasMsgType() {
       return ((bitField0_ & 0x00000040) == 0x00000040);
     }
@@ -1757,18 +1759,18 @@ public  final class Alert extends
     }
     public Builder clearMsgType() {
       bitField0_ = (bitField0_ & ~0x00000040);
-      msgType_ = com.google.publicalerts.cap.Alert.MsgType.Alert;
+      msgType_ = com.google.publicalerts.cap.Alert.MsgType.ALERT;
       onChanged();
       return this;
     }
     
     // optional string source = 8;
-    private Object source_ = "";
+    private java.lang.Object source_ = "";
     public boolean hasSource() {
       return ((bitField0_ & 0x00000080) == 0x00000080);
     }
     public String getSource() {
-      Object ref = source_;
+      java.lang.Object ref = source_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         source_ = s;
@@ -1798,8 +1800,8 @@ public  final class Alert extends
       onChanged();
     }
     
-    // optional .alerts.cap.Alert.Scope scope = 9;
-    private com.google.publicalerts.cap.Alert.Scope scope_ = com.google.publicalerts.cap.Alert.Scope.Public;
+    // optional .publicalerts.cap.Alert.Scope scope = 9;
+    private com.google.publicalerts.cap.Alert.Scope scope_ = com.google.publicalerts.cap.Alert.Scope.PUBLIC;
     public boolean hasScope() {
       return ((bitField0_ & 0x00000100) == 0x00000100);
     }
@@ -1817,18 +1819,18 @@ public  final class Alert extends
     }
     public Builder clearScope() {
       bitField0_ = (bitField0_ & ~0x00000100);
-      scope_ = com.google.publicalerts.cap.Alert.Scope.Public;
+      scope_ = com.google.publicalerts.cap.Alert.Scope.PUBLIC;
       onChanged();
       return this;
     }
     
     // optional string restriction = 10;
-    private Object restriction_ = "";
+    private java.lang.Object restriction_ = "";
     public boolean hasRestriction() {
       return ((bitField0_ & 0x00000200) == 0x00000200);
     }
     public String getRestriction() {
-      Object ref = restriction_;
+      java.lang.Object ref = restriction_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         restriction_ = s;
@@ -1858,7 +1860,7 @@ public  final class Alert extends
       onChanged();
     }
     
-    // optional .alerts.cap.Group addresses = 11;
+    // optional .publicalerts.cap.Group addresses = 11;
     private com.google.publicalerts.cap.Group addresses_ = com.google.publicalerts.cap.Group.getDefaultInstance();
     private com.google.protobuf.SingleFieldBuilder<
         com.google.publicalerts.cap.Group, com.google.publicalerts.cap.Group.Builder, com.google.publicalerts.cap.GroupOrBuilder> addressesBuilder_;
@@ -2005,12 +2007,12 @@ public  final class Alert extends
     }
     
     // optional string note = 13;
-    private Object note_ = "";
+    private java.lang.Object note_ = "";
     public boolean hasNote() {
       return ((bitField0_ & 0x00001000) == 0x00001000);
     }
     public String getNote() {
-      Object ref = note_;
+      java.lang.Object ref = note_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         note_ = s;
@@ -2040,7 +2042,7 @@ public  final class Alert extends
       onChanged();
     }
     
-    // optional .alerts.cap.Group references = 14;
+    // optional .publicalerts.cap.Group references = 14;
     private com.google.publicalerts.cap.Group references_ = com.google.publicalerts.cap.Group.getDefaultInstance();
     private com.google.protobuf.SingleFieldBuilder<
         com.google.publicalerts.cap.Group, com.google.publicalerts.cap.Group.Builder, com.google.publicalerts.cap.GroupOrBuilder> referencesBuilder_;
@@ -2130,7 +2132,7 @@ public  final class Alert extends
       return referencesBuilder_;
     }
     
-    // optional .alerts.cap.Group incidents = 15;
+    // optional .publicalerts.cap.Group incidents = 15;
     private com.google.publicalerts.cap.Group incidents_ = com.google.publicalerts.cap.Group.getDefaultInstance();
     private com.google.protobuf.SingleFieldBuilder<
         com.google.publicalerts.cap.Group, com.google.publicalerts.cap.Group.Builder, com.google.publicalerts.cap.GroupOrBuilder> incidentsBuilder_;
@@ -2220,7 +2222,7 @@ public  final class Alert extends
       return incidentsBuilder_;
     }
     
-    // repeated .alerts.cap.Info info = 16;
+    // repeated .publicalerts.cap.Info info = 16;
     private java.util.List<com.google.publicalerts.cap.Info> info_ =
       java.util.Collections.emptyList();
     private void ensureInfoIsMutable() {
@@ -2406,7 +2408,7 @@ public  final class Alert extends
       return infoBuilder_;
     }
     
-    // @@protoc_insertion_point(builder_scope:alerts.cap.Alert)
+    // @@protoc_insertion_point(builder_scope:publicalerts.cap.Alert)
   }
   
   static {
@@ -2414,6 +2416,6 @@ public  final class Alert extends
     defaultInstance.initFields();
   }
   
-  // @@protoc_insertion_point(class_scope:alerts.cap.Alert)
+  // @@protoc_insertion_point(class_scope:publicalerts.cap.Alert)
 }
 

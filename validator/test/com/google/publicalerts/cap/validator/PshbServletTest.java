@@ -24,7 +24,7 @@ import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import com.google.publicalerts.cap.feed.TestResources;
+import com.google.publicalerts.cap.testing.TestResources;
 import com.google.publicalerts.cap.profile.CapProfile;
 
 import org.mockito.ArgumentCaptor;

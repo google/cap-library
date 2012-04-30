@@ -1,0 +1,177 @@
+Srl #,TIER I EVENTS,TIER II EVENTS,EVENT CODE,CAP CATEGORY VALUE,AUTHORITY TO MODIFY,(Can include associated Tier II events),(Can be included in Tier I event associated with it),"(4 to 12 characters, lower camel-hump style)",,
+1,Administration,,admin,Other,12
+2,Air Quality,,airQuality,Health,5
+3,Animal Health,,animalHealth,Env,2
+4,Animal Health,Animal Disease,animalDiseas,Env,2
+5,Animal Health,Animal Feed,animalFeed,Env,2
+6,Animal Health,Animal Pest,animalPest,Env,2
+7,Animal Health,Aquatic Animal Disease,aqAnimalDis,Env,2
+8,Animal Health,Aquatic Animal Pest,aqAnimalPest,Env,2
+9,Animal Health,Animal Welfare,animalWelfar,Env,2
+10,Animal Health,Marine Disease,marineDiseas,Env,2
+11,Animal Health,Maine Pest,marinePest,Env,2
+12,Animal Health,Animal Quarantine,aQuarantine,Env,2
+13,Animal Health,Sheep Grazier Warning,sheepWarning,Met,7
+14,Animals,Animal Attack,animalAttack,Other,12
+15,Animals,Dangerous Animal,animalDanger,Other,12
+16,Animals,Plague,plague,Env,2
+17,Aviation,,aviation,Transport,11
+18,Aviation,Aircraft Crash,aircraftCrsh,Transport,11
+19,Aviation,Aircraft Incident,aircraft,Transport,11
+20,Aviation,Airport Closure,airportClos,Transport,11
+21,Aviation,Airspace Closure,airspaceClos,Transport,11
+22,Aviation,Airport Lightning,Threat avLightning,Met,7
+23,Aviation,Airport Thunder Threat,avThunder,Met,7
+24,Aviation,Aviation Security,aviationSec,Transport,11
+25,Aviation,Falling Object,fallObject,Transport,11
+26,Aviation,Notice to Airmen,notam,Transport,11
+27,Aviation,Satellite / Space Re-entry Debris,spaceDebris,Transport,11
+28,Civil,,civil,Security,10
+29,Civil,Building Collapse,bldgCollapse,Infra,6
+30,Civil,Civil Emergency,civilEmerg,Security,10
+31,Civil,Demonstration,demonstratin,Security,10
+32,Civil,Public Event,civilEvent,Security,10
+33,Civil,Volunteer Request,volunteer,Other,12
+34,Criminal Activity,,crime,Security,10
+35,Criminal Activity,Cyber Crime,cyberCrime,Security,10
+36,Criminal Activity,Dangerous Person,dangerPerson,Security,10
+37,Criminal Activity,Terrorism,terrorism,Security,10
+38,Fire,,fire,Fire,3
+39,Fire,Bushfire,bushFire,Fire,3
+40,Fire,Fire Ban,fireBan,Fire,3
+41,Fire,Fire Danger Level,fireDangrLvl,Fire,3
+42,Fire,Forest Fire,forestFire,Fire,3
+43,Fire,Fire Weather,fireWeather,"Fire,Met","3,7"
+44,Fire,Grass Fire,grassFire,Fire,3
+45,Fire,Industrial Fire,industryFire,Fire,3
+46,Fire,Smoke Alert,smoke,Fire,3
+47,Fire,Structure Fire,structurFire,Fire,3
+48,Fire,Total Fire Ban,totalFireBan,Fire,3
+49,Flood,,flood,Met,7
+50,Flood,Dam Failure,damFailure,Infra,6
+51,Flood,Flash Flood,flashFlood,Met,7
+52,Flood,High Water Level,highWater,Met,7
+53,Flood,King Tide,kingTide,Met,7
+54,Flood,Levee Failure,leveeFailure,Infra,7
+55,Flood,Storm Surge,stormSurge,Met,7
+56,Flood,Riverine Flood,riverineflod,Met,7
+57,Geological,,geologicalHaz,Geo,4
+58,Geological,Avalanche,avalanche,Geo,4
+59,Geological,Earthquake,earthquake,Geo,4
+60,Geological,Karst Hazard,karst,Geo,4
+61,Geological,Lahar,lahar,Geo,4
+62,Geological,Landslide,landslide,Geo,4
+63,Geological,Lava Flow,lavaFlow,Geo,4
+64,Geological,Magnetic Storm,magnetcStorm,Geo,4
+65,Geological,Meteorite,meteor,Geo,4
+66,Geological,Pyroclastic Flow,pyroclasFlow,Geo,4
+67,Geological,Pyroclastic Surge,pyroclaSurge,Geo,4
+68,Geological,Tsunami,tsunami,Geo,4
+69,Geological,Volcanic Ash Cloud,volcanicAsh,Geo,4
+70,Geological,Volcano,volcano,Geo,4
+71,Hazardous Materials,,hazmat,CBRNE,1
+72,Hazardous Materials,Asbestos,asbestos,Health,5
+73,Hazardous Materials,Biological Hazard,biological,CBRNE,1
+74,Hazardous Materials,Chemical Hazard,chemical,CBRNE,1
+75,Hazardous Materials,Explosive Hazard,explosive,CBRNE,1
+76,Hazardous Materials,Major Pollution,pollution,Health,5
+77,Hazardous Materials,Radiological Hazard,radiological,CBRNE,1
+78,Hazardous Materials,Toxic Plume,toxicPlume,CBRNE,1
+79,Health,,health,Health,5
+80,Health,Ambulance,ambulance,Health,5
+81,Health,Blood Supply,bloodSupply,Health,5
+82,Health,Communicable Disease,communicable,Health,5
+83,Health,Drinking Water,drinkingWate,Health,5
+84,Health,Drug Safety,drugSafety,Health,5
+85,Health,Drug Supply,drugSupply,Health,5
+86,Health,Food Safety,foodSafety,Health,5
+87,Health,Food Supply,foodSupply,Health,5
+88,Health,Hospital,hospital,Health,5
+89,Health,Human Quarantine,hQuarantine,Health,5
+90,Health,Zoonotic Disease,zoonoticDis,"Health,Env","5,7"
+91,Marine,,marine,Met,7
+92,Marine,Freezing Spray,freezngSpray,Met,7
+93,Marine,Gale Wind,galeWind,Met,7
+94,Marine,Hurricane Force Wind,hurricFrcWnd,Met,7
+95,Marine,Iceberg,iceberg,Met,7
+96,Marine,Large Coastal Surf,largeSurf,Met,7
+97,Marine,Large Swell Waves,largeSwell,Met,7
+98,Marine,Maritime / Marine Security,maritimeSec,Transport,11
+99,Marine,Nautical Incident,nautical,Transport,11
+100,Marine,Oil Spill,oilSpill,Transport,11
+101,Marine,Squall,squall,Met,7
+102,Marine,Storm Force Wind,stormFrcWind,Met,7
+103,Marine,Strong Wind,strongWind,Met,7
+104,Marine,Waterspout,waterspout,Met,7
+105,Missing Person,,missingPer,Security,10
+106,Missing Person,Missing Vulnerable Person,missingVPer,Security,10
+107,Other Non-Urgent Alerts,,other,Other,12
+108,Other Urgent Alerts,,otherUrgent,Other,12
+109,Plant Health,,plant,Env,2
+110,Plant Health,Plant Disease,plantDisease,Env,2
+111,Plant Health,Plant Pest,plantPest,Env,2
+112,Plant Health,Plant Quarantine,pQuarantine,Env,2
+113,Preparedness Reminders,Emergency Preparedness Reminder,reminder,Other,12
+114,Product Safety,,product,Safety,9
+115,Public Services,,publicServic,Infra,6
+116,Public Services,Facility Closure,facilityClos,Infra,6
+117,Public Services,Facility Lockdown,facilityLock,Infra,6
+118,Public Services,Service or Facility,facility,Infra,6
+119,Public Services,Transit,transit,Transport,6
+120,Railway,,railway,Transport,11
+121,Railway,Railway Incident,railIncident,Transport,11
+122,Railway,Train / Rail Crash,railCrash,Transport,11
+123,Rescue,,rescue,Rescue,8
+124,Rescue,Distress Beacon,distressBcon,Rescue,8
+125,Roadway,,road,Transport,11
+126,Roadway,Bridge Closure,bridgClose,Transport,11
+127,Roadway,Bridge Collapse,bridgCollaps,Transport,11
+128,Roadway,Hazardous Road Conditions,roadHazard,Transport,11
+129,Roadway,Motor Vehicle Accident,roadCrash,Transport,11
+130,Roadway,Roadway Closure,roadClose,Transport,11
+131,Roadway,Roadway Delay,roadDelay,Transport,11
+132,Roadway,Roadway Incident,roadIncident,Transport,11
+133,Roadway,Roadway Usage Condition,roadUsage,Transport,11
+134,Roadway,Traffic Report,traffic,Transport,11
+135,Search,,search,Rescue,8
+136,Search,Over Water Search,waterSearch,Rescue,8
+137,Search,Over Land Search,landSearch,Rescue,8
+138,Search,Air Search,airSearch,Rescue,8
+139,Storm,,storm,Met,7
+140,Storm,Blizzard,blizzard,Met,7
+141,Storm,Dust Storm,dustStorm,Met,7
+142,Storm,Hail,hail,Met,7
+143,Storm,Rainfall,rainfall,Met,7
+144,Storm,Snowfall,snowfall,Met,7
+145,Storm,Thunderstorm,thunderstorm,Met,7
+146,Storm,Tornado,tornado,Met,7
+147,Storm,Tropical Cyclone,tropCyclone,Met,7
+148,Storm,Weather,weather,Met,7
+149,Temperature,,temperature,Met,7
+150,Temperature,Extreme Heat,extremeHeat,Met,7
+151,Temperature,Exposure,exposure,Met,7
+152,Temperature,Frost,frost,Met,7
+153,Temperature,Wind Chill,windChill,Met,7
+154,Test Message,,testMessage,Other,12
+155,Utility,,utility,Infra,6
+156,Utility,Cable Service,cable,Infra,6
+157,Utility,Communications Service,comunication,Infra,6
+158,Utility,Diesel Supply,diesel,Infra,6
+159,Utility,Electricity Supply,electric,Infra,6
+160,Utility,Heating Oil Supply,heatingOil,Infra,6
+161,Utility,Internet Service,internet,Infra,6
+162,Utility,Landline Service,landlines,Infra,6
+163,Utility,Mobile Service,mobiles,Infra,6
+164,Utility,Natural Gas Supply,naturalGas,Infra,6
+165,Utility,Petrol Supply,petrol,Infra,6
+166,Utility,Pipeline Rupture,pipeRupture,Infra,6
+167,Utility,Satellite Service,satellite,Infra,6
+168,Utility,Sewer System,sewer,Infra,6
+169,Utility,Telephone Service,telephone,Infra,6
+170,Utility,Triple Zero,tripleZero,Infra,6
+171,Utility,Waste Management,waste,Infra,6
+172,Utility,Water Supply,water,Infra,6
+173,Wind,,wind,Met,7
+174,Wind,Wind Change,windChange,Met,7
+175,Water quality,,water,Other,12
+176,Water quality,Blue Green Algae,blueGrnAlgae,Other,12

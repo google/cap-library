@@ -22,16 +22,16 @@ public  final class Circle extends
   
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Circle_descriptor;
+    return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Circle_descriptor;
   }
   
   protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Circle_fieldAccessorTable;
+    return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Circle_fieldAccessorTable;
   }
   
   private int bitField0_;
-  // required .alerts.cap.Point point = 1;
+  // required .publicalerts.cap.Point point = 1;
   public static final int POINT_FIELD_NUMBER = 1;
   private com.google.publicalerts.cap.Point point_;
   public boolean hasPoint() {
@@ -110,13 +110,15 @@ public  final class Circle extends
     return size;
   }
   
+  private static final long serialVersionUID = 0L;
   @java.lang.Override
-  protected Object writeReplace() throws java.io.ObjectStreamException {
+  protected java.lang.Object writeReplace()
+      throws java.io.ObjectStreamException {
     return super.writeReplace();
   }
   
   @java.lang.Override
-  public boolean equals(final Object obj) {
+  public boolean equals(final java.lang.Object obj) {
     if (obj == this) {
      return true;
     }
@@ -242,12 +244,12 @@ public  final class Circle extends
      implements com.google.publicalerts.cap.CircleOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Circle_descriptor;
+      return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Circle_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Circle_fieldAccessorTable;
+      return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Circle_fieldAccessorTable;
     }
     
     // Construct using com.google.publicalerts.cap.Circle.newBuilder()
@@ -413,7 +415,7 @@ public  final class Circle extends
     
     private int bitField0_;
     
-    // required .alerts.cap.Point point = 1;
+    // required .publicalerts.cap.Point point = 1;
     private com.google.publicalerts.cap.Point point_ = com.google.publicalerts.cap.Point.getDefaultInstance();
     private com.google.protobuf.SingleFieldBuilder<
         com.google.publicalerts.cap.Point, com.google.publicalerts.cap.Point.Builder, com.google.publicalerts.cap.PointOrBuilder> pointBuilder_;
@@ -524,7 +526,7 @@ public  final class Circle extends
       return this;
     }
     
-    // @@protoc_insertion_point(builder_scope:alerts.cap.Circle)
+    // @@protoc_insertion_point(builder_scope:publicalerts.cap.Circle)
   }
   
   static {
@@ -532,6 +534,6 @@ public  final class Circle extends
     defaultInstance.initFields();
   }
   
-  // @@protoc_insertion_point(class_scope:alerts.cap.Circle)
+  // @@protoc_insertion_point(class_scope:publicalerts.cap.Circle)
 }
 

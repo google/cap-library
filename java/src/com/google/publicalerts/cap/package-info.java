@@ -29,7 +29,7 @@
  * The generated classes offer a clean API for creating and manipulating
  * alert objects. The alert data structures are immutable; they provide only
  * getters. New alerts are constructed via Builder classes. See
- * <a href="http://code.google.com/p/cap-library/source/browse/java/test/com/google/publicalerts/cap/TestUtil.java">TestUtil.java</a>
+ * <a href="http://code.google.com/p/cap-library/source/browse/java/test/com/google/publicalerts/cap/CapTestUtil.java">CapTestUtil.java</a>
  * for an example.
  * <p>
  * <a href="http://code.google.com/p/cap-library/source/browse/java/test/com/google/publicalerts/cap/EndToEndTest.java">EndToEndTest.java</a>

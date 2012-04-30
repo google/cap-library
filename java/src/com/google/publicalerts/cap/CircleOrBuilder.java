@@ -5,7 +5,7 @@ package com.google.publicalerts.cap;
 public interface CircleOrBuilder
     extends com.google.protobuf.MessageOrBuilder {
   
-  // required .alerts.cap.Point point = 1;
+  // required .publicalerts.cap.Point point = 1;
   boolean hasPoint();
   com.google.publicalerts.cap.Point getPoint();
   com.google.publicalerts.cap.PointOrBuilder getPointOrBuilder();

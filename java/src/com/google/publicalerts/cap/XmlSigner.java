@@ -37,6 +37,7 @@ import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
@@ -239,5 +240,9 @@ public class XmlSigner {
     }
 
     XmlUtil.writeDocument(document, writer, null);
+  }
+
+  /* VisibleForTesting */ PublicKey getPublicKey() {
+    return keyPair.getPublic();
   }
 }

@@ -16,10 +16,10 @@
 
 package com.google.publicalerts.cap.profile;
 
-import java.util.List;
-
 import com.google.publicalerts.cap.AlertOrBuilder;
 import com.google.publicalerts.cap.CapException;
+
+import java.util.List;
 
 /**
  * Specifies a set of extra constraints on the CAP format.

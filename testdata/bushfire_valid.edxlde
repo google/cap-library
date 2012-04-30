@@ -1,0 +1,534 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet href="../lib/RFS_EDXL_simple.xsl" type="text/xsl"?>
+<edxlde:EDXLDistribution xmlns:edxlde="urn:oasis:names:tc:emergency:EDXL:DE:1.0">
+  <edxlde:distributionID>RFSuniqueID12345</edxlde:distributionID>
+  <edxlde:senderID>webmaster@rfs.nsw.gov.au</edxlde:senderID>
+  <edxlde:dateTimeSent>2011-10-17T11:18:00-00:00</edxlde:dateTimeSent>
+  <edxlde:distributionStatus>Actual</edxlde:distributionStatus>
+  <edxlde:distributionType>Report</edxlde:distributionType>
+  <edxlde:combinedConfidentiality>UNCLASSIFIED</edxlde:combinedConfidentiality>
+  <edxlde:language>en-AU</edxlde:language>
+  <edxlde:targetArea>
+    <edxlde:subdivision>AU-NSW</edxlde:subdivision>
+  </edxlde:targetArea>
+  <edxlde:contentObject>
+    <edxlde:contentDescription>Information on One Tree MVA (Unmapped Incident)</edxlde:contentDescription>
+    <edxlde:xmlContent>
+      <edxlde:embeddedXMLContent>
+        <cap:alert xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">
+          <cap:identifier>tag:www.rfs.nsw.gov.au2011-10-18:40500</cap:identifier>
+          <cap:sender>webmaster@rfs.nsw.gov.au</cap:sender>
+          <cap:sent>2011-10-17T11:18:00-00:00</cap:sent>
+          <cap:status>Actual</cap:status>
+          <cap:msgType>Alert</cap:msgType>
+          <cap:scope>Public</cap:scope>
+          <cap:info>
+            <cap:language>en-AU</cap:language>
+            <cap:category>Fire</cap:category>
+            <cap:event>Other</cap:event>
+            <cap:urgency>Expected</cap:urgency>
+            <cap:severity>Minor</cap:severity>
+            <cap:certainty>Observed</cap:certainty>
+            <cap:eventCode>
+              <cap:valueName>CDNevent</cap:valueName>
+              <cap:value>other</cap:value>
+            </cap:eventCode>
+            <cap:expires>2011-10-18T11:18:00-00:00</cap:expires>
+            <cap:senderName>NSW Rural Fire Service</cap:senderName>
+            <cap:headline>One Tree MVA (Unmapped Incident)</cap:headline>
+            <cap:description>ALERT LEVEL: Not Applicable&lt;br /&gt;LOCATION: 8.5 kilometers south on Point Lookout50k east of Armidale
+ (Note: location on map is approximate to centre of local government area)&lt;br /&gt;COUNCIL AREA: Armidale Dumaresq&lt;br /&gt;STATUS: Under Control&lt;br /&gt;TYPE: MVA (Motor vehicle accident)&lt;br /&gt;SIZE: 0 ha&lt;br /&gt;RESPONSIBLE AGENCY: Rural Fire Service&lt;br /&gt;UPDATED: 17 Oct 2011 22:18</cap:description>
+            <cap:instruction>Not Applicable</cap:instruction>
+            <cap:web>http://www.rfs.nsw.gov.au/dsp_content.cfm?cat_id=683</cap:web>
+            <cap:parameter>
+              <cap:valueName>FuelType</cap:valueName>
+              <cap:value>Forest</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Location</cap:valueName>
+              <cap:value>8.5 kilometers south on Point Lookout50k east of Armidale
+ (Note: location on map is approximate to centre of local government area)</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>FireDangerClass</cap:valueName>
+              <cap:value>1</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Status</cap:valueName>
+              <cap:value>Under Control</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Fireground</cap:valueName>
+              <cap:value>0 ha</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>AllocatedResources</cap:valueName>
+              <cap:value />
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>ControlAuthority</cap:valueName>
+              <cap:value>Rural Fire Service</cap:value>
+            </cap:parameter>
+            <cap:resource>
+              <cap:resourceDesc>map</cap:resourceDesc>
+              <cap:mimeType>text/html</cap:mimeType>
+              <cap:uri>http://www.rfs.nsw.gov.au/dsp_content.cfm?CAT_ID=683</cap:uri>
+            </cap:resource>
+            <cap:area>
+              <cap:areaDesc>One Tree MVA (Unmapped Incident)</cap:areaDesc>
+              <cap:circle>-30.546,151.9576 0.0</cap:circle>
+              <cap:geocode>
+                <cap:valueName>ISO 3166-2</cap:valueName>
+                <cap:value>AU-NSW</cap:value>
+              </cap:geocode>
+            </cap:area>
+          </cap:info>
+        </cap:alert>
+      </edxlde:embeddedXMLContent>
+    </edxlde:xmlContent>
+  </edxlde:contentObject>
+  <edxlde:contentObject>
+    <edxlde:contentDescription>Information on Quinambyie</edxlde:contentDescription>
+    <edxlde:xmlContent>
+      <edxlde:embeddedXMLContent>
+        <cap:alert xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">
+          <cap:identifier>tag:www.rfs.nsw.gov.au2011-10-18:40444</cap:identifier>
+          <cap:sender>webmaster@rfs.nsw.gov.au</cap:sender>
+          <cap:sent>2011-10-17T05:34:00-00:00</cap:sent>
+          <cap:status>Actual</cap:status>
+          <cap:msgType>Alert</cap:msgType>
+          <cap:scope>Public</cap:scope>
+          <cap:info>
+            <cap:language>en-AU</cap:language>
+            <cap:category>Fire</cap:category>
+            <cap:event>Grassfire</cap:event>
+            <cap:urgency>Expected</cap:urgency>
+            <cap:severity>Moderate</cap:severity>
+            <cap:certainty>Observed</cap:certainty>
+            <cap:eventCode>
+              <cap:valueName>CDNevent</cap:valueName>
+              <cap:value>grassFire</cap:value>
+            </cap:eventCode>
+            <cap:expires>2011-10-18T05:34:00-00:00</cap:expires>
+            <cap:senderName>NSW Rural Fire Service</cap:senderName>
+            <cap:headline>Quinambyie</cap:headline>
+            <cap:description>ALERT LEVEL: Advice&lt;br /&gt;LOCATION: 250 km north Broken hill&lt;br /&gt;COUNCIL AREA: Unincorporated&lt;br /&gt;STATUS: Being Controlled&lt;br /&gt;TYPE: Grass fire&lt;br /&gt;SIZE: 1000 ha&lt;br /&gt;RESPONSIBLE AGENCY: Rural Fire Service&lt;br /&gt;UPDATED: 17 Oct 2011 16:34</cap:description>
+            <cap:instruction>A fire has started. There is no immediate danger. Stay up to date in case the situation changes.</cap:instruction>
+            <cap:web>http://www.rfs.nsw.gov.au/dsp_content.cfm?cat_id=683</cap:web>
+            <cap:parameter>
+              <cap:valueName>FuelType</cap:valueName>
+              <cap:value>Forest</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Location</cap:valueName>
+              <cap:value>250 km north Broken hill</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>FireDangerClass</cap:valueName>
+              <cap:value>1</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Status</cap:valueName>
+              <cap:value>Being Controlled</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Fireground</cap:valueName>
+              <cap:value>1000 ha</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>AllocatedResources</cap:valueName>
+              <cap:value />
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>ControlAuthority</cap:valueName>
+              <cap:value>Rural Fire Service</cap:value>
+            </cap:parameter>
+            <cap:resource>
+              <cap:resourceDesc>map</cap:resourceDesc>
+              <cap:mimeType>text/html</cap:mimeType>
+              <cap:uri>http://www.rfs.nsw.gov.au/dsp_content.cfm?CAT_ID=683</cap:uri>
+            </cap:resource>
+            <cap:area>
+              <cap:areaDesc>Quinambyie</cap:areaDesc>
+              <cap:circle>-30.0266,141.0118 0.0</cap:circle>
+              <cap:geocode>
+                <cap:valueName>ISO 3166-2</cap:valueName>
+                <cap:value>AU-NSW</cap:value>
+              </cap:geocode>
+            </cap:area>
+          </cap:info>
+        </cap:alert>
+      </edxlde:embeddedXMLContent>
+    </edxlde:xmlContent>
+  </edxlde:contentObject>
+  <edxlde:contentObject>
+    <edxlde:contentDescription>Information on Sturt NP - Middle Road</edxlde:contentDescription>
+    <edxlde:xmlContent>
+      <edxlde:embeddedXMLContent>
+        <cap:alert xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">
+          <cap:identifier>tag:www.rfs.nsw.gov.au2011-10-18:40394</cap:identifier>
+          <cap:sender>webmaster@rfs.nsw.gov.au</cap:sender>
+          <cap:sent>2011-10-17T05:30:00-00:00</cap:sent>
+          <cap:status>Actual</cap:status>
+          <cap:msgType>Alert</cap:msgType>
+          <cap:scope>Public</cap:scope>
+          <cap:info>
+            <cap:language>en-AU</cap:language>
+            <cap:category>Fire</cap:category>
+            <cap:event>Grassfire</cap:event>
+            <cap:urgency>Expected</cap:urgency>
+            <cap:severity>Moderate</cap:severity>
+            <cap:certainty>Observed</cap:certainty>
+            <cap:eventCode>
+              <cap:valueName>CDNevent</cap:valueName>
+              <cap:value>grassFire</cap:value>
+            </cap:eventCode>
+            <cap:expires>2011-10-18T05:30:00-00:00</cap:expires>
+            <cap:senderName>NSW Rural Fire Service</cap:senderName>
+            <cap:headline>Sturt NP - Middle Road</cap:headline>
+            <cap:description>ALERT LEVEL: Advice&lt;br /&gt;LOCATION: Sturt National Park, 75km north-west of Tibooburra&lt;br /&gt;COUNCIL AREA: Unincorporated&lt;br /&gt;STATUS: Under Control&lt;br /&gt;TYPE: Grass fire&lt;br /&gt;SIZE: 6700 ha&lt;br /&gt;RESPONSIBLE AGENCY: NSW National Parks &amp; Wildlife Service&lt;br /&gt;UPDATED: 17 Oct 2011 16:30</cap:description>
+            <cap:instruction>A fire has started. There is no immediate danger. Stay up to date in case the situation changes.</cap:instruction>
+            <cap:web>http://www.rfs.nsw.gov.au/dsp_content.cfm?cat_id=683</cap:web>
+            <cap:parameter>
+              <cap:valueName>FuelType</cap:valueName>
+              <cap:value>Forest</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Location</cap:valueName>
+              <cap:value>Sturt National Park, 75km north-west of Tibooburra</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>FireDangerClass</cap:valueName>
+              <cap:value>1</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Status</cap:valueName>
+              <cap:value>Under Control</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Fireground</cap:valueName>
+              <cap:value>6700 ha</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>AllocatedResources</cap:valueName>
+              <cap:value />
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>ControlAuthority</cap:valueName>
+              <cap:value>NSW National Parks &amp; Wildlife Service</cap:value>
+            </cap:parameter>
+            <cap:resource>
+              <cap:resourceDesc>map</cap:resourceDesc>
+              <cap:mimeType>text/html</cap:mimeType>
+              <cap:uri>http://www.rfs.nsw.gov.au/dsp_content.cfm?CAT_ID=683</cap:uri>
+            </cap:resource>
+            <cap:area>
+              <cap:areaDesc>Sturt NP - Middle Road</cap:areaDesc>
+              <cap:circle>-29.0699,141.3707 0.0</cap:circle>
+              <cap:geocode>
+                <cap:valueName>ISO 3166-2</cap:valueName>
+                <cap:value>AU-NSW</cap:value>
+              </cap:geocode>
+            </cap:area>
+          </cap:info>
+        </cap:alert>
+      </edxlde:embeddedXMLContent>
+    </edxlde:xmlContent>
+  </edxlde:contentObject>
+  <edxlde:contentObject>
+    <edxlde:contentDescription>Information on Border Downs</edxlde:contentDescription>
+    <edxlde:xmlContent>
+      <edxlde:embeddedXMLContent>
+        <cap:alert xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">
+          <cap:identifier>tag:www.rfs.nsw.gov.au2011-10-18:40428</cap:identifier>
+          <cap:sender>webmaster@rfs.nsw.gov.au</cap:sender>
+          <cap:sent>2011-10-17T05:15:00-00:00</cap:sent>
+          <cap:status>Actual</cap:status>
+          <cap:msgType>Alert</cap:msgType>
+          <cap:scope>Public</cap:scope>
+          <cap:info>
+            <cap:language>en-AU</cap:language>
+            <cap:category>Fire</cap:category>
+            <cap:event>Grassfire</cap:event>
+            <cap:urgency>Expected</cap:urgency>
+            <cap:severity>Moderate</cap:severity>
+            <cap:certainty>Observed</cap:certainty>
+            <cap:eventCode>
+              <cap:valueName>CDNevent</cap:valueName>
+              <cap:value>grassFire</cap:value>
+            </cap:eventCode>
+            <cap:expires>2011-10-18T05:15:00-00:00</cap:expires>
+            <cap:senderName>NSW Rural Fire Service</cap:senderName>
+            <cap:headline>Border Downs</cap:headline>
+            <cap:description>ALERT LEVEL: Advice&lt;br /&gt;LOCATION: North west of Broken Hill&lt;br /&gt;COUNCIL AREA: Unincorporated&lt;br /&gt;STATUS: Under Control&lt;br /&gt;TYPE: Grass fire&lt;br /&gt;SIZE: 7000 ha&lt;br /&gt;RESPONSIBLE AGENCY: Rural Fire Service&lt;br /&gt;UPDATED: 17 Oct 2011 16:15</cap:description>
+            <cap:instruction>A fire has started. There is no immediate danger. Stay up to date in case the situation changes.</cap:instruction>
+            <cap:web>http://www.rfs.nsw.gov.au/dsp_content.cfm?cat_id=683</cap:web>
+            <cap:parameter>
+              <cap:valueName>FuelType</cap:valueName>
+              <cap:value>Forest</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Location</cap:valueName>
+              <cap:value>North west of Broken Hill</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>FireDangerClass</cap:valueName>
+              <cap:value>1</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Status</cap:valueName>
+              <cap:value>Under Control</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Fireground</cap:valueName>
+              <cap:value>7000 ha</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>AllocatedResources</cap:valueName>
+              <cap:value />
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>ControlAuthority</cap:valueName>
+              <cap:value>Rural Fire Service</cap:value>
+            </cap:parameter>
+            <cap:resource>
+              <cap:resourceDesc>map</cap:resourceDesc>
+              <cap:mimeType>text/html</cap:mimeType>
+              <cap:uri>http://www.rfs.nsw.gov.au/dsp_content.cfm?CAT_ID=683</cap:uri>
+            </cap:resource>
+            <cap:area>
+              <cap:areaDesc>Border Downs</cap:areaDesc>
+              <cap:circle>-31.4023,141.0412 0.0</cap:circle>
+              <cap:geocode>
+                <cap:valueName>ISO 3166-2</cap:valueName>
+                <cap:value>AU-NSW</cap:value>
+              </cap:geocode>
+            </cap:area>
+          </cap:info>
+        </cap:alert>
+      </edxlde:embeddedXMLContent>
+    </edxlde:xmlContent>
+  </edxlde:contentObject>
+  <edxlde:contentObject>
+    <edxlde:contentDescription>Information on Langs Rd Fire</edxlde:contentDescription>
+    <edxlde:xmlContent>
+      <edxlde:embeddedXMLContent>
+        <cap:alert xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">
+          <cap:identifier>tag:www.rfs.nsw.gov.au2011-10-18:40484</cap:identifier>
+          <cap:sender>webmaster@rfs.nsw.gov.au</cap:sender>
+          <cap:sent>2011-10-17T04:30:00-00:00</cap:sent>
+          <cap:status>Actual</cap:status>
+          <cap:msgType>Alert</cap:msgType>
+          <cap:scope>Public</cap:scope>
+          <cap:info>
+            <cap:language>en-AU</cap:language>
+            <cap:category>Fire</cap:category>
+            <cap:event>Grassfire</cap:event>
+            <cap:urgency>Expected</cap:urgency>
+            <cap:severity>Moderate</cap:severity>
+            <cap:certainty>Observed</cap:certainty>
+            <cap:eventCode>
+              <cap:valueName>CDNevent</cap:valueName>
+              <cap:value>grassFire</cap:value>
+            </cap:eventCode>
+            <cap:expires>2011-10-18T04:30:00-00:00</cap:expires>
+            <cap:senderName>NSW Rural Fire Service</cap:senderName>
+            <cap:headline>Langs Rd Fire</cap:headline>
+            <cap:description>ALERT LEVEL: Advice&lt;br /&gt;LOCATION: 5KM NE of Wombeyan Caves.&lt;br /&gt;COUNCIL AREA: Upper Lachlan&lt;br /&gt;STATUS: Out of Control&lt;br /&gt;TYPE: Grass fire&lt;br /&gt;SIZE: 10 ha&lt;br /&gt;RESPONSIBLE AGENCY: Rural Fire Service&lt;br /&gt;UPDATED: 17 Oct 2011 15:30</cap:description>
+            <cap:instruction>A fire has started. There is no immediate danger. Stay up to date in case the situation changes.</cap:instruction>
+            <cap:web>http://www.rfs.nsw.gov.au/dsp_content.cfm?cat_id=683</cap:web>
+            <cap:parameter>
+              <cap:valueName>FuelType</cap:valueName>
+              <cap:value>Forest</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Location</cap:valueName>
+              <cap:value>5KM NE of Wombeyan Caves.</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>FireDangerClass</cap:valueName>
+              <cap:value>1</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Status</cap:valueName>
+              <cap:value>Out of Control</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Fireground</cap:valueName>
+              <cap:value>10 ha</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>AllocatedResources</cap:valueName>
+              <cap:value />
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>ControlAuthority</cap:valueName>
+              <cap:value>Rural Fire Service</cap:value>
+            </cap:parameter>
+            <cap:resource>
+              <cap:resourceDesc>map</cap:resourceDesc>
+              <cap:mimeType>text/html</cap:mimeType>
+              <cap:uri>http://www.rfs.nsw.gov.au/dsp_content.cfm?CAT_ID=683</cap:uri>
+            </cap:resource>
+            <cap:area>
+              <cap:areaDesc>Langs Rd Fire</cap:areaDesc>
+              <cap:circle>-34.2805,150.0102 0.0</cap:circle>
+              <cap:geocode>
+                <cap:valueName>ISO 3166-2</cap:valueName>
+                <cap:value>AU-NSW</cap:value>
+              </cap:geocode>
+            </cap:area>
+          </cap:info>
+        </cap:alert>
+      </edxlde:embeddedXMLContent>
+    </edxlde:xmlContent>
+  </edxlde:contentObject>
+  <edxlde:contentObject>
+    <edxlde:contentDescription>Information on Alambie near Harden Golf Course</edxlde:contentDescription>
+    <edxlde:xmlContent>
+      <edxlde:embeddedXMLContent>
+        <cap:alert xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">
+          <cap:identifier>tag:www.rfs.nsw.gov.au2011-10-18:40487</cap:identifier>
+          <cap:sender>webmaster@rfs.nsw.gov.au</cap:sender>
+          <cap:sent>2011-10-17T03:23:00-00:00</cap:sent>
+          <cap:status>Actual</cap:status>
+          <cap:msgType>Alert</cap:msgType>
+          <cap:scope>Public</cap:scope>
+          <cap:info>
+            <cap:language>en-AU</cap:language>
+            <cap:category>Fire</cap:category>
+            <cap:event>Grassfire</cap:event>
+            <cap:urgency>Expected</cap:urgency>
+            <cap:severity>Moderate</cap:severity>
+            <cap:certainty>Observed</cap:certainty>
+            <cap:eventCode>
+              <cap:valueName>CDNevent</cap:valueName>
+              <cap:value>grassFire</cap:value>
+            </cap:eventCode>
+            <cap:expires>2011-10-18T03:23:00-00:00</cap:expires>
+            <cap:senderName>NSW Rural Fire Service</cap:senderName>
+            <cap:headline>Alambie near Harden Golf Course</cap:headline>
+            <cap:description>ALERT LEVEL: Advice&lt;br /&gt;LOCATION: South of Harden on Rutland rd&lt;br /&gt;COUNCIL AREA: Harden&lt;br /&gt;STATUS: Under Control&lt;br /&gt;TYPE: Grass fire&lt;br /&gt;SIZE: 1 ha&lt;br /&gt;RESPONSIBLE AGENCY: Rural Fire Service&lt;br /&gt;UPDATED: 17 Oct 2011 14:23</cap:description>
+            <cap:instruction>A fire has started. There is no immediate danger. Stay up to date in case the situation changes.</cap:instruction>
+            <cap:web>http://www.rfs.nsw.gov.au/dsp_content.cfm?cat_id=683</cap:web>
+            <cap:parameter>
+              <cap:valueName>FuelType</cap:valueName>
+              <cap:value>Forest</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Location</cap:valueName>
+              <cap:value>South of Harden on Rutland rd</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>FireDangerClass</cap:valueName>
+              <cap:value>1</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Status</cap:valueName>
+              <cap:value>Under Control</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Fireground</cap:valueName>
+              <cap:value>1 ha</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>AllocatedResources</cap:valueName>
+              <cap:value />
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>ControlAuthority</cap:valueName>
+              <cap:value>Rural Fire Service</cap:value>
+            </cap:parameter>
+            <cap:resource>
+              <cap:resourceDesc>map</cap:resourceDesc>
+              <cap:mimeType>text/html</cap:mimeType>
+              <cap:uri>http://www.rfs.nsw.gov.au/dsp_content.cfm?CAT_ID=683</cap:uri>
+            </cap:resource>
+            <cap:area>
+              <cap:areaDesc>Alambie near Harden Golf Course</cap:areaDesc>
+              <cap:circle>-34.5678,148.3683 0.0</cap:circle>
+              <cap:geocode>
+                <cap:valueName>ISO 3166-2</cap:valueName>
+                <cap:value>AU-NSW</cap:value>
+              </cap:geocode>
+            </cap:area>
+          </cap:info>
+        </cap:alert>
+      </edxlde:embeddedXMLContent>
+    </edxlde:xmlContent>
+  </edxlde:contentObject>
+  <edxlde:contentObject>
+    <edxlde:contentDescription>Information on Old Mill Bush Fire</edxlde:contentDescription>
+    <edxlde:xmlContent>
+      <edxlde:embeddedXMLContent>
+        <cap:alert xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">
+          <cap:identifier>tag:www.rfs.nsw.gov.au2011-10-18:40435</cap:identifier>
+          <cap:sender>webmaster@rfs.nsw.gov.au</cap:sender>
+          <cap:sent>2011-10-17T02:30:00-00:00</cap:sent>
+          <cap:status>Actual</cap:status>
+          <cap:msgType>Alert</cap:msgType>
+          <cap:scope>Public</cap:scope>
+          <cap:info>
+            <cap:language>en-AU</cap:language>
+            <cap:category>Fire</cap:category>
+            <cap:event>Fire</cap:event>
+            <cap:urgency>Expected</cap:urgency>
+            <cap:severity>Moderate</cap:severity>
+            <cap:certainty>Observed</cap:certainty>
+            <cap:eventCode>
+              <cap:valueName>CDNevent</cap:valueName>
+              <cap:value>Fire</cap:value>
+            </cap:eventCode>
+            <cap:expires>2011-10-18T02:30:00-00:00</cap:expires>
+            <cap:senderName>NSW Rural Fire Service</cap:senderName>
+            <cap:headline>Old Mill Bush Fire</cap:headline>
+            <cap:description>ALERT LEVEL: Advice&lt;br /&gt;LOCATION: Kentuckey Road Neville&lt;br /&gt;COUNCIL AREA: Blayney&lt;br /&gt;STATUS: Under Control&lt;br /&gt;TYPE: Scrub fire&lt;br /&gt;SIZE: 12 ha&lt;br /&gt;RESPONSIBLE AGENCY: Rural Fire Service&lt;br /&gt;UPDATED: 17 Oct 2011 13:30</cap:description>
+            <cap:instruction>A fire has started. There is no immediate danger. Stay up to date in case the situation changes.</cap:instruction>
+            <cap:web>http://www.rfs.nsw.gov.au/dsp_content.cfm?cat_id=683</cap:web>
+            <cap:parameter>
+              <cap:valueName>FuelType</cap:valueName>
+              <cap:value>Forest</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Location</cap:valueName>
+              <cap:value>Kentuckey Road Neville</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>FireDangerClass</cap:valueName>
+              <cap:value>1</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Status</cap:valueName>
+              <cap:value>Under Control</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>Fireground</cap:valueName>
+              <cap:value>12 ha</cap:value>
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>AllocatedResources</cap:valueName>
+              <cap:value />
+            </cap:parameter>
+            <cap:parameter>
+              <cap:valueName>ControlAuthority</cap:valueName>
+              <cap:value>Rural Fire Service</cap:value>
+            </cap:parameter>
+            <cap:resource>
+              <cap:resourceDesc>map</cap:resourceDesc>
+              <cap:mimeType>text/html</cap:mimeType>
+              <cap:uri>http://www.rfs.nsw.gov.au/dsp_content.cfm?CAT_ID=683</cap:uri>
+            </cap:resource>
+            <cap:area>
+              <cap:areaDesc>Old Mill Bush Fire</cap:areaDesc>
+              <cap:circle>-33.7614,149.1685 0.0</cap:circle>
+              <cap:geocode>
+                <cap:valueName>ISO 3166-2</cap:valueName>
+                <cap:value>AU-NSW</cap:value>
+              </cap:geocode>
+            </cap:area>
+          </cap:info>
+        </cap:alert>
+      </edxlde:embeddedXMLContent>
+    </edxlde:xmlContent>
+  </edxlde:contentObject>
+</edxlde:EDXLDistribution>

@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<cap:alert xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">
+  <cap:identifier>tag:www.rfs.nsw.gov.au2011-10-06:40184</cap:identifier>
+  <cap:sender>webmaster@rfs.nsw.gov.au</cap:sender>
+  <cap:sent>2011-10-05T23:04:00-00:00</cap:sent>
+  <cap:status>Actual</cap:status>
+  <cap:msgType>Alert</cap:msgType>
+  <cap:scope>Public</cap:scope>
+  <cap:code>urn:oasis:names:tc:emergency:cap:1.2:profile:CAP-AU:1.0</cap:code>
+
+  <cap:info>
+    <cap:language>en-AU</cap:language>
+    <cap:category>Fire</cap:category>
+    <cap:category>Met</cap:category>
+    <cap:event>Fire</cap:event>
+    <cap:responseType>Evacuate</cap:responseType>
+    <cap:urgency>Expected</cap:urgency>
+    <cap:severity>Minor</cap:severity>
+    <cap:certainty>Observed</cap:certainty>
+    <cap:eventCode>
+      <cap:valueName>urn:oasis:names:tc:emergency:cap:1.2:profile:CAP-AU:1.0:AUeventLIST:1.0</cap:valueName>
+      <cap:value>fire</cap:value>
+    </cap:eventCode>
+    <cap:effective>2011-10-05T23:04:00-00:00</cap:effective>
+    <cap:expires>2011-10-06T23:04:00-00:00</cap:expires>
+    <cap:senderName>NSW Rural Fire Service</cap:senderName>
+    <cap:headline>Yerong Creek Structure Fire</cap:headline>
+    <cap:description>ALERT LEVEL: Not Applicable&lt;br /&gt;LOCATION: 12 Cox Street, Yerong Creek&lt;br /&gt;COUNCIL AREA: Lockhart&lt;br /&gt;STATUS: Out of Control&lt;br /&gt;TYPE: Structure fire (A fire involving a residential, commercial or industrial building)&lt;br /&gt;SIZE: 0 ha&lt;br /&gt;RESPONSIBLE AGENCY: Rural Fire Service&lt;br /&gt;UPDATED: 6 Oct 2011 10:04</cap:description>
+
+    <cap:instruction>Not Applicable</cap:instruction>
+    <cap:web>http://www.rfs.nsw.gov.au/dsp_content.cfm?cat_id=683</cap:web>
+    <cap:parameter>
+      <cap:valueName>FuelType</cap:valueName>
+      <cap:value>Forest</cap:value>
+    </cap:parameter>
+    <cap:parameter>
+
+      <cap:valueName>Location</cap:valueName>
+      <cap:value>12 Cox Street, Yerong Creek</cap:value>
+    </cap:parameter>
+    <cap:parameter>
+      <cap:valueName>FireDangerClass</cap:valueName>
+      <cap:value>1</cap:value>
+    </cap:parameter>
+
+    <cap:parameter>
+      <cap:valueName>Status</cap:valueName>
+      <cap:value>Out of Control</cap:value>
+    </cap:parameter>
+    <cap:parameter>
+      <cap:valueName>Fireground</cap:valueName>
+      <cap:value>0 ha</cap:value>
+
+    </cap:parameter>
+    <cap:parameter>
+      <cap:valueName>AllocatedResources</cap:valueName>
+      <cap:value />
+    </cap:parameter>
+    <cap:parameter>
+      <cap:valueName>ControlAuthority</cap:valueName>
+      <cap:value>Rural Fire Service</cap:value>
+
+    </cap:parameter>
+    <cap:resource>
+      <cap:resourceDesc>map</cap:resourceDesc>
+      <cap:mimeType>text/html</cap:mimeType>
+      <cap:uri>http://www.rfs.nsw.gov.au/dsp_content.cfm?CAT_ID=683</cap:uri>
+    </cap:resource>
+    <cap:area>
+
+      <cap:areaDesc>Yerong Creek Structure Fire</cap:areaDesc>
+      <cap:circle>-35.3888,147.0598 0.0</cap:circle>
+      <cap:geocode>
+        <cap:valueName>urn:oasis:names:tc:emergency:cap:1.2:profile:CAP-AU:1.0:ISO 3166-2</cap:valueName>
+        <cap:value>AU-NSW</cap:value>
+      </cap:geocode>
+    </cap:area>
+
+  </cap:info>
+  <cap:info>
+    <cap:language>en-AU</cap:language>
+    <cap:category>Fire</cap:category>
+    <cap:category>Met</cap:category>
+    <cap:event>Fire</cap:event>
+    <cap:responseType>Evacuate</cap:responseType>
+    <cap:urgency>Expected</cap:urgency>
+    <cap:severity>Minor</cap:severity>
+    <cap:certainty>Observed</cap:certainty>
+    <cap:eventCode>
+      <cap:valueName>urn:oasis:names:tc:emergency:cap:1.2:profile:CAP-AU:1.0:AUeventLIST:1.0</cap:valueName>
+      <cap:value>fire</cap:value>
+    </cap:eventCode>
+    <cap:effective>2011-10-05T23:04:00-00:00</cap:effective>
+    <cap:expires>2011-10-06T23:04:00-00:00</cap:expires>
+    <cap:senderName>NSW Rural Fire Service</cap:senderName>
+    <cap:headline>Yerong Creek Structure Fire</cap:headline>
+    <cap:description>ALERT LEVEL: Not Applicable&lt;br /&gt;LOCATION: 12 Cox Street, Yerong Creek&lt;br /&gt;COUNCIL AREA: Lockhart&lt;br /&gt;STATUS: Out of Control&lt;br /&gt;TYPE: Structure fire (A fire involving a residential, commercial or industrial building)&lt;br /&gt;SIZE: 0 ha&lt;br /&gt;RESPONSIBLE AGENCY: Rural Fire Service&lt;br /&gt;UPDATED: 6 Oct 2011 10:04</cap:description>
+
+    <cap:instruction>Not Applicable</cap:instruction>
+    <cap:web>http://www.rfs.nsw.gov.au/dsp_content.cfm?cat_id=683</cap:web>
+    <cap:parameter>
+      <cap:valueName>FuelType</cap:valueName>
+      <cap:value>Forest</cap:value>
+    </cap:parameter>
+    <cap:parameter>
+
+      <cap:valueName>Location</cap:valueName>
+      <cap:value>12 Cox Street, Yerong Creek</cap:value>
+    </cap:parameter>
+    <cap:parameter>
+      <cap:valueName>FireDangerClass</cap:valueName>
+      <cap:value>1</cap:value>
+    </cap:parameter>
+
+    <cap:parameter>
+      <cap:valueName>Status</cap:valueName>
+      <cap:value>Out of Control</cap:value>
+    </cap:parameter>
+    <cap:parameter>
+      <cap:valueName>Fireground</cap:valueName>
+      <cap:value>0 ha</cap:value>
+
+    </cap:parameter>
+    <cap:parameter>
+      <cap:valueName>AllocatedResources</cap:valueName>
+      <cap:value />
+    </cap:parameter>
+    <cap:parameter>
+      <cap:valueName>ControlAuthority</cap:valueName>
+      <cap:value>Rural Fire Service</cap:value>
+
+    </cap:parameter>
+    <cap:resource>
+      <cap:resourceDesc>map</cap:resourceDesc>
+      <cap:mimeType>text/html</cap:mimeType>
+      <cap:uri>http://www.rfs.nsw.gov.au/dsp_content.cfm?CAT_ID=683</cap:uri>
+    </cap:resource>
+    <cap:area>
+
+      <cap:areaDesc>Yerong Creek Structure Fire</cap:areaDesc>
+      <cap:circle>-35.3888,147.0598 0.0</cap:circle>
+      <cap:geocode>
+        <cap:valueName>urn:oasis:names:tc:emergency:cap:1.2:profile:CAP-AU:1.0:ISO 3166-2</cap:valueName>
+        <cap:value>AU-NSW</cap:value>
+      </cap:geocode>
+    </cap:area>
+
+  </cap:info>
+</cap:alert>

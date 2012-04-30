@@ -17,8 +17,8 @@
 <eventCode><valueName>SAME</valueName><value>EQW</value></eventCode>
 <expires>2010-09-02T00:09:25-05:00</expires>
 <senderName>U.S. Geological Survey</senderName>
-<headline>EQ 5.3 Neiafu, Tonga - PRELIMINARY REPORT</headline>
-<description>An earthquake with magnitude 5.3 occurred near Neiafu, Tonga at 23:25:40.68 UTC on Aug 30, 2010. (This event has been reviewed by a seismologist.)</description>
+<headline>EQ 6.3 Neiafu, Tonga - PRELIMINARY REPORT</headline>
+<description>An earthquake with magnitude 6.3 occurred near Neiafu, Tonga at 23:25:40.68 UTC on Aug 30, 2010. (This event has been reviewed by a seismologist.)</description>
 <web>http://earthquake.usgs.gov/eqcenter/recenteqsww/Quakes/us2010apcd.php</web>
 <contact>http://earthquake.usgs.gov/research/monitoring/anss/neic/</contact>
 <parameter>
@@ -35,7 +35,7 @@
 </parameter>
 <parameter>
 <valueName>Magnitude</valueName>
-<value>5.3</value>
+<value>6.3</value>
 </parameter>
 <parameter>
 <valueName>Depth</valueName>
@@ -84,8 +84,8 @@
 <eventCode><valueName>SAME</valueName><value>EQW</value></eventCode>
 <expires>2010-09-02T00:09:25-05:00</expires>
 <senderName>U.S. Geological Survey</senderName>
-<headline>EQ 5.3 Neiafu, Tonga - PRELIMINARY REPORT</headline>
-<description>Un terremoto de magnitud 5,3 se produjo cerca de Neiafu, Tonga en 23:25:40.68 UTC el 30 de Ago de 2010. (Este caso ha sido revisado por un sism—logo.)</description>
+<headline>EQ 6.3 Neiafu, Tonga - PRELIMINARY REPORT</headline>
+<description>Un terremoto de magnitud 5,3 se produjo cerca de Neiafu, Tonga en 23:25:40.68 UTC el 30 de Ago de 2010. (Este caso ha sido revisado por un sismï¿½logo.)</description>
 <web>http://earthquake.usgs.gov/eqcenter/recenteqsww/Quakes/us2010apcd.php</web>
 <contact>http://earthquake.usgs.gov/research/monitoring/anss/neic/</contact>
 <area>

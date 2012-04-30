@@ -25,11 +25,11 @@ public interface AlertOrBuilder
   boolean hasSent();
   String getSent();
   
-  // required .alerts.cap.Alert.Status status = 6;
+  // required .publicalerts.cap.Alert.Status status = 6;
   boolean hasStatus();
   com.google.publicalerts.cap.Alert.Status getStatus();
   
-  // required .alerts.cap.Alert.MsgType msg_type = 7;
+  // required .publicalerts.cap.Alert.MsgType msg_type = 7;
   boolean hasMsgType();
   com.google.publicalerts.cap.Alert.MsgType getMsgType();
   
@@ -37,7 +37,7 @@ public interface AlertOrBuilder
   boolean hasSource();
   String getSource();
   
-  // optional .alerts.cap.Alert.Scope scope = 9;
+  // optional .publicalerts.cap.Alert.Scope scope = 9;
   boolean hasScope();
   com.google.publicalerts.cap.Alert.Scope getScope();
   
@@ -45,7 +45,7 @@ public interface AlertOrBuilder
   boolean hasRestriction();
   String getRestriction();
   
-  // optional .alerts.cap.Group addresses = 11;
+  // optional .publicalerts.cap.Group addresses = 11;
   boolean hasAddresses();
   com.google.publicalerts.cap.Group getAddresses();
   com.google.publicalerts.cap.GroupOrBuilder getAddressesOrBuilder();
@@ -59,17 +59,17 @@ public interface AlertOrBuilder
   boolean hasNote();
   String getNote();
   
-  // optional .alerts.cap.Group references = 14;
+  // optional .publicalerts.cap.Group references = 14;
   boolean hasReferences();
   com.google.publicalerts.cap.Group getReferences();
   com.google.publicalerts.cap.GroupOrBuilder getReferencesOrBuilder();
   
-  // optional .alerts.cap.Group incidents = 15;
+  // optional .publicalerts.cap.Group incidents = 15;
   boolean hasIncidents();
   com.google.publicalerts.cap.Group getIncidents();
   com.google.publicalerts.cap.GroupOrBuilder getIncidentsOrBuilder();
   
-  // repeated .alerts.cap.Info info = 16;
+  // repeated .publicalerts.cap.Info info = 16;
   java.util.List<com.google.publicalerts.cap.Info> 
       getInfoList();
   com.google.publicalerts.cap.Info getInfo(int index);

@@ -14,7 +14,7 @@
  * the License.
  */
 
-package com.google.publicalerts.cap.feed;
+package com.google.publicalerts.cap.testing;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -38,6 +38,6 @@ public class TestResources {
     }
     return sb.toString();
   }
-  
+
   private TestResources() { }
 }

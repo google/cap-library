@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><alert xmlns="urn:oasis:names:tc:emergency:cap:1.1">
+    <identifier>USGS-earthquakes-nc71635010.28103893.20110906T171538.586Z</identifier>
+    <sender>http://www.cisn.org/ncmc.html</sender>
+    <sent>2011-09-06T17:15:38+00:00</sent>
+    <status>Actual</status>
+    <msgType>Alert</msgType>
+    <scope>Public</scope>
+    <code>IPAWSv1.0</code>
+    <info>
+        <category>Geo</category>
+        <event>Earthquake</event>
+        <urgency>Past</urgency>
+        <severity>Unknown</severity>
+        <certainty>Likely</certainty>
+        <eventCode>
+            <valueName>SAME</valueName>
+            <value>EQW</value>
+        </eventCode>
+        <onset>2011-09-06T01:33:57+00:00</onset>
+        <expires>2011-09-13T17:15:38+00:00</expires>
+        <senderName>CISN Northern California Management Center</senderName>
+        <headline>EQ 1.3 The Geysers, CA - PRELIMINARY REPORT</headline>
+        <description>An earthquake with magnitude 1.3 occurred near The Geysers, CA at 01:33:57.60 UTC on Sep 6, 2011. (This event has been reviewed by a seismologist.)</description>
+        <instruction>None</instruction>
+        <web>http://earthquake.usgs.gov/earthquakes/recenteqsus/Quakes/nc71635010.htm</web>
+        <contact>http://www.cisn.org/ncmc.html</contact>
+        <parameter>
+            <valueName>EventTime</valueName>
+            <value>20110906T013357.600Z</value>
+        </parameter>
+        <parameter>
+            <valueName>EventIDKey</valueName>
+            <value>nc71635010</value>
+        </parameter>
+        <parameter>
+            <valueName>Version</valueName>
+            <value>3</value>
+        </parameter>
+        <parameter>
+            <valueName>Magnitude</valueName>
+            <value>1.3</value>
+        </parameter>
+        <parameter>
+            <valueName>Depth</valueName>
+            <value>3.2 km (2.0 miles)</value>
+        </parameter>
+        <parameter>
+            <valueName>HorizontalError</valueName>
+            <value>0.1 km</value>
+        </parameter>
+        <parameter>
+            <valueName>VerticalError</valueName>
+            <value>0.2 km</value>
+        </parameter>
+        <parameter>
+            <valueName>NumPhases</valueName>
+            <value>65</value>
+        </parameter>
+        <parameter>
+            <valueName>MinDistance</valueName>
+            <value>0.0 km</value>
+        </parameter>
+        <parameter>
+            <valueName>RMSTimeError</valueName>
+            <value>0.06 seconds</value>
+        </parameter>
+        <parameter>
+            <valueName>AzimuthalGap</valueName>
+            <value>40 degrees</value>
+        </parameter>
+        <area>
+            <areaDesc>2 miles (2 km) NNW of The Geysers, CA; 5 miles (8 km) WSW of Cobb, CA; 7 miles (12 km) WNW of Anderson Springs, CA; 26 miles (42 km) NNW of Santa Rosa, CA; 75 miles (120 km) WNW of Sacramento, CA</areaDesc>
+            <circle>38.820,-122.812 0.0</circle>
+        </area>
+    </info>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><DigestValue>FrTsLzcnztq/2OZkkMaz5gZN9VY=</DigestValue></Reference></SignedInfo><SignatureValue>hHRm2GRqaNMg2oge7RFGDqWBdy77QyXzg0K7DbuFIXaLCbxFpX6IFgGj9Mmw9Jg4gaq44PZu3TTY
+bAbtAIH1Rjep3UFJLqWEF096MVXdX4rUzZ1JDKV0m5ZOI6ahCZdAS6+64OaNC5MEYyWfinmIZF/4
+Uh9BW+5mp5HC2owENtB8lvTJWOkb7KshXekrydR1lb1bjj3EUAhW/TOSkK0kb1yNa+ZiiIvUUTF9
+/sxj5mgxViVTImRl4UAFNEYfm2FjBR4HPytqV/jIORnEaAcqNW9GB5vM0kyhKyAti+H7BN/X3G5c
+0XEloyt0bHzGDdDipp3J6bYm0CVsjXBVYoKEqA==</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>iqSOSGRoJI7hg8yUih5WFOPcEsc4bZhYwQ1etBSM5eYip4pc2xr3n5aMnJOCatFUIiJBxIfopp+9
+w5W52LvqQJst+qkfv6ZV6ZUu86lLV1znXKOf10b1JtBtkZiJA+alaE1xd+oMmz+KdYRpoAaVFKM7
+ClnXu16pV9ZLHHtLmAe6sO+MIZ+up1Q+9CqF32rJXM4exPKqdEBCHYrz1iCAjDApRwxXb60D4wtQ
+EtTF9t9z3k1RjnbviozWQuF/k5MzdcVbCfRJk8s3kF+oaJolWd3ukOfExpBQFiIQ8ritEbLWS+z3
+yd66g9CdXRvJZWht4MWamDOClBaRnNKGflutAQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></KeyInfo></Signature></alert>
