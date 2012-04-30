@@ -1,3 +1,10 @@
 com.google.publicalerts.cap
+com.google.publicalerts.cap.edxl
+com.google.publicalerts.cap.edxl.io
+com.google.publicalerts.cap.edxl.types
 com.google.publicalerts.cap.feed
 com.google.publicalerts.cap.profile
+com.google.publicalerts.cap.profile.au
+com.google.publicalerts.cap.profile.ca
+com.google.publicalerts.cap.profile.us
+com.google.publicalerts.cap.testing
