@@ -16,15 +16,15 @@
 
 package com.google.publicalerts.cap.profile;
 
-import junit.framework.TestCase;
-
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.AlertOrBuilder;
 import com.google.publicalerts.cap.CapException;
 import com.google.publicalerts.cap.CapException.ReasonType;
 import com.google.publicalerts.cap.CapXmlParser;
-import com.google.publicalerts.cap.TestUtil;
-import com.google.publicalerts.cap.feed.TestResources;
+import com.google.publicalerts.cap.testing.CapTestUtil;
+import com.google.publicalerts.cap.testing.TestResources;
+
+import junit.framework.TestCase;
 
 /**
  * Test case for {@link CapProfile} tests.
@@ -62,7 +62,7 @@ public abstract class CapProfileTestCase extends TestCase {
   }
 
   protected void assertErrors(AlertOrBuilder alert, ReasonType...types) {
-    TestUtil.assertErrorTypes(profile.checkForErrors(alert), types);
+    CapTestUtil.assertErrorTypes(profile.checkForErrors(alert), types);
   }
 
   protected void assertNoRecommendations(AlertOrBuilder alert) {
@@ -70,6 +70,6 @@ public abstract class CapProfileTestCase extends TestCase {
   }
 
   protected void assertRecommendations(AlertOrBuilder alert, ReasonType...types) {
-    TestUtil.assertErrorTypes(profile.checkForRecommendations(alert), types);
+    CapTestUtil.assertErrorTypes(profile.checkForRecommendations(alert), types);
   }
 }

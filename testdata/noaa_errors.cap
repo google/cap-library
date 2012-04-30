@@ -1,0 +1,77 @@
+<?xml version = '1.0' encoding = 'UTF-8' standalone = 'yes'?>
+<?xml-stylesheet href='http://alerts.weather.gov/cap/capatomproduct.xsl' type='text/xsl'?>
+<alert xmlns = 'urn:oasis:names:tc:emergency:cap:1.1'>
+<!-- http-date = Sun, 10 Jul 2011 03:52:00 GMT -->
+<identifier>NOAA-NWS-ALERTS-NV20110710035200FloodWarning20110812031500NV.LKNFLWLKN.b246748c7bbfa7c65ae9b960569510dd</identifier>
+<sender>w-nws.webmaster@noaa.gov</sender>
+<sent>2011-07-09T20:52:00-07:00</sent>
+<status>Actual</status>
+<msgType>Alert</msgType>
+<scope>Public</scope>
+<note>Alert for Humboldt (Nevada) Issued by the National Weather Service</note>
+<!-- Note empty references is invalid. -->
+<references></references>
+<info>
+<category>Met</category>
+<event>Flood Warning</event>
+<urgency></urgency>
+<severity></severity>
+<certainty></certainty>
+<eventCode>
+<valueName>SAME</valueName>
+<value></value>
+</eventCode>
+<effective>2011-07-09T20:52:00-07:00</effective>
+<expires>2011-08-11T20:15:00-07:00</expires>
+<senderName>NWS Elko (Northern and Northeastern Nevada)</senderName>
+<headline>Flood Warning issued July 09 at 8:52PM PDT expiring August 11 at 8:15PM PDT by NWS Elko</headline>
+<description>THE NATIONAL WEATHER SERVICE IN ELKO HAS EXTENDED THE
+* FLOOD WARNING FOR...
+SOUTH CENTRAL HUMBOLDT COUNTY IN NORTHWEST NEVADA...
+THIS INCLUDES THE CITY OF WINNEMUCCA...
+* UNTIL 815 PM PDT MONDAY
+* AT 851 AM PDT FRIDAY THE MELARKEY STREET GAGE ON THE HUMBOLDT
+RIVER IN WINNEMUCCA READ 19.1 FEET. FLOOD STAGE IS 19.0 FEET. A
+WAVE CREST IS MOVING DOWNSTREAM BETWEEN COMUS AND WINNEMUCCA.
+* MINOR FLOODING ALONG THE HUMBOLDT RIVER BETWEEN COMUS AND
+WINNEMUCCA IS EXPECTED TO CONTINUE FOR THE NEXT COUPLE DAYS.
+A FLOOD WARNING MEANS THAT FLOODING IS IMMINENT OR HAS BEEN REPORTED.
+STREAM RISES WILL BE SLOW AND FLASH FLOODING IS NOT EXPECTED.
+HOWEVER...ALL INTERESTED PARTIES SHOULD TAKE NECESSARY PRECAUTIONS
+IMMEDIATELY.</description>
+<instruction>A FLOOD WARNING MEANS FLOODING IS OCCURRING OR IS IMMINENT. MOST
+FLOOD RELATED DEATHS OCCUR IN AUTOMOBILES. DO NOT ATTEMPT TO CROSS
+WATER COVERED BRIDGES...DIPS...OR LOW WATER CROSSINGS. NEVER TRY TO
+CROSS A FLOWING STREAM...EVEN A SMALL ONE...ON FOOT. TO ESCAPE RISING
+WATER MOVE UP TO HIGHER GROUND.</instruction>
+<parameter>
+<valueName>WMOHEADER</valueName>
+<value></value>
+</parameter>
+<parameter>
+<valueName>UGC</valueName>
+<value>NVC013</value>
+</parameter>
+<parameter>
+<valueName>VTEC</valueName>
+<value>/O.EXT.KLKN.FA.W.0018.000000T0000Z-110712T0315Z/
+/00000.0.SM.000000T0000Z.000000T0000Z.000000T0000Z.OO/</value>
+</parameter>
+<parameter>
+<valueName>TIME...MOT...LOC</valueName>
+<value></value>
+</parameter>
+<area>
+<areaDesc>Humboldt</areaDesc>
+<polygon>+41.12,-117.61 +41.06,-117.47 +41.04,-117.47 +40.91,-117.52 +40.96,-117.61 +40.84,-117.89 +40.85,-118.09, +40.86,-118.09, +41.12,-117.61</polygon>
+<geocode>
+<valueName>FIPS6</valueName>
+<value>032013</value>
+</geocode>
+<geocode>
+<valueName>UGC</valueName>
+<value>NVC013</value>
+</geocode>
+</area>
+</info>
+</alert>

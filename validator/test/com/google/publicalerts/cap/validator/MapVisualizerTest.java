@@ -24,7 +24,7 @@ import junit.framework.TestCase;
 
 import com.google.common.collect.Lists;
 import com.google.publicalerts.cap.Alert;
-import com.google.publicalerts.cap.TestUtil;
+import com.google.publicalerts.cap.testing.CapTestUtil;
 
 /**
  * Tests for {@link MapVisualizer}.
@@ -46,7 +46,7 @@ public class MapVisualizerTest extends TestCase {
     this.alerts = Lists.newArrayList();
 
     for (int i = 0; i < 3; i++) {
-      Alert.Builder alert = TestUtil.getValidAlertBuilder();
+      Alert.Builder alert = CapTestUtil.getValidAlertBuilder();
       alert.setIdentifier(String.valueOf(i));
       alerts.add(alert.build());
     }

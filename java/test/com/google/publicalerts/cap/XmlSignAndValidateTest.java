@@ -16,29 +16,35 @@
 
 package com.google.publicalerts.cap;
 
-import com.google.publicalerts.cap.XmlSignatureValidator;
-import com.google.publicalerts.cap.XmlSigner;
+import com.google.publicalerts.cap.XmlSignatureValidator.Result.Detail;
+import com.google.publicalerts.cap.testing.MockTrustStrategy;
+import com.google.publicalerts.cap.testing.TestResources;
 
 import junit.framework.TestCase;
 
 /**
- * Tests for {@link XmlSigner}.
+ * Tests for {@link XmlSigner} and {@link XmlSignatureValidator}.
  *
 * @author shakusa@google.com (Steve Hakusa)
  */
 public class XmlSignAndValidateTest extends TestCase {
-
   private XmlSigner signer;
+  private MockTrustStrategy trustStrategy;
   private XmlSignatureValidator validator;
 
   public XmlSignAndValidateTest(String name) {
     super(name);
   }
 
+  @Override
   protected void setUp() throws Exception {
     super.setUp();
     signer = XmlSigner.newInstanceWithRandomKeyPair();
-    validator = new XmlSignatureValidator();
+    trustStrategy = new MockTrustStrategy()
+        .setAllowMissingSignatures(false)
+        .setAllowUntrustedCredentials(false)
+        .addTrustedKey(signer.getPublicKey());
+    validator = new XmlSignatureValidator(trustStrategy);
   }
 
   public void testSign() throws Exception {
@@ -47,13 +53,65 @@ public class XmlSignAndValidateTest extends TestCase {
         + "<alert xmlns=\"urn:oasis:names:tc:emergency:cap:1.2\">"
         + "<info><headline>" + headline + "</headline></info></alert>";
 
-    assertTrue(validator.isSignatureValid(xml, true));
-    assertFalse(validator.isSignatureValid(xml, false));
+    trustStrategy.setAllowMissingSignatures(true);
+    XmlSignatureValidator.Result result = validator.validate(xml);
+    assertTrue("Missing signatures must be tolerated when TrustStrategy allows them",
+        result.isSignatureValid());
+    assertDetail(result, Detail.SIGNATURE_MISSING);
+
+    trustStrategy.setAllowMissingSignatures(false);
+    result = validator.validate(xml);
+    assertFalse("Missing signatures must not be tolerated when TrustStrategy disallows them",
+        result.isSignatureValid());
+    assertDetail(result, Detail.SIGNATURE_MISSING);
 
     String signedXml = signer.sign(xml);
-    assertTrue(validator.isSignatureValid(signedXml, false));
+    result = validator.validate(signedXml);
+    assertTrue("XML Signed with a trusted key should pass validation",
+        result.isSignatureValid());
+    assertTrue(result.details().isEmpty());
 
-    signedXml = signedXml.replace(headline, "attacker headline");
-    assertFalse(validator.isSignatureValid(signedXml, false));
+    String tamperedSignedXml = signedXml.replace(headline, "attacker headline");
+    result = validator.validate(tamperedSignedXml);
+    assertFalse("XML tampered with after signing -- should fail validation",
+        result.isSignatureValid());
+    assertDetail(result, Detail.SIGNATURE_INVALID);
+
+    trustStrategy.clearTrustedKeys();
+    result = validator.validate(signedXml);
+    assertFalse("XML signed with an untrusted key should fail validation",
+        result.isSignatureValid());
+    assertDetail(result, Detail.KEY_UNTRUSTED);
+
+    trustStrategy.setAllowUntrustedCredentials(true);
+    result = validator.validate(signedXml);
+    assertTrue("XML signed with an untrusted key should be tolerated when TrustStrategy allows it",
+        result.isSignatureValid());
+    assertDetail(result, Detail.KEY_UNTRUSTED);
+
+    String signedXmlWithoutKey = signedXml.replaceAll("(?s)<KeyInfo>.*</KeyInfo>", "");
+    result = validator.validate(signedXmlWithoutKey);
+    assertFalse("Signed XML with missing key should fail validation",
+        result.isSignatureValid());
+    assertDetail(result, Detail.KEY_MISSING);
+
+    trustStrategy.setAllowMissingSignatures(true);
+    result = validator.validate(signedXmlWithoutKey);
+    assertTrue("Signed XML with missing key should be treated as missing signature when " +
+        "TrustStrategy allows it",
+        result.isSignatureValid());
+    assertDetail(result, Detail.KEY_MISSING);
+  }
+
+  private void assertDetail(XmlSignatureValidator.Result result, Detail detail) {
+    assertEquals(1, result.details().size());
+    assertEquals(detail, result.details().iterator().next());
+  }
+
+  public void testValidateExternallySignedAlert() throws Exception {
+    trustStrategy.setAllowUntrustedCredentials(true);
+    String signedXml = TestResources.load("earthquake_signed.cap");
+    assertTrue("Alert signed by 3rd party with in-band key",
+        validator.validate(signedXml).isSignatureValid());
   }
 }

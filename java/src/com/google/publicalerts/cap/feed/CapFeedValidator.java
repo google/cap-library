@@ -16,21 +16,24 @@
 
 package com.google.publicalerts.cap.feed;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import com.google.publicalerts.cap.CapException.Reason;
 import com.google.publicalerts.cap.CapUtil;
+import com.google.publicalerts.cap.CapValidator;
 import com.google.publicalerts.cap.feed.CapFeedException.FeedErrorType;
 import com.google.publicalerts.cap.feed.CapFeedException.FeedRecommendationType;
+import com.google.publicalerts.cap.edxl.types.ContentObject;
+import com.google.publicalerts.cap.edxl.DistributionFeed;
+
 import com.sun.syndication.feed.atom.Entry;
 import com.sun.syndication.feed.atom.Feed;
 import com.sun.syndication.feed.atom.Link;
 import com.sun.syndication.feed.rss.Channel;
 import com.sun.syndication.feed.rss.Item;
 import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.io.FeedException;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Validates portions of Atom/RSS feeds (fat or thin) of CAP alerts
@@ -52,6 +55,8 @@ public class CapFeedValidator {
       checkForErrors((Feed) feed.originalWireFeed());
     } else if (feed.originalWireFeed() instanceof Channel) {
       checkForErrors((Channel) feed.originalWireFeed());
+    } else if (feed.originalWireFeed() instanceof DistributionFeed) {
+      checkForErrors((DistributionFeed) feed.originalWireFeed());
     } else {
       throw new IllegalArgumentException("Unsupported feed " + feed);
     }
@@ -65,7 +70,7 @@ public class CapFeedValidator {
    */
   public void checkForErrors(Feed feed) throws CapFeedException {
     @SuppressWarnings("unchecked")
-    List<Entry> entries = (List<Entry>) feed.getEntries();
+    List<Entry> entries = feed.getEntries();
     for (int i = 0; i < entries.size(); i++) {
       Entry entry = entries.get(i);
       if (entry.getContents().isEmpty() && !hasCapLink(entry)) {
@@ -77,9 +82,9 @@ public class CapFeedValidator {
 
   private boolean hasCapLink(Entry entry) {
     @SuppressWarnings("unchecked")
-    List<Link> links = (List<Link>) entry.getAlternateLinks();
+    List<Link> links = entry.getAlternateLinks();
     @SuppressWarnings("unchecked")
-    List<Link> otherLinks = (List<Link>) entry.getOtherLinks();
+    List<Link> otherLinks = entry.getOtherLinks();
     links.addAll(otherLinks);
     if (links.size() == 1) {
       return true;
@@ -103,7 +108,7 @@ public class CapFeedValidator {
 
     List<Reason> itemReasons = new ArrayList<Reason>();
     @SuppressWarnings("unchecked")
-    List<Item> items = (List<Item>) channel.getItems();
+    List<Item> items = channel.getItems();
     for (int i = 0; i < items.size(); i++) {
       Item item = items.get(i);
       String xpath = "/channel/item[" + i + "]";
@@ -125,6 +130,70 @@ public class CapFeedValidator {
       }
     }
     if (!reasons.isEmpty()) {
+      throw new CapFeedException(reasons);
+    }
+  }
+
+  /**
+   * Checks the given EDXL-DE distribution feed for errors.
+   *
+   * In particular, ensures that every contentObject has either an xmlContent
+   * object containing a CAP alert, or a nonXMLContent object containing a
+   * reference to a CAP alert. Note that this method does not ensure that the
+   * CAP alert can be successfully created, but merely that a CAP specification
+   * exists.
+   *
+   * @param feed the distribution feed object to check
+   * @throws CapFeedException if the feed is invalid
+   */
+  public void checkForErrors(DistributionFeed feed) throws CapFeedException {
+    List<Reason> reasons = new ArrayList<Reason>();
+    boolean foundcap = false;
+    boolean errors = false;
+
+    if (feed.getContentObjects().isEmpty()) {
+      throw new CapFeedException(new Reason("/EDXLDistribution",
+          FeedErrorType.EDXLDE_CONTENT_OBJECT_IS_REQUIRED));
+    }
+
+    for (int i = 0; i < feed.getContentObjects().size(); i++) {
+      ContentObject content = feed.getContentObjects().get(i);
+      foundcap = false;
+
+      if (content.getXmlContent() != null) {
+        for (String xml : content.getXmlContent().getEmbeddedXmlContent()) {
+          if (xml.contains(CapValidator.CAP10_XMLNS)
+              || xml.contains(CapValidator.CAP11_XMLNS)
+              || xml.contains(CapValidator.CAP12_XMLNS)) {
+            foundcap = true;
+          }
+        }
+
+        if (!foundcap) {
+          reasons.add(new Reason(
+              "/EDXLDistribution/contentObject[" + i + "]/xmlContent",
+              FeedErrorType.EDXLDE_NO_CAP_IN_CONTENT_OBJECT));
+        }
+      }
+
+      if (content.getNonXmlContent() != null) {
+        if (content.getNonXmlContent().getMimeType().equalsIgnoreCase(
+            CapFeedParser.CAP_CONTENT_TYPE)
+            && content.getNonXmlContent().getUri() != null) {
+          foundcap = true;
+        } else {
+          reasons.add(new Reason(
+              "/EDXLDistribution/contentObject[" + i + "]/nonMXLContent",
+              FeedErrorType.EDXLDE_NO_CAP_IN_CONTENT_OBJECT));
+        }
+      }
+
+      if (!foundcap) {
+        errors = true;
+      }
+    }
+
+    if (errors) {
       throw new CapFeedException(reasons);
     }
   }
@@ -170,7 +239,7 @@ public class CapFeedValidator {
 
     List<Reason> itemReasons = new ArrayList<Reason>();
     @SuppressWarnings("unchecked")
-    List<Item> items = (List<Item>) channel.getItems();
+    List<Item> items = channel.getItems();
     for (int i = 0; i < items.size(); i++) {
       Item item = items.get(i);
       if (item.getGuid() == null ||

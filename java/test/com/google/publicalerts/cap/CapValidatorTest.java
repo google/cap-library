@@ -16,9 +16,10 @@
 
 package com.google.publicalerts.cap;
 
-import junit.framework.TestCase;
-
 import com.google.publicalerts.cap.CapException.Type;
+import com.google.publicalerts.cap.testing.CapTestUtil;
+
+import junit.framework.TestCase;
 
 /**
  * Tests for {@link CapValidator}.
@@ -34,12 +35,12 @@ public class CapValidatorTest extends TestCase {
   }
 
   public void testAlertValidatesOk() throws Exception {
-    validator.validateAlert(TestUtil.getValidAlertBuilder().build());
+    validator.validateAlert(CapTestUtil.getValidAlertBuilder().build());
   }
 
   @SuppressWarnings("deprecation")
   public void testAlertParseErrors() {
-    Alert.Builder alert = TestUtil.getValidAlertBuilder();
+    Alert.Builder alert = CapTestUtil.getValidAlertBuilder();
 
     alert.setAddresses(Group.newBuilder().addValue("addresses").build());
     alert.setRestriction("restriction");
@@ -52,7 +53,24 @@ public class CapValidatorTest extends TestCase {
   }
 
   public void testInfoParseErrors() {
-    Info.Builder info = TestUtil.getValidInfoBuilder();
+    Info.Builder info = CapTestUtil.getValidInfoBuilder();
+
+    assertNoValidateErrors(info);
+    info.clearLanguage();
+    assertNoValidateErrors(info);
+
+    for (String lang : new String[] { "en", "EN", "fr-CA", "en-scouse",
+        "i-klingon", "x-pig-latin", "de-1901", "sgn-CH-de", "zh-cmn-Hans",
+        "zh-Hans-HK"}) {
+      info.setLanguage(lang);
+      assertNoValidateErrors(info);
+    }
+
+    for (String lang : new String[] { "12345", "toolonglang", "en_US", "??"}) {
+      info.setLanguage(lang);
+      assertValidateErrors(info, Type.INVALID_LANGUAGE);
+    }
+    info.clearLanguage();
 
     info.getAreaBuilder(0).clearCircle();
     info.getAreaBuilder(0).clearAltitude();
@@ -60,7 +78,7 @@ public class CapValidatorTest extends TestCase {
   }
 
   public void testParseAreaParseErrors() {
-    Area.Builder area = TestUtil.getValidAreaBuilder();
+    Area.Builder area = CapTestUtil.getValidAreaBuilder();
 
     area.clearPolygon();
     area.addPolygon(Polygon.newBuilder()
@@ -93,17 +111,21 @@ public class CapValidatorTest extends TestCase {
       validator.validateAlert(alert);
       fail("Expected CapException");
     } catch (CapException expected) {
-      TestUtil.assertErrorTypes(expected.getReasons(), types);
+      CapTestUtil.assertErrorTypes(expected.getReasons(), types);
     }
   }
 
+  private void assertNoValidateErrors(InfoOrBuilder info) {
+    assertValidateErrors(info);
+  }
+
   private void assertValidateErrors(InfoOrBuilder info, Type...types) {
-    TestUtil.assertErrorTypes(
+    CapTestUtil.assertErrorTypes(
         validator.validateInfo(info, "/alert/info[0]", 12, true), types);
   }
 
   private void assertValidateErrors(AreaOrBuilder area, Type...types) {
-    TestUtil.assertErrorTypes(
+    CapTestUtil.assertErrorTypes(
         validator.validateArea(area, "/alert/info[0]", 12, true), types);
   }
 }

@@ -16,6 +16,38 @@
 
 package com.google.publicalerts.cap.feed;
 
+import com.google.publicalerts.cap.Alert;
+import com.google.publicalerts.cap.CapException;
+import com.google.publicalerts.cap.CapException.Reason;
+import com.google.publicalerts.cap.CapException.Type;
+import com.google.publicalerts.cap.CapUtil;
+import com.google.publicalerts.cap.CapXmlParser;
+import com.google.publicalerts.cap.NotCapException;
+import com.google.publicalerts.cap.XmlSignatureValidator;
+import com.google.publicalerts.cap.feed.CapFeedException.FeedErrorType;
+import com.google.publicalerts.cap.edxl.DistributionFeed;
+
+import com.sun.syndication.feed.atom.Feed;
+import com.sun.syndication.feed.rss.Channel;
+import com.sun.syndication.feed.synd.SyndContent;
+import com.sun.syndication.feed.synd.SyndEntry;
+import com.sun.syndication.feed.synd.SyndFeed;
+import com.sun.syndication.feed.synd.SyndLink;
+import com.sun.syndication.io.FeedException;
+import com.sun.syndication.io.ParsingFeedException;
+import com.sun.syndication.io.SAXBuilder;
+import com.sun.syndication.io.SyndFeedInput;
+import com.sun.syndication.io.WireFeedInput;
+import com.thaiopensource.validation.Constants;
+
+import org.jdom.Document;
+import org.jdom.input.JDOMParseException;
+import org.jdom.transform.JDOMSource;
+import org.xml.sax.ErrorHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
@@ -33,36 +65,6 @@ import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
 
-import org.jdom.Document;
-import org.jdom.input.JDOMParseException;
-import org.jdom.transform.JDOMSource;
-import org.xml.sax.ErrorHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-
-import com.google.publicalerts.cap.Alert;
-import com.google.publicalerts.cap.CapException;
-import com.google.publicalerts.cap.CapException.Reason;
-import com.google.publicalerts.cap.CapException.Type;
-import com.google.publicalerts.cap.CapUtil;
-import com.google.publicalerts.cap.CapXmlParser;
-import com.google.publicalerts.cap.NotCapException;
-import com.google.publicalerts.cap.XmlSignatureValidator;
-import com.google.publicalerts.cap.feed.CapFeedException.FeedErrorType;
-import com.sun.syndication.feed.atom.Feed;
-import com.sun.syndication.feed.rss.Channel;
-import com.sun.syndication.feed.synd.SyndContent;
-import com.sun.syndication.feed.synd.SyndEntry;
-import com.sun.syndication.feed.synd.SyndFeed;
-import com.sun.syndication.feed.synd.SyndLink;
-import com.sun.syndication.io.FeedException;
-import com.sun.syndication.io.ParsingFeedException;
-import com.sun.syndication.io.SAXBuilder;
-import com.sun.syndication.io.SyndFeedInput;
-import com.sun.syndication.io.WireFeedInput;
-import com.thaiopensource.validation.Constants;
-
 /**
  * Parses feeds of alerts, the entries in those feeds, and the CAP alerts in
  * those entries.
@@ -79,6 +81,8 @@ public class CapFeedParser {
       loadRelaxNgSchema("atom_rfc4287.rng");
   private static final Schema RSS2_XSD =
       loadXsd("rss-2_0.xsd");
+  private static final Schema EDXLDE_SCHEMA =
+      loadXsd("edxlde-1_0.xsd");
 
   private static Schema loadRelaxNgSchema(String schemaFile) {
     try {
@@ -210,7 +214,7 @@ public class CapFeedParser {
   }
 
   /**
-   * Parses the given ATOM or RSS feed, provided as a string.
+   * Parses the given ATOM, RSS, or EDXL-DE feed, provided as a string.
    * Unlike the stream versions, if {@code validate} is true, this version
    * parses feeds twice in order to preserve line numbers when
    * validating.
@@ -233,6 +237,8 @@ public class CapFeedParser {
         validate(ATOM_RELAX_NG_SCHEMA, source);
       } else if (syndFeed.originalWireFeed() instanceof Channel) {
         validate(RSS2_XSD, source);
+      } else if (syndFeed.originalWireFeed() instanceof DistributionFeed) {
+        validate(EDXLDE_SCHEMA, source);
       }
     }
     return syndFeed;
@@ -254,6 +260,8 @@ public class CapFeedParser {
           validate(ATOM_RELAX_NG_SCHEMA, new JDOMSource(doc));
         } else if (syndFeed.originalWireFeed() instanceof Channel) {
           validate(RSS2_XSD, new JDOMSource(doc));
+        } else if (syndFeed.originalWireFeed() instanceof DistributionFeed) {
+          validate(EDXLDE_SCHEMA, new JDOMSource(doc));
         }
       }
     }
@@ -296,7 +304,7 @@ public class CapFeedParser {
   public List<Alert> parseAlerts(SyndFeed feed)
       throws CapException, NotCapException {
     @SuppressWarnings("unchecked")
-    List<SyndEntry> entries = (List<SyndEntry>) feed.getEntries();
+    List<SyndEntry> entries = feed.getEntries();
     List<Alert> alerts = new ArrayList<Alert>();
     for (SyndEntry entry : entries) {
       alerts.add(parseAlert(entry));
@@ -325,28 +333,27 @@ public class CapFeedParser {
     return parseAlert(contents.get(0).getValue());
   }
 
- /**
-  * Parses the CAP alerts assumed to be in the &lt;content&gt; bodies of the
-  * entry.
-  *
-  * @param entry the entry to process
-  * @param parseErrors a list to which to add non-fatal errors during parsing
-  * @return a list of CAP alerts (one per content body, usually just 1)
-  * @throws CapException if the alert is unparseable as XML
-  * @throws NotCapException if any of the &lt;content&gt;s do not contain a
-  * CAP alert
-  */
-  public Alert parseAlert(
-    SyndEntry entry, List<CapException.Reason> parseErrors)
-    throws CapException, NotCapException {
-  @SuppressWarnings("unchecked")
-  List<SyndContent> contents = entry.getContents();
-  if (contents.isEmpty()) {
-     throw new NotCapException();
-   }
-   return parseAlert(contents.get(0).getValue(), parseErrors);
- }
+  /**
+   * Parses the CAP alerts assumed to be in the &lt;content&gt; bodies of the
+   * entry.
+   *
+   * @param entry the entry to process
+   * @param parseErrors a list to which to add any non-fatal errors during parsing
+   * @return a list of CAP alerts (one per content body, usually just 1)
+   * @throws CapException if the alert is unparseable as XML
+   * @throws NotCapException if any of the &lt;content&gt;s do not contain a
+   * CAP alert
+   */
+  public Alert parseAlert(SyndEntry entry, List<CapException.Reason> parseErrors)
+      throws CapException, NotCapException {
+    @SuppressWarnings("unchecked")
+    List<SyndContent> contents = entry.getContents();
 
+    if (contents.isEmpty()) {
+      throw new NotCapException();
+    }
+    return parseAlert(contents.get(0).getValue(), parseErrors);
+  }
 
   /**
    * Parses the given CAP alert.
@@ -358,25 +365,25 @@ public class CapFeedParser {
    * a CAP alert
    */
   public Alert parseAlert(String entryPayload)
-     throws CapException, NotCapException {
-   List<Reason> parseErrors = new ArrayList<Reason>();
-   Alert alert = parseAlert(entryPayload, parseErrors);
-   if (validate && !parseErrors.isEmpty()) {
+      throws CapException, NotCapException {
+    List<Reason> parseErrors = new ArrayList<Reason>();
+    Alert alert = parseAlert(entryPayload, parseErrors);
+    if (validate && !parseErrors.isEmpty()) {
       throw new CapException(parseErrors);
     }
     return alert;
   }
 
- /**
-  * Parses the given CAP alert.
-  *
-  * @param entryPayload the alert, as an XML string
-  * @param parseErrors a list to which to add non-fatal errors during parsing
-  * @return the parsed alert
-  * @throws CapException if the alert is unparseable as XML
-  * @throws com.google.publicalerts.cap.NotCapException if the string is not
-  * a CAP alert
-  */
+  /**
+   * Parses the given CAP alert.
+   *
+   * @param entryPayload the alert, as an XML string
+   * @param parseErrors a list to which to add any non-fatal errors during parsing
+   * @return the parsed alert
+   * @throws CapException if the alert is unparseable as XML
+   * @throws com.google.publicalerts.cap.NotCapException if the string is not
+   * a CAP alert
+   */
   public Alert parseAlert(String entryPayload, List<Reason> parseErrors)
       throws CapException, NotCapException {
     if (CapUtil.isEmptyOrWhitespace(entryPayload)) {
@@ -388,10 +395,12 @@ public class CapFeedParser {
     try {
       alert = parser.parseFrom(entryPayload, parseErrors);
 
-      if (validate && xmlSignatureValidator != null &&
-          xmlSignatureValidator.isSignatureValid(entryPayload, false)) {
-        parseErrors.add(new Reason("/alert/Signature", Type.OTHER,
-            "Invalid Signature: " + entryPayload));
+      if (validate && xmlSignatureValidator != null) {
+        XmlSignatureValidator.Result result = xmlSignatureValidator.validate(entryPayload);
+        if (!result.isSignatureValid()) {
+          parseErrors.add(new Reason("/alert/Signature", Type.OTHER,
+              "Signature failed validation - " + result.details() + " - " + entryPayload));
+        }
       }
     } catch (SAXParseException e) {
       throw new CapException(new Reason("/alert", Type.OTHER,
@@ -402,33 +411,44 @@ public class CapFeedParser {
   }
 
   /**
-   * Returns the link in the entry that points to the full version of CAP.
-   * If there is only one link in the entry, that is assumed to be the CAP URL,
-   * otherwise, the link with type "application/cap+xml" is returned.
+   * Returns the link in the entry that most likely points to the full version
+   * of CAP.
+   * <p>For RSS:
+   *   If there is a non-empty link, it is returned, otherwise null
+   * <p>For Atom:
+   *   If there is only one link in the entry, and it has no a type, it is
+   *   assumed to be the CAP URL and is returned. If there are multiple links,
+   *   the link with type "application/cap+xml" is returned.
+   *   null is returned otherwise.
    * @param entry the entry to extract a URL from
    * @return the URL, or null if no suitable URL is found
    */
   public String getCapUrl(SyndEntry entry) {
-    @SuppressWarnings("unchecked")
-    List<SyndLink> links = (List<SyndLink>) entry.getLinks();
+    @SuppressWarnings("unchecked") // SyndEntry.getLinks returns raw unparameterized list
+    List<SyndLink> links = entry.getLinks();
 
-    if (links.size() == 1) {
-      return links.get(0).getHref();
+    // RSS has only one link, while Atom supports separate sets of "alternate",
+    // "enclosure", "other" links.  Links is not used for RSS, so we have to
+    // check link.
+    if (links.isEmpty()) {
+      String link = entry.getLink();
+      if (link != null && link.length() > 0) {
+        return link;
+      }
     }
+
+    SyndLink noTypeSyndLink = null;
 
     for (SyndLink link : links) {
       if (CAP_CONTENT_TYPE.equals(link.getType())) {
         return link.getHref();
+      } else if (CapUtil.isEmptyOrWhitespace(link.getType())) {
+        noTypeSyndLink = link;
       }
     }
 
-    // RSS has only one link, while Atom supports separate sets of "alternate",
-    // "enclosure", "other" links.  For Atom, link is the first alternate link,
-    // and links contains it and all the others.  For RSS links is not used,
-    // so we have to check link as well.
-    String link = entry.getLink();
-    if (link != null && link.length() > 0) {
-      return link;
+    if (noTypeSyndLink != null) {
+      return noTypeSyndLink.getHref();
     }
 
     return null;
@@ -459,17 +479,17 @@ public class CapFeedParser {
     }
 
     @Override
-    public void error(SAXParseException e) throws SAXException {
+    public void error(SAXParseException e) {
       reasons.add(translate(e));
     }
 
     @Override
-    public void fatalError(SAXParseException e) throws SAXException {
+    public void fatalError(SAXParseException e) {
       error(e);
     }
 
     @Override
-    public void warning(SAXParseException e) throws SAXException {
+    public void warning(SAXParseException e) {
       error(e);
     }
 
@@ -477,16 +497,16 @@ public class CapFeedParser {
 
     private static Map<String, FeedErrorType> makeErrorMap() {
       Map<String, FeedErrorType> errorMap =
-        new HashMap<String, FeedErrorType>();
+          new HashMap<String, FeedErrorType>();
       errorMap.put("element \"entry\" not allowed yet; " +
-      		"missing required element \"id\"",
+          "missing required element \"id\"",
           FeedErrorType.ATOM_ID_IS_REQUIRED);
       errorMap.put("element \"entry\" not allowed yet; " +
-      		"missing required element \"title\"",
+          "missing required element \"title\"",
           FeedErrorType.ATOM_TITLE_IS_REQUIRED);
       errorMap.put(
           "element \"entry\" not allowed yet; " +
-          "missing required element \"updated\"",
+              "missing required element \"updated\"",
           FeedErrorType.ATOM_UPDATED_IS_REQUIRED);
       errorMap.put(
           "element \"entry\" incomplete; missing required element \"id\"",

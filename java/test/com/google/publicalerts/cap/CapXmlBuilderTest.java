@@ -39,10 +39,10 @@ public class CapXmlBuilderTest extends TestCase {
         .setIdentifier("43b080713727")
         .setSender("hsas@dhs.gov")
         .setSent("2003-04-02T14:39:01-05:00")
-        .setStatus(Alert.Status.Actual)
-        .setMsgType(Alert.MsgType.Alert)
+        .setStatus(Alert.Status.ACTUAL)
+        .setMsgType(Alert.MsgType.ALERT)
         .setSource("a source")
-        .setScope(Alert.Scope.Public)
+        .setScope(Alert.Scope.PUBLIC)
         .setRestriction("a restriction")
         .setAddresses(Group.newBuilder().addValue("address 1").addValue("address2").build())
         .addCode("abcde")
@@ -52,7 +52,7 @@ public class CapXmlBuilderTest extends TestCase {
         .setIncidents(Group.newBuilder().addValue("incident1").addValue("incident2").build())
         .buildPartial();
 
-    String alertStr = XML_DECLARATION +"\n"
+    String alertStr = XML_DECLARATION + "\n"
         + "<alert xmlns=\"" + CapValidator.CAP_LATEST_XMLNS + "\">\n"
         + "  <identifier>43b080713727</identifier>\n"
         + "  <sender>hsas@dhs.gov</sender>\n"
@@ -70,17 +70,17 @@ public class CapXmlBuilderTest extends TestCase {
         + "  <incidents>incident1 incident2</incidents>\n"
         + "</alert>\n";
 
-    assertXmlString(alertStr, alert);
+    assertEquals(alertStr, builder.toXml(alert));
   }
 
   public void testInfo() throws Exception {
     Info info1 = Info.newBuilder()
-        .addCategory(Info.Category.Security)
-        .addCategory(Info.Category.Safety)
+        .addCategory(Info.Category.SECURITY)
+        .addCategory(Info.Category.SAFETY)
         .setEvent("Homeland Security Advisory System Update")
-        .setUrgency(Info.Urgency.Unknown_Urgency)
-        .setSeverity(Info.Severity.Unknown_Severity)
-        .setCertainty(Info.Certainty.Unknown_Certainty)
+        .setUrgency(Info.Urgency.UNKNOWN_URGENCY)
+        .setSeverity(Info.Severity.UNKNOWN_SEVERITY)
+        .setCertainty(Info.Certainty.UNKNOWN_CERTAINTY)
         .setSenderName("Department of Homeland Security")
         .setHeadline("Homeland Security Sets Code ORANGE")
         .setDescription("DHS has set the threat level to ORANGE.")
@@ -109,7 +109,7 @@ public class CapXmlBuilderTest extends TestCase {
         .addInfo(info2)
         .buildPartial();
 
-    String alertStr = XML_DECLARATION +"\n"
+    String alertStr = XML_DECLARATION + "\n"
         + "<alert xmlns=\"" + CapValidator.CAP_LATEST_XMLNS + "\">\n"
         + "  <info>\n"
         + "    <category>Security</category>\n"
@@ -149,7 +149,7 @@ public class CapXmlBuilderTest extends TestCase {
         + "  </info>\n"
         + "</alert>\n";
 
-    assertXmlString(alertStr, alert);
+    assertEquals(alertStr, builder.toXml(alert));
   }
 
 
@@ -190,7 +190,7 @@ public class CapXmlBuilderTest extends TestCase {
         .addInfo(info)
         .buildPartial();
 
-    String alertStr = XML_DECLARATION +"\n"
+    String alertStr = XML_DECLARATION + "\n"
         + "<alert xmlns=\"" + CapValidator.CAP_LATEST_XMLNS + "\">\n"
         + "  <info>\n"
         + "    <area>\n"
@@ -215,7 +215,7 @@ public class CapXmlBuilderTest extends TestCase {
         + "  </info>\n"
         + "</alert>\n";
 
-    assertXmlString(alertStr, alert);
+    assertEquals(alertStr, builder.toXml(alert));
   }
 
   public void testResource() throws Exception {
@@ -238,7 +238,7 @@ public class CapXmlBuilderTest extends TestCase {
         .addInfo(info)
         .buildPartial();
 
-    String alertStr = XML_DECLARATION +"\n"
+    String alertStr = XML_DECLARATION + "\n"
         + "<alert xmlns=\"" + CapValidator.CAP_LATEST_XMLNS + "\">\n"
         + "  <info>\n"
         + "    <resource>\n"
@@ -254,7 +254,7 @@ public class CapXmlBuilderTest extends TestCase {
         + "  </info>\n"
         + "</alert>\n";
 
-    assertXmlString(alertStr, alert);
+    assertEquals(alertStr, builder.toXml(alert));
   }
 
   @SuppressWarnings("deprecation")
@@ -265,7 +265,7 @@ public class CapXmlBuilderTest extends TestCase {
         .buildPartial();
 
     Info info = Info.newBuilder()
-        .setCertainty(Info.Certainty.VeryLikely)
+        .setCertainty(Info.Certainty.VERY_LIKELY)
         .addParameter(ValuePair.newBuilder()
             .setValueName("HSAS").setValue("ORANGE").build())
         .addEventCode(ValuePair.newBuilder()
@@ -277,7 +277,7 @@ public class CapXmlBuilderTest extends TestCase {
         .addInfo(info)
         .buildPartial();
 
-    String alertStr = XML_DECLARATION +"\n"
+    String alertStr = XML_DECLARATION + "\n"
         + "<alert xmlns=\"" + CapValidator.CAP10_XMLNS + "\">\n"
         + "  <password>obsolete</password>\n"
         + "  <info>\n"
@@ -290,7 +290,7 @@ public class CapXmlBuilderTest extends TestCase {
         + "  </info>\n"
         + "</alert>\n";
 
-    assertXmlString(alertStr, alert);
+    assertEquals(alertStr, builder.toXml(alert));
   }
 
   public void testCap11() throws Exception {
@@ -299,16 +299,16 @@ public class CapXmlBuilderTest extends TestCase {
         .buildPartial();
     Info info = Info.newBuilder()
         .addCategory(Info.Category.CBRNE)
-        .addResponseType(Info.ResponseType.Evacuate)
+        .addResponseType(Info.ResponseType.EVACUATE)
         .addResource(resource)
         .buildPartial();
     Alert alert = Alert.newBuilder().setXmlns(CapValidator.CAP11_XMLNS)
-        .setStatus(Alert.Status.Draft)
-        .setScope(Alert.Scope.Public)
+        .setStatus(Alert.Status.DRAFT)
+        .setScope(Alert.Scope.PUBLIC)
         .addInfo(info)
         .buildPartial();
 
-    String alertStr = XML_DECLARATION +"\n"
+    String alertStr = XML_DECLARATION + "\n"
         + "<alert xmlns=\"" + CapValidator.CAP11_XMLNS + "\">\n"
         + "  <status>Draft</status>\n"
         + "  <scope>Public</scope>\n"
@@ -321,19 +321,19 @@ public class CapXmlBuilderTest extends TestCase {
         + "  </info>\n"
         + "</alert>\n";
 
-    assertXmlString(alertStr, alert);
+    assertEquals(alertStr, builder.toXml(alert));
   }
 
   public void testCap12() throws Exception {
     Info info = Info.newBuilder()
-        .addResponseType(Info.ResponseType.Avoid)
-        .addResponseType(Info.ResponseType.AllClear)
+        .addResponseType(Info.ResponseType.AVOID)
+        .addResponseType(Info.ResponseType.ALL_CLEAR)
         .buildPartial();
     Alert alert = Alert.newBuilder().setXmlns(CapValidator.CAP12_XMLNS)
         .addInfo(info)
         .buildPartial();
 
-    String alertStr = XML_DECLARATION +"\n"
+    String alertStr = XML_DECLARATION + "\n"
         + "<alert xmlns=\"" + CapValidator.CAP12_XMLNS + "\">\n"
         + "  <info>\n"
         + "    <responseType>Avoid</responseType>\n"
@@ -341,7 +341,7 @@ public class CapXmlBuilderTest extends TestCase {
         + "  </info>\n"
         + "</alert>\n";
 
-    assertXmlString(alertStr, alert);
+    assertEquals(alertStr, builder.toXml(alert));
   }
 
   public void testNoPrettyPrint() {
@@ -357,7 +357,7 @@ public class CapXmlBuilderTest extends TestCase {
         + "<alert xmlns=\"" + CapValidator.CAP12_XMLNS + "\">"
         + "<info><headline>headline</headline></info></alert>";
 
-    assertXmlString(alertStr, alert);
+    assertEquals(alertStr, builder.toXml(alert));
   }
 
   public void testEscaping() {
@@ -365,12 +365,12 @@ public class CapXmlBuilderTest extends TestCase {
         .setNote("&<>\u0000")
         .buildPartial();
 
-    String alertStr = XML_DECLARATION +"\n"
+    String alertStr = XML_DECLARATION + "\n"
         + "<alert xmlns=\"" + CapValidator.CAP12_XMLNS + "\">\n"
         + "  <note>&amp;&lt;&gt;&#0;</note>\n"
         + "</alert>\n";
 
-    assertXmlString(alertStr, alert);
+    assertEquals(alertStr, builder.toXml(alert));
   }
 
   public void testMaybeQuote() {
@@ -378,10 +378,5 @@ public class CapXmlBuilderTest extends TestCase {
     assertEquals("foo", builder.maybeQuote("foo"));
     assertEquals("\"foo bar\"", builder.maybeQuote("foo bar"));
     assertEquals("\"foo\tbar\"", builder.maybeQuote("foo\tbar"));
-  }
-
-  private void assertXmlString(String expected, Alert alert) {
-    String actual = builder.toXml(alert).replace("\r\n", "\n");
-    assertEquals(expected, actual);
   }
 }

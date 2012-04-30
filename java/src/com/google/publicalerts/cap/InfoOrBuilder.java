@@ -9,7 +9,7 @@ public interface InfoOrBuilder
   boolean hasLanguage();
   String getLanguage();
   
-  // repeated .alerts.cap.Info.Category category = 2;
+  // repeated .publicalerts.cap.Info.Category category = 2;
   java.util.List<com.google.publicalerts.cap.Info.Category> getCategoryList();
   int getCategoryCount();
   com.google.publicalerts.cap.Info.Category getCategory(int index);
@@ -18,20 +18,20 @@ public interface InfoOrBuilder
   boolean hasEvent();
   String getEvent();
   
-  // repeated .alerts.cap.Info.ResponseType response_type = 4;
+  // repeated .publicalerts.cap.Info.ResponseType response_type = 4;
   java.util.List<com.google.publicalerts.cap.Info.ResponseType> getResponseTypeList();
   int getResponseTypeCount();
   com.google.publicalerts.cap.Info.ResponseType getResponseType(int index);
   
-  // required .alerts.cap.Info.Urgency urgency = 5;
+  // required .publicalerts.cap.Info.Urgency urgency = 5;
   boolean hasUrgency();
   com.google.publicalerts.cap.Info.Urgency getUrgency();
   
-  // required .alerts.cap.Info.Severity severity = 6;
+  // required .publicalerts.cap.Info.Severity severity = 6;
   boolean hasSeverity();
   com.google.publicalerts.cap.Info.Severity getSeverity();
   
-  // required .alerts.cap.Info.Certainty certainty = 7;
+  // required .publicalerts.cap.Info.Certainty certainty = 7;
   boolean hasCertainty();
   com.google.publicalerts.cap.Info.Certainty getCertainty();
   
@@ -39,7 +39,7 @@ public interface InfoOrBuilder
   boolean hasAudience();
   String getAudience();
   
-  // repeated .alerts.cap.ValuePair event_code = 9;
+  // repeated .publicalerts.cap.ValuePair event_code = 9;
   java.util.List<com.google.publicalerts.cap.ValuePair> 
       getEventCodeList();
   com.google.publicalerts.cap.ValuePair getEventCode(int index);
@@ -85,7 +85,7 @@ public interface InfoOrBuilder
   boolean hasContact();
   String getContact();
   
-  // repeated .alerts.cap.ValuePair parameter = 19;
+  // repeated .publicalerts.cap.ValuePair parameter = 19;
   java.util.List<com.google.publicalerts.cap.ValuePair> 
       getParameterList();
   com.google.publicalerts.cap.ValuePair getParameter(int index);
@@ -95,7 +95,7 @@ public interface InfoOrBuilder
   com.google.publicalerts.cap.ValuePairOrBuilder getParameterOrBuilder(
       int index);
   
-  // repeated .alerts.cap.Resource resource = 20;
+  // repeated .publicalerts.cap.Resource resource = 20;
   java.util.List<com.google.publicalerts.cap.Resource> 
       getResourceList();
   com.google.publicalerts.cap.Resource getResource(int index);
@@ -105,7 +105,7 @@ public interface InfoOrBuilder
   com.google.publicalerts.cap.ResourceOrBuilder getResourceOrBuilder(
       int index);
   
-  // repeated .alerts.cap.Area area = 21;
+  // repeated .publicalerts.cap.Area area = 21;
   java.util.List<com.google.publicalerts.cap.Area> 
       getAreaList();
   com.google.publicalerts.cap.Area getArea(int index);

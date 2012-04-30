@@ -1,0 +1,10 @@
+<?xml version = '1.0' encoding = 'UTF-8' standalone = 'yes'?>
+<?xml-stylesheet href='http://www.weather.gov/alerts-beta/capatomproduct.xsl' type='text/xsl'?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.1">
+<identifier>USGS-earthquakes-us2010apcd.6.20100831T000925.496Z</identifier>
+<sender>http://earthquake.usgs.gov/research/monitoring/anss/neic/</sender> 
+<sent>2010-08-31T00:09:25-05:00</sent>
+<status>Actual</status>
+<msgType>Alert</msgType>
+<scope>Public</scope>
+</alert>

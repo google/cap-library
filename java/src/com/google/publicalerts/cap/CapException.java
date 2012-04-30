@@ -261,7 +261,7 @@ public class CapException extends Exception {
         "deprecated. Use Likely instead"),
     DUPLICATE_ELEMENT("Invalid duplicate <{0}>, ignoring \"{1}\""),
     INVALID_ALTITUDE_CEILING_RANGE("Invalid <area>; ceiling must " +
-    		"be greater than altitude"),
+        "be greater than altitude"),
     INVALID_AREA("Invalid <area>; when ceiling is specified " +
         "altitude must also be specified."),
     INVALID_CHARACTERS("Invalid characters in element \"{0}\""),
@@ -274,12 +274,13 @@ public class CapException extends Exception {
         "Must be one of {2}"),
     INVALID_IDENTIFIER("Invalid <identifier> \"{0}\". Must not include " +
         "spaces, commas, or restricted characters (< and &)"),
+    INVALID_LANGUAGE("Invalid <language> \"{0}\". Must follow RFC 3066."),
     INVALID_POLYGON("Invalid <polygon> \"{0}\". Expect a minimum of four " +
-    		"[WGS 84] coordinates like: " +
-    		"\"12.3,-4.2 12.3,-4.3 12.4,-4.3 12.3,-4.2\", " +
-    		"where the first and last coordinates are equal."),
+        "[WGS 84] coordinates like: " +
+        "\"12.3,-4.2 12.3,-4.3 12.4,-4.3 12.3,-4.2\", " +
+        "where the first and last coordinates are equal."),
     INVALID_REFERENCES("Invalid <references>: \"{0}\". Must be a non-empty, " +
-    		"space-separated list of sender,identifier,sent triplets."),
+        "space-separated list of sender,identifier,sent triplets."),
     INVALID_RESOURCE_SIZE("Invalid size: \"{0}\""),
     INVALID_RESOURCE_URI("Invalid URI: \"{0}\""),
     INVALID_SENDER("Invalid <sender>: \"{0}\". Must not include " +
@@ -290,7 +291,7 @@ public class CapException extends Exception {
     INVALID_WEB("Invalid <web>: \"{0}\". Must be a full " +
         "absolute URI"),
     MISSING_REQUIRED_ELEMENT("The content of <{0}> is not complete. One of " +
-    		"{1} is required"),
+        "{1} is required"),
     OTHER("{0}"),
     PASSWORD_DEPRECATED("<password> has been deprecated"),
     RESTRICTION_SCOPE_MISMATCH(

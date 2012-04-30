@@ -16,17 +16,21 @@
 
 package com.google.publicalerts.cap;
 
-import java.lang.reflect.Constructor;
-import java.util.ArrayList;
-import java.util.List;
+import com.google.publicalerts.cap.edxl.io.ConverterForEdxlde10Test;
+import com.google.publicalerts.cap.edxl.io.Edxlde10ParserTest;
+import com.google.publicalerts.cap.feed.CapFeedParserTest;
+import com.google.publicalerts.cap.feed.CapFeedValidatorTest;
+import com.google.publicalerts.cap.profile.GoogleProfileTest;
+import com.google.publicalerts.cap.profile.au.AustralianProfileTest;
+import com.google.publicalerts.cap.profile.ca.CanadianProfileTest;
+import com.google.publicalerts.cap.profile.us.Ipaws1ProfileTest;
 
 import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
-import com.google.publicalerts.cap.feed.CapFeedParserTest;
-import com.google.publicalerts.cap.feed.CapFeedValidatorTest;
-import com.google.publicalerts.cap.profile.CanadianProfileTest;
-import com.google.publicalerts.cap.profile.Ipaws1ProfileTest;
+import java.lang.reflect.Constructor;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * All tests.
@@ -54,6 +58,7 @@ public class AllTests {
     // TODO(shakusa) Automate this, recursively search for test classes
     TestSuite suite = new TestSuite();
 
+    suite.addTestSuite(CachedSaxInputSourceTest.class);
     suite.addTestSuite(CapJsonBuilderTest.class);
     suite.addTestSuite(CapXmlParserTest.class);
     suite.addTestSuite(CapXmlBuilderTest.class);
@@ -65,7 +70,12 @@ public class AllTests {
     suite.addTestSuite(CapFeedParserTest.class);
     suite.addTestSuite(CapFeedValidatorTest.class);
 
+    suite.addTestSuite(Edxlde10ParserTest.class);
+    suite.addTestSuite(ConverterForEdxlde10Test.class);
+
+    suite.addTestSuite(AustralianProfileTest.class);
     suite.addTestSuite(CanadianProfileTest.class);
+    suite.addTestSuite(GoogleProfileTest.class);
     suite.addTestSuite(Ipaws1ProfileTest.class);
 
     return suite;

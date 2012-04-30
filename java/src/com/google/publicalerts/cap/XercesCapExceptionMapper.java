@@ -16,6 +16,11 @@
 
 package com.google.publicalerts.cap;
 
+import com.google.protobuf.Descriptors.Descriptor;
+import com.google.protobuf.Descriptors.FieldDescriptor;
+import com.google.publicalerts.cap.CapException.Reason;
+import com.google.publicalerts.cap.CapException.Type;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,11 +29,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.google.protobuf.Descriptors.Descriptor;
-import com.google.protobuf.Descriptors.FieldDescriptor;
-import com.google.publicalerts.cap.CapException.Reason;
-import com.google.publicalerts.cap.CapException.Type;
 
 /**
  * Attempts to map {@link Reason}s of type {@link Type#OTHER} derived
@@ -44,11 +44,11 @@ import com.google.publicalerts.cap.CapException.Type;
  */
 public class XercesCapExceptionMapper {
   private static final Pattern XERCES_ONE_PARAM_PATTERN = Pattern.compile(
-      ".* '(.*)' .*");
+  ".* '(.*)' .*");
   private static final Pattern XERCES_TWO_PARAM_PATTERN = Pattern.compile(
       ".* '(.*)'.* '(.*)'.*");
   private static final Pattern ANON_TYPE_PATTERN = Pattern.compile(
-       ".*AnonType_(.*)alert.*");
+      ".*AnonType_(.*)alert.*");
 
   private static final Set<String> VALID_TAGS = buildValidTagSet();
   private static final Set<String> DATE_TAGS = buildDateTags();
@@ -197,7 +197,7 @@ public class XercesCapExceptionMapper {
     ret.add("alert");
     for (Descriptor d : Cap.getDescriptor().getMessageTypes()) {
       for (FieldDescriptor fd : d.getFields()) {
-        ret.add(CapUtil.camelCase(fd.getName()));
+        ret.add(CapUtil.javaCase(fd.getName()));
       }
     }
     return ret;

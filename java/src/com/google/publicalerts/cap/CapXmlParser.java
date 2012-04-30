@@ -16,9 +16,24 @@
 
 package com.google.publicalerts.cap;
 
+import com.google.protobuf.ByteString;
+import com.google.protobuf.Descriptors;
+import com.google.protobuf.Descriptors.FieldDescriptor;
+import com.google.protobuf.Message.Builder;
+import com.google.protobuf.MessageOrBuilder;
+import com.google.publicalerts.cap.CapException.Reason;
+import com.google.publicalerts.cap.CapException.Type;
+
+import org.xml.sax.Attributes;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
+import org.xml.sax.XMLReader;
+import org.xml.sax.helpers.DefaultHandler;
+
 import java.io.IOException;
 import java.io.Reader;
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -33,22 +48,6 @@ import javax.xml.transform.Source;
 import javax.xml.transform.stream.StreamSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
-
-import org.xml.sax.Attributes;
-import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.DefaultHandler;
-
-import com.google.protobuf.ByteString;
-import com.google.protobuf.Descriptors;
-import com.google.protobuf.Descriptors.FieldDescriptor;
-import com.google.protobuf.Message.Builder;
-import com.google.protobuf.MessageOrBuilder;
-import com.google.publicalerts.cap.CapException.Reason;
-import com.google.publicalerts.cap.CapException.Type;
 
 /**
  * Parses CAP XML, optionally validating.
@@ -137,23 +136,23 @@ public class CapXmlParser {
    * @throws NotCapException if the XML is not CAP XML
    * @throws SAXParseException on XML parsing error
    */
-  public Alert parseFrom(String str)
+  public final Alert parseFrom(String str)
       throws CapException, NotCapException, SAXParseException {
-    return parseFrom(new StringReader(str));
+    return parseFromInternal(new CachedSaxInputSource(str));
   }
 
   /**
    * Parse the given alert.
    *
    * @param str the CAP XML to parse, as a string
-   * @param parseErrors a list to which to add non-fatal errors during parsing
+   * @param parseErrors a list to which to add any non-fatal errors during parsing
    * @return the parsed alert
    * @throws NotCapException if the XML is not CAP XML
    * @throws SAXParseException on XML parsing error
    */
-  public Alert parseFrom(String str, List<Reason> parseErrors)
+  public final Alert parseFrom(String str, List<Reason> parseErrors)
       throws NotCapException, SAXParseException {
-    return parseFrom(new StringReader(str), parseErrors);
+    return parseFromInternal(new CachedSaxInputSource(str), parseErrors);
   }
 
   /**
@@ -166,23 +165,23 @@ public class CapXmlParser {
    * @throws NotCapException if the XML is not CAP XML
    * @throws SAXParseException on XML parsing error
    */
-  public Alert parseFrom(Reader reader)
+  public final Alert parseFrom(Reader reader)
       throws CapException, NotCapException, SAXParseException {
-    return parseFrom(new InputSource(reader));
+    return parseFromInternal(new CachedSaxInputSource(reader));
   }
 
   /**
    * Parse the given alert.
    *
    * @param reader the reader to read the CAP XML to parse
-   * @param parseErrors a list to which to add non-fatal errors during parsing
+   * @param parseErrors a list to which to add any non-fatal errors during parsing
    * @return the parsed alert
    * @throws NotCapException if the XML is not CAP XML
    * @throws SAXParseException on XML parsing error
    */
-  public Alert parseFrom(Reader reader, List<Reason> parseErrors)
+  public final Alert parseFrom(Reader reader, List<Reason> parseErrors)
       throws NotCapException, SAXParseException {
-    return parseFrom(new InputSource(reader), parseErrors);
+    return parseFromInternal(new CachedSaxInputSource(reader), parseErrors);
   }
 
   /**
@@ -195,27 +194,37 @@ public class CapXmlParser {
    * @throws NotCapException if the XML is not CAP XML
    * @throws SAXParseException on XML parsing error
    */
-  public Alert parseFrom(InputSource is)
+  public final Alert parseFrom(InputSource is)
+    throws CapException, NotCapException, SAXParseException {
+    return parseFromInternal(new CachedSaxInputSource(is));
+  }
+
+  /**
+   * Parse the given alert.
+   *
+   * @param is the input source to read the CAP XML to parse
+   * @param parseErrors a list to which to add any non-fatal errors during parsing
+   * @return the parsed alert
+   * @throws NotCapException if the XML is not CAP XML
+   * @throws SAXParseException on XML parsing error
+   */
+  public final Alert parseFrom(InputSource is, List<Reason> parseErrors)
+      throws NotCapException, SAXParseException {
+    return parseFromInternal(new CachedSaxInputSource(is), parseErrors);
+  }
+
+  private Alert parseFromInternal(CachedSaxInputSource is)
       throws CapException, NotCapException, SAXParseException {
     List<Reason> parseErrors = new ArrayList<Reason>();
-    Alert alert = parseFrom(is, parseErrors);
+    Alert alert = parseFromInternal(is, parseErrors);
     if (validate && !parseErrors.isEmpty()) {
       throw new CapException(parseErrors);
     }
     return alert;
   }
 
-  /**
-   * Parse the given alert.
-   *
-   * @param is the input source to read the CAP XML to parse
-   * @param parseErrors a list to which to add non-fatal errors during parsing
-   * @return the parsed alert
-   * @throws NotCapException if the XML is not CAP XML
-   * @throws SAXParseException on XML parsing error
-   */
-  public Alert parseFrom(InputSource is, List<Reason> parseErrors)
-      throws NotCapException, SAXParseException {   
+  protected Alert parseFromInternal(CachedSaxInputSource is, List<Reason> parseErrors)
+       throws NotCapException, SAXParseException {
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setNamespaceAware(true);
 
@@ -225,6 +234,7 @@ public class CapXmlParser {
       if (!schemaMap.containsKey(xmlns)) {
         throw new NotCapException("Unsupported xmlns:" + xmlns);
       }
+      is.reset(); // Reset input streams so we can now parse entire document.
       factory.setSchema(schemaMap.get(xmlns));
       XMLReader reader = factory.newSAXParser().getXMLReader();
       reader.setContentHandler(handler);
@@ -244,7 +254,7 @@ public class CapXmlParser {
     return handler.getAlert();
   }
 
-  private String getXmlns(InputSource is)
+  private String getXmlns(CachedSaxInputSource is)
       throws ParserConfigurationException, SAXException, IOException {
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setNamespaceAware(true);
@@ -253,12 +263,6 @@ public class CapXmlParser {
       factory.newSAXParser().parse(is, handler);
     } catch (AbortXmlnsParseException e) {
       return e.xmlns;
-    } finally {
-      if (is.getCharacterStream() != null) {
-        is.getCharacterStream().reset();
-      } else if (is.getByteStream() != null) {
-        is.getByteStream().reset();
-      }
     }
     return null;
   }
@@ -534,7 +538,9 @@ public class CapXmlParser {
         case ENUM:
           // Special-case the only valid space character
           if ("Very Likely".equals(val)) {
-            val = "VeryLikely";
+            val = "VERY_LIKELY";
+          } else if (val != null) {
+            val = CapUtil.underscoreCase(val).toUpperCase();
           }
           Descriptors.EnumDescriptor enumType = fd.getEnumType();
           Descriptors.EnumValueDescriptor evd = enumType.findValueByName(val);
@@ -542,7 +548,8 @@ public class CapXmlParser {
             // Enum values in proto use C++ scoping rules, so 2 enums
             // of the same message can't have the same name. We work around
             // this limitation by using the name Value_EnumTypeName
-            evd = enumType.findValueByName(val + "_" + enumType.getName());
+            evd = enumType.findValueByName(val + "_" +
+                enumType.getName().toUpperCase());
           }
           if (evd == null) {
             // Error will be added by the XSD validation

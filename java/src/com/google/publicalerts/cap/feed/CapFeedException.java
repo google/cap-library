@@ -16,11 +16,11 @@
 
 package com.google.publicalerts.cap.feed;
 
+import com.google.publicalerts.cap.CapException;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
-
-import com.google.publicalerts.cap.CapException;
 
 /**
  * An exception for CAP feeds.
@@ -55,6 +55,11 @@ public class CapFeedException extends CapException {
     RSS_ITEM_TITLE_OR_DESCRIPTION_IS_REQUIRED(
         "Items must have a non-empty <title> or <description>"),
     RSS_ITEM_MISSING_CAP_LINK("Item ust contain a link to a CAP document"),
+    EDXLDE_CONTENT_OBJECT_IS_REQUIRED(
+        "Feeds must have a non-empty <contentObject> element"),
+    EDXLDE_NO_CAP_IN_CONTENT_OBJECT(
+        "Feeds must contain an xmlContent element containing a CAP alert, "
+        + "or a nonXMLContent element pointing to a CAP alert"),
     OTHER("{0}"),
     ;
 

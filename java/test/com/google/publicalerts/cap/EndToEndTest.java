@@ -16,6 +16,9 @@
 
 package com.google.publicalerts.cap;
 
+import com.google.publicalerts.cap.testing.CapTestUtil;
+import com.google.publicalerts.cap.testing.MockTrustStrategy;
+
 import junit.framework.TestCase;
 
 /**
@@ -31,7 +34,7 @@ public class EndToEndTest extends TestCase {
 
   public void testEndToEnd() throws Exception {
     // Generate a CAP document
-    Alert alert = TestUtil.getValidAlertBuilder().build();
+    Alert alert = CapTestUtil.getValidAlertBuilder().build();
 
     // Write it out to XML
     CapXmlBuilder builder = new CapXmlBuilder();
@@ -42,8 +45,9 @@ public class EndToEndTest extends TestCase {
     String signedXml = signer.sign(xml);
 
     // Validate the signature
-    XmlSignatureValidator signatureValidator = new XmlSignatureValidator();
-    assertTrue(signatureValidator.isSignatureValid(signedXml, false));
+    XmlSignatureValidator signatureValidator = new XmlSignatureValidator(
+        new MockTrustStrategy().setAllowMissingSignatures(false));
+    assertTrue(signatureValidator.validate(signedXml).isSignatureValid());
 
     // Parse it, with validation
     CapXmlParser parser = new CapXmlParser(true);

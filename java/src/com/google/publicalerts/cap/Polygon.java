@@ -22,15 +22,15 @@ public  final class Polygon extends
   
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Polygon_descriptor;
+    return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Polygon_descriptor;
   }
   
   protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Polygon_fieldAccessorTable;
+    return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Polygon_fieldAccessorTable;
   }
   
-  // repeated .alerts.cap.Point point = 1;
+  // repeated .publicalerts.cap.Point point = 1;
   public static final int POINT_FIELD_NUMBER = 1;
   private java.util.List<com.google.publicalerts.cap.Point> point_;
   public java.util.List<com.google.publicalerts.cap.Point> getPointList() {
@@ -93,13 +93,15 @@ public  final class Polygon extends
     return size;
   }
   
+  private static final long serialVersionUID = 0L;
   @java.lang.Override
-  protected Object writeReplace() throws java.io.ObjectStreamException {
+  protected java.lang.Object writeReplace()
+      throws java.io.ObjectStreamException {
     return super.writeReplace();
   }
   
   @java.lang.Override
-  public boolean equals(final Object obj) {
+  public boolean equals(final java.lang.Object obj) {
     if (obj == this) {
      return true;
     }
@@ -213,12 +215,12 @@ public  final class Polygon extends
      implements com.google.publicalerts.cap.PolygonOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Polygon_descriptor;
+      return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Polygon_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Polygon_fieldAccessorTable;
+      return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Polygon_fieldAccessorTable;
     }
     
     // Construct using com.google.publicalerts.cap.Polygon.newBuilder()
@@ -383,7 +385,7 @@ public  final class Polygon extends
     
     private int bitField0_;
     
-    // repeated .alerts.cap.Point point = 1;
+    // repeated .publicalerts.cap.Point point = 1;
     private java.util.List<com.google.publicalerts.cap.Point> point_ =
       java.util.Collections.emptyList();
     private void ensurePointIsMutable() {
@@ -569,7 +571,7 @@ public  final class Polygon extends
       return pointBuilder_;
     }
     
-    // @@protoc_insertion_point(builder_scope:alerts.cap.Polygon)
+    // @@protoc_insertion_point(builder_scope:publicalerts.cap.Polygon)
   }
   
   static {
@@ -577,6 +579,6 @@ public  final class Polygon extends
     defaultInstance.initFields();
   }
   
-  // @@protoc_insertion_point(class_scope:alerts.cap.Polygon)
+  // @@protoc_insertion_point(class_scope:publicalerts.cap.Polygon)
 }
 

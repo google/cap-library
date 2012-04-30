@@ -23,9 +23,9 @@ import junit.framework.TestCase;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Sets;
-import com.google.publicalerts.cap.feed.TestResources;
+import com.google.publicalerts.cap.testing.TestResources;
 import com.google.publicalerts.cap.profile.CapProfile;
-import com.google.publicalerts.cap.profile.Ipaws1Profile;
+import com.google.publicalerts.cap.profile.us.Ipaws1Profile;
 
 /**
  * Tests for {@link CapValidator}.

@@ -8,7 +8,7 @@ You can download and install Apache Ant from http://ant.apache.org/
 
 Run all tests
 =============
-ant test
+APPENGINE_JAVA_SDK=/path/to/appengine-sdk ant test
 
 Compile the library into a jar
 ==============================
@@ -18,7 +18,7 @@ ant jar
 Compile and run the validator
 =============================
 cd validator
-ant runserver
+APPENGINE_JAVA_SDK=/path/to/appengine-sdk ant runserver
 
 Usage
 =====

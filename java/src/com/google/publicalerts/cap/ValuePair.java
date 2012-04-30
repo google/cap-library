@@ -22,23 +22,23 @@ public  final class ValuePair extends
   
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_ValuePair_descriptor;
+    return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_ValuePair_descriptor;
   }
   
   protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_ValuePair_fieldAccessorTable;
+    return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_ValuePair_fieldAccessorTable;
   }
   
   private int bitField0_;
   // required string value_name = 1;
   public static final int VALUE_NAME_FIELD_NUMBER = 1;
-  private Object valueName_;
+  private java.lang.Object valueName_;
   public boolean hasValueName() {
     return ((bitField0_ & 0x00000001) == 0x00000001);
   }
   public String getValueName() {
-    Object ref = valueName_;
+    java.lang.Object ref = valueName_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -52,7 +52,7 @@ public  final class ValuePair extends
     }
   }
   private com.google.protobuf.ByteString getValueNameBytes() {
-    Object ref = valueName_;
+    java.lang.Object ref = valueName_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -65,12 +65,12 @@ public  final class ValuePair extends
   
   // required string value = 2;
   public static final int VALUE_FIELD_NUMBER = 2;
-  private Object value_;
+  private java.lang.Object value_;
   public boolean hasValue() {
     return ((bitField0_ & 0x00000002) == 0x00000002);
   }
   public String getValue() {
-    Object ref = value_;
+    java.lang.Object ref = value_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -84,7 +84,7 @@ public  final class ValuePair extends
     }
   }
   private com.google.protobuf.ByteString getValueBytes() {
-    Object ref = value_;
+    java.lang.Object ref = value_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -147,13 +147,15 @@ public  final class ValuePair extends
     return size;
   }
   
+  private static final long serialVersionUID = 0L;
   @java.lang.Override
-  protected Object writeReplace() throws java.io.ObjectStreamException {
+  protected java.lang.Object writeReplace()
+      throws java.io.ObjectStreamException {
     return super.writeReplace();
   }
   
   @java.lang.Override
-  public boolean equals(final Object obj) {
+  public boolean equals(final java.lang.Object obj) {
     if (obj == this) {
      return true;
     }
@@ -279,12 +281,12 @@ public  final class ValuePair extends
      implements com.google.publicalerts.cap.ValuePairOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_ValuePair_descriptor;
+      return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_ValuePair_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_ValuePair_fieldAccessorTable;
+      return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_ValuePair_fieldAccessorTable;
     }
     
     // Construct using com.google.publicalerts.cap.ValuePair.newBuilder()
@@ -434,12 +436,12 @@ public  final class ValuePair extends
     private int bitField0_;
     
     // required string value_name = 1;
-    private Object valueName_ = "";
+    private java.lang.Object valueName_ = "";
     public boolean hasValueName() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     public String getValueName() {
-      Object ref = valueName_;
+      java.lang.Object ref = valueName_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         valueName_ = s;
@@ -470,12 +472,12 @@ public  final class ValuePair extends
     }
     
     // required string value = 2;
-    private Object value_ = "";
+    private java.lang.Object value_ = "";
     public boolean hasValue() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public String getValue() {
-      Object ref = value_;
+      java.lang.Object ref = value_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         value_ = s;
@@ -505,7 +507,7 @@ public  final class ValuePair extends
       onChanged();
     }
     
-    // @@protoc_insertion_point(builder_scope:alerts.cap.ValuePair)
+    // @@protoc_insertion_point(builder_scope:publicalerts.cap.ValuePair)
   }
   
   static {
@@ -513,6 +515,6 @@ public  final class ValuePair extends
     defaultInstance.initFields();
   }
   
-  // @@protoc_insertion_point(class_scope:alerts.cap.ValuePair)
+  // @@protoc_insertion_point(class_scope:publicalerts.cap.ValuePair)
 }
 

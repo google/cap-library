@@ -20,7 +20,7 @@
   <target name="protoc">
     <exec executable="protoc">
       <arg value="--java_out=../java/src/"/>
-      <arg value="proto/cap.proto"/>
+      <arg value="cap.proto"/>
     </exec>
   </target>
 </project>

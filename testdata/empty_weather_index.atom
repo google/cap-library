@@ -1,0 +1,16 @@
+<feed
+xmlns = 'http://www.w3.org/2005/Atom'
+xmlns:cap = 'urn:oasis:names:tc:emergency:cap:1.1'
+xmlns:ha = 'http://www.alerting.net/namespace/index_1.0'
+>
+<!-- http-date = Tue, 31 Aug 2010 02:24:00 GMT -->
+<id>http://www.weather.gov/alerts-beta/</id>
+<logo>http://weather.gov/images/xml_logo.gif</logo>
+<generator>NWS CAP Server</generator>
+<updated>2010-08-31T14:24:00-00:00</updated>
+<author>
+<name>w-nws.webmaster@noaa.gov</name>
+</author>
+<title>Current Watches, Warnings and Advisories for the United States Issued by the National Weather Service</title>
+<link href='http://www.weather.gov/alerts-beta/'/>
+</feed>

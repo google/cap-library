@@ -1,0 +1,50 @@
+<?xml version = '1.0' encoding = 'UTF-8' standalone = 'yes'?>
+<feed
+xmlns = 'http://www.w3.org/2005/Atom'
+xmlns:cap = 'urn:oasis:names:tc:emergency:cap:1.1'
+xmlns:ha = 'http://www.alerting.net/namespace/index_1.0'
+>
+<id>http://www.weather.gov/alerts-beta/</id>
+<logo>http://weather.gov/images/xml_logo.gif</logo>
+<generator>NWS CAP Server</generator>
+<updated>2010-08-30T14:37:00-00:00</updated>
+<author>
+<name>w-nws.webmaster@noaa.gov</name>
+</author>
+<title>Current Watches, Warnings and Advisories for the United States Issued by the National Weather Service</title>
+<link href='http://www.weather.gov/alerts-beta/'/>
+<entry>
+<id>http://www.weather.gov/alerts-beta/wwacapget.php?x=DC20100829202900LWXAirQualityAlertLWX20100831040000DC</id>
+<updated>2010-08-29T16:29:00-04:00</updated>
+<published>2010-08-29T16:29:00-04:00</published>
+<author>
+<name>w-nws.webmaster@noaa.gov</name>
+</author>
+<title>Air Quality Alert issued August 29 at 4:29PM EDT expiring August 31 at 12:00AM EDT by NWS Baltimore/Washington http://www.erh.noaa.gov/lwx/</title>
+<link href='http://www.weather.gov/alerts-beta/wwacapget.php?x=DC20100829202900LWXAirQualityAlertLWX20100831040000DC'/>
+<content type="text/xml">
+<alert xmlns = 'urn:oasis:names:tc:emergency:cap:1.1'>
+<!-- Invalid identifier -->
+<identifier>INVALID, </identifier>
+<sender>w-nws.webmaster@noaa.gov</sender>
+<sent>2010-08-30T04:07:00-06:00</sent>
+<status>Actual</status>
+<msgType>Alert</msgType>
+<scope>Public</scope>
+<info>
+<category>Met</category>
+<event>Flash Flood Watch</event>
+<urgency>Expected</urgency>
+<severity>Severe</severity>
+<certainty>Possible</certainty>
+<effective>2010-08-30T04:07:00-06:00</effective>
+<expires>2010-08-30T12:00:00-06:00</expires>
+<senderName>NWS GreatFalls (Central Montana)</senderName>
+<area>
+<areaDesc>Central and Southern Lewis and Clark; Lewis and Clark</areaDesc>
+</area>
+</info>
+</alert>
+</content>
+</entry>
+</feed>

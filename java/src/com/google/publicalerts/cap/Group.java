@@ -22,12 +22,12 @@ public  final class Group extends
   
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Group_descriptor;
+    return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Group_descriptor;
   }
   
   protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Group_fieldAccessorTable;
+    return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Group_fieldAccessorTable;
   }
   
   // repeated string value = 1;
@@ -85,13 +85,15 @@ public  final class Group extends
     return size;
   }
   
+  private static final long serialVersionUID = 0L;
   @java.lang.Override
-  protected Object writeReplace() throws java.io.ObjectStreamException {
+  protected java.lang.Object writeReplace()
+      throws java.io.ObjectStreamException {
     return super.writeReplace();
   }
   
   @java.lang.Override
-  public boolean equals(final Object obj) {
+  public boolean equals(final java.lang.Object obj) {
     if (obj == this) {
      return true;
     }
@@ -205,12 +207,12 @@ public  final class Group extends
      implements com.google.publicalerts.cap.GroupOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Group_descriptor;
+      return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Group_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Group_fieldAccessorTable;
+      return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Group_fieldAccessorTable;
     }
     
     // Construct using com.google.publicalerts.cap.Group.newBuilder()
@@ -400,7 +402,7 @@ public  final class Group extends
       onChanged();
     }
     
-    // @@protoc_insertion_point(builder_scope:alerts.cap.Group)
+    // @@protoc_insertion_point(builder_scope:publicalerts.cap.Group)
   }
   
   static {
@@ -408,6 +410,6 @@ public  final class Group extends
     defaultInstance.initFields();
   }
   
-  // @@protoc_insertion_point(class_scope:alerts.cap.Group)
+  // @@protoc_insertion_point(class_scope:publicalerts.cap.Group)
 }
 

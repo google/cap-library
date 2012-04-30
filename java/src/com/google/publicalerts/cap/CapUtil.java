@@ -16,21 +16,23 @@
 
 package com.google.publicalerts.cap;
 
+import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
-import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Message.Builder;
 import com.google.protobuf.ProtocolMessageEnum;
 
-import java.util.Set;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Date;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
+
+import javax.xml.bind.DatatypeConverter;
 
 /**
  * Utilities for dealing with transforming to and from CAP protos.
@@ -47,22 +49,28 @@ public class CapUtil {
    * 16: 49 PDT).  Alphabetic timezone designators such as "Z"
    * MUST NOT be used.  The timezone for UTC MUST be represented
    * as "-00:00" or "+00:00"
-   *
-   * {@link #DATE_FORMATS} below do most of the work of validating this format,
-   * but do not support handling the colon in the time zone format
-   * and are more lenient in parsing months and dates than the spec specifies.
    */
-  // TODO (andriy): We handle fractional seconds (hundredths or thousands), but
-  // because [dateTime] allows an arbitrary number of decimals, it would be better
-  // to devise a more robust and flexible solution here.
+  // TODO(andriy): We handle fractional seconds (hundredths or thousands), but
+  // because [dateTime] allows an arbitrary number of decimals, it would be
+  // better to devise a more robust and flexible solution here.
   private static final Pattern DATE_PATTERN = Pattern.compile(
-      "[0-9]{4}-[01][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9](\\.[0-9]{2}([0-9])?)?"
-          + "([\\+|-])([01][0-9]:[0-5][0-9])");
+      "[0-9]{4}-[01][0-9]-[0-3][0-9]T[0-2][0-9]:[0-5][0-9]:[0-5][0-9]"
+          + "(\\.[0-9]{2}([0-9])?)?([\\+|-])([01][0-9]:[0-5][0-9])");
 
-  // These are the (only) supported date formats; they must be covered by DATE_PATTERN.
-  private static final String [] DATE_FORMATS = {"yyyy-MM-dd'T'HH:mm:ssZ",
-                                                 "yyyy-MM-dd'T'HH:mm:ss.SSZ",
-                                                 "yyyy-MM-dd'T'HH:mm:ss.SSSZ"};
+  private static final String DATETIME_FORMAT = "yyyy-MM-dd'T'HH:mm:ssZZ";
+
+  private static final Map<String, String> ENUM_CASING_EXCEPTIONS =
+      buildEnumCasingExceptions();
+
+  private static Map<String, String> buildEnumCasingExceptions() {
+    Map<String, String> ret = new HashMap<String, String>();
+    ret.put("VERY_LIKELY", "Very Likely");
+    ret.put("CBRNE", "CBRNE");
+    ret.put("UNKNOWN_URGENCY", "Unknown");
+    ret.put("UNKNOWN_SEVERITY", "Unknown");
+    ret.put("UNKNOWN_CERTAINTY", "Unknown");
+    return ret;
+  }
 
   /**
    * Returns a CAP field value for an enum field.
@@ -75,16 +83,8 @@ public class CapUtil {
    * @return a CAP field name for the enum field.
    */
   public static String getEnumValue(EnumValueDescriptor evd) {
-    String value = evd.getName();
-    String suffixWorkaround = "_" + evd.getType().getName();
-    if (value.endsWith(suffixWorkaround)) {
-      return value.substring(0, value.length() - suffixWorkaround.length());
-    } else if ("VeryLikely".equals(value)) {
-      // Special-case for the deprecated CAP 1.0 enum value for <certainty>
-      // The proto enum does not support a space, but the CAP XML enum has one.
-      return "Very Likely";
-    }
-    return value;
+    String value = ENUM_CASING_EXCEPTIONS.get(evd.getName());
+    return value == null ? camelCase(evd.getName()) : value;
   }
 
   /**
@@ -110,16 +110,29 @@ public class CapUtil {
    * @return the element name of the field
    */
   public static String getElementName(FieldDescriptor fd) {
-    return camelCase(fd.getName());
+    return javaCase(fd.getName());
+  }
+
+  static String javaCase(String s) {
+    return toCase(s, false);
   }
 
   static String camelCase(String s) {
+    return toCase(s, true);
+  }
+
+  static String toCase(String s, boolean camel) {
     String[] parts = s.split("_");
-    StringBuilder sb = new StringBuilder(parts[0].toLowerCase());
-    for (int i = 1; i < parts.length; i++) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < parts.length; i++) {
       String part = parts[i];
-      sb.append(part.substring(0, 1).toUpperCase())
-          .append(part.substring(1).toLowerCase());
+      if (part.length() > 0) {
+        sb.append(part.substring(0, 1).toUpperCase())
+            .append(part.substring(1).toLowerCase());
+      }
+    }
+    if (!camel && sb.length() > 0) {
+      sb.replace(0, 1, String.valueOf(Character.toLowerCase(sb.charAt(0))));
     }
     return sb.toString();
   }
@@ -134,20 +147,23 @@ public class CapUtil {
    */
   public static FieldDescriptor findFieldByName(Builder builder, String name) {
     return builder == null ? null :
-        builder.getDescriptorForType().findFieldByName(underscoreCase(name));
+        builder.getDescriptorForType().findFieldByName(
+            underscoreCase(name).toLowerCase());
   }
 
   static String underscoreCase(String s) {
+    if (s.isEmpty()) {
+      return s;
+    }
     StringBuilder sb = new StringBuilder();
     char[] chars = s.toCharArray();
     sb.append(chars[0]);
     for (int i = 1; i < chars.length; i++) {
       char ch = chars[i];
-      if (Character.isUpperCase(ch)) {
-        sb.append('_').append(Character.toLowerCase(ch));
-      } else {
-        sb.append(ch);
+      if (Character.isUpperCase(ch) && Character.isLowerCase(chars[i - 1])) {
+        sb.append('_');
       }
+      sb.append(ch);
     }
     return sb.toString();
   }
@@ -172,14 +188,14 @@ public class CapUtil {
     Set<String> repeatedFields = new HashSet<String>();
     for (FieldDescriptor fd : d.getFields()) {
       if (fd.isRepeated()) {
-        repeatedFields.add(camelCase(fd.getName()));
+        repeatedFields.add(javaCase(fd.getName()));
       }
       if (fd.getType() == FieldDescriptor.Type.MESSAGE) {
         getRepeatedFieldNamesInternal(fd.getMessageType(), result);
       }
     }
     if (!repeatedFields.isEmpty()) {
-      result.put(camelCase(d.getName()), repeatedFields);
+      result.put(javaCase(d.getName()), repeatedFields);
     }
   }
 
@@ -191,21 +207,9 @@ public class CapUtil {
   public static Date toJavaDate(String dateStr) {
     if (!DATE_PATTERN.matcher(dateStr).matches()) {
       return null;
+    } else {
+      return DatatypeConverter.parseDateTime(dateStr).getTime();
     }
-    int lastColon = dateStr.lastIndexOf(':');
-    dateStr = dateStr.substring(0, lastColon)
-        + dateStr.substring(lastColon + 1);
-
-    for (String dateFormat : DATE_FORMATS) {
-      // Can't be static, SimpleDateFormat is not thread safe.
-      SimpleDateFormat format = new SimpleDateFormat(dateFormat);
-      try {
-        return format.parse(dateStr);
-      } catch (ParseException e) {
-        // do nothing.  Try the next format...
-      }
-    }
-    return null;
   }
 
   /**
@@ -245,6 +249,49 @@ public class CapUtil {
    */
   public static boolean isEmptyOrWhitespace(String s) {
     return s == null || "".equals(s.trim());
+  }
+
+  /**
+   * Returns a string legal for use in a CAP {@literal <references>} parameter.
+   */
+  public static String formatCapReference(
+      String capSender, String capIdentifier, Calendar sent) {
+
+    // CAP reference format 'sender,identifier,sent'
+    return String.format("%s,%s,%s",
+        capSender,
+        capIdentifier,
+        formatCapDate(sent));
+  }
+
+  /**
+   * Formats the given date as a [datetime].
+   *
+   * @param cal the date and time zone to format
+   * @return a string of the form "2011-10-28T12:00:01+00:00"
+   */
+  public static String formatCapDate(Calendar cal) {
+    SimpleDateFormat format = new SimpleDateFormat(DATETIME_FORMAT);
+    format.setTimeZone(cal.getTimeZone());
+    StringBuilder ret = new StringBuilder(format.format(cal.getTime()));
+    // SimpleDateFormat doesn't include the colon in the timezone, so add it here
+    ret.insert(ret.length() - 2, ':');
+    return ret.toString();
+  }
+
+  /**
+   * Strips the XML preamble, if any, from the start of the given string.
+   *
+   * @param xmlDocument document to check for {@literal <?xml ..>} preamble.
+   *     If a preamble exists, this method expects it to start on the first
+   *     character of the given xmlDocument.
+   * @return the same String, minus any preamble.
+   */
+  public static String stripXmlPreamble(String xmlDocument) {
+    while (xmlDocument.startsWith("<?xml")) {
+      xmlDocument = xmlDocument.substring(xmlDocument.indexOf(">") + 1);
+    }
+    return xmlDocument;
   }
 
   private CapUtil() {}

@@ -22,23 +22,23 @@ public  final class Resource extends
   
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
-    return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Resource_descriptor;
+    return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Resource_descriptor;
   }
   
   protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
       internalGetFieldAccessorTable() {
-    return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Resource_fieldAccessorTable;
+    return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Resource_fieldAccessorTable;
   }
   
   private int bitField0_;
   // required string resource_desc = 1;
   public static final int RESOURCE_DESC_FIELD_NUMBER = 1;
-  private Object resourceDesc_;
+  private java.lang.Object resourceDesc_;
   public boolean hasResourceDesc() {
     return ((bitField0_ & 0x00000001) == 0x00000001);
   }
   public String getResourceDesc() {
-    Object ref = resourceDesc_;
+    java.lang.Object ref = resourceDesc_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -52,7 +52,7 @@ public  final class Resource extends
     }
   }
   private com.google.protobuf.ByteString getResourceDescBytes() {
-    Object ref = resourceDesc_;
+    java.lang.Object ref = resourceDesc_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -65,12 +65,12 @@ public  final class Resource extends
   
   // optional string mime_type = 2;
   public static final int MIME_TYPE_FIELD_NUMBER = 2;
-  private Object mimeType_;
+  private java.lang.Object mimeType_;
   public boolean hasMimeType() {
     return ((bitField0_ & 0x00000002) == 0x00000002);
   }
   public String getMimeType() {
-    Object ref = mimeType_;
+    java.lang.Object ref = mimeType_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -84,7 +84,7 @@ public  final class Resource extends
     }
   }
   private com.google.protobuf.ByteString getMimeTypeBytes() {
-    Object ref = mimeType_;
+    java.lang.Object ref = mimeType_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -107,12 +107,12 @@ public  final class Resource extends
   
   // optional string uri = 4;
   public static final int URI_FIELD_NUMBER = 4;
-  private Object uri_;
+  private java.lang.Object uri_;
   public boolean hasUri() {
     return ((bitField0_ & 0x00000008) == 0x00000008);
   }
   public String getUri() {
-    Object ref = uri_;
+    java.lang.Object ref = uri_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -126,7 +126,7 @@ public  final class Resource extends
     }
   }
   private com.google.protobuf.ByteString getUriBytes() {
-    Object ref = uri_;
+    java.lang.Object ref = uri_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -139,12 +139,12 @@ public  final class Resource extends
   
   // optional string deref_uri = 5;
   public static final int DEREF_URI_FIELD_NUMBER = 5;
-  private Object derefUri_;
+  private java.lang.Object derefUri_;
   public boolean hasDerefUri() {
     return ((bitField0_ & 0x00000010) == 0x00000010);
   }
   public String getDerefUri() {
-    Object ref = derefUri_;
+    java.lang.Object ref = derefUri_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -158,7 +158,7 @@ public  final class Resource extends
     }
   }
   private com.google.protobuf.ByteString getDerefUriBytes() {
-    Object ref = derefUri_;
+    java.lang.Object ref = derefUri_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -171,12 +171,12 @@ public  final class Resource extends
   
   // optional string digest = 6;
   public static final int DIGEST_FIELD_NUMBER = 6;
-  private Object digest_;
+  private java.lang.Object digest_;
   public boolean hasDigest() {
     return ((bitField0_ & 0x00000020) == 0x00000020);
   }
   public String getDigest() {
-    Object ref = digest_;
+    java.lang.Object ref = digest_;
     if (ref instanceof String) {
       return (String) ref;
     } else {
@@ -190,7 +190,7 @@ public  final class Resource extends
     }
   }
   private com.google.protobuf.ByteString getDigestBytes() {
-    Object ref = digest_;
+    java.lang.Object ref = digest_;
     if (ref instanceof String) {
       com.google.protobuf.ByteString b = 
           com.google.protobuf.ByteString.copyFromUtf8((String) ref);
@@ -281,13 +281,15 @@ public  final class Resource extends
     return size;
   }
   
+  private static final long serialVersionUID = 0L;
   @java.lang.Override
-  protected Object writeReplace() throws java.io.ObjectStreamException {
+  protected java.lang.Object writeReplace()
+      throws java.io.ObjectStreamException {
     return super.writeReplace();
   }
   
   @java.lang.Override
-  public boolean equals(final Object obj) {
+  public boolean equals(final java.lang.Object obj) {
     if (obj == this) {
      return true;
     }
@@ -449,12 +451,12 @@ public  final class Resource extends
      implements com.google.publicalerts.cap.ResourceOrBuilder {
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Resource_descriptor;
+      return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Resource_descriptor;
     }
     
     protected com.google.protobuf.GeneratedMessage.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.google.publicalerts.cap.Cap.internal_static_alerts_cap_Resource_fieldAccessorTable;
+      return com.google.publicalerts.cap.Cap.internal_static_publicalerts_cap_Resource_fieldAccessorTable;
     }
     
     // Construct using com.google.publicalerts.cap.Resource.newBuilder()
@@ -656,12 +658,12 @@ public  final class Resource extends
     private int bitField0_;
     
     // required string resource_desc = 1;
-    private Object resourceDesc_ = "";
+    private java.lang.Object resourceDesc_ = "";
     public boolean hasResourceDesc() {
       return ((bitField0_ & 0x00000001) == 0x00000001);
     }
     public String getResourceDesc() {
-      Object ref = resourceDesc_;
+      java.lang.Object ref = resourceDesc_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         resourceDesc_ = s;
@@ -692,12 +694,12 @@ public  final class Resource extends
     }
     
     // optional string mime_type = 2;
-    private Object mimeType_ = "";
+    private java.lang.Object mimeType_ = "";
     public boolean hasMimeType() {
       return ((bitField0_ & 0x00000002) == 0x00000002);
     }
     public String getMimeType() {
-      Object ref = mimeType_;
+      java.lang.Object ref = mimeType_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         mimeType_ = s;
@@ -749,12 +751,12 @@ public  final class Resource extends
     }
     
     // optional string uri = 4;
-    private Object uri_ = "";
+    private java.lang.Object uri_ = "";
     public boolean hasUri() {
       return ((bitField0_ & 0x00000008) == 0x00000008);
     }
     public String getUri() {
-      Object ref = uri_;
+      java.lang.Object ref = uri_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         uri_ = s;
@@ -785,12 +787,12 @@ public  final class Resource extends
     }
     
     // optional string deref_uri = 5;
-    private Object derefUri_ = "";
+    private java.lang.Object derefUri_ = "";
     public boolean hasDerefUri() {
       return ((bitField0_ & 0x00000010) == 0x00000010);
     }
     public String getDerefUri() {
-      Object ref = derefUri_;
+      java.lang.Object ref = derefUri_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         derefUri_ = s;
@@ -821,12 +823,12 @@ public  final class Resource extends
     }
     
     // optional string digest = 6;
-    private Object digest_ = "";
+    private java.lang.Object digest_ = "";
     public boolean hasDigest() {
       return ((bitField0_ & 0x00000020) == 0x00000020);
     }
     public String getDigest() {
-      Object ref = digest_;
+      java.lang.Object ref = digest_;
       if (!(ref instanceof String)) {
         String s = ((com.google.protobuf.ByteString) ref).toStringUtf8();
         digest_ = s;
@@ -856,7 +858,7 @@ public  final class Resource extends
       onChanged();
     }
     
-    // @@protoc_insertion_point(builder_scope:alerts.cap.Resource)
+    // @@protoc_insertion_point(builder_scope:publicalerts.cap.Resource)
   }
   
   static {
@@ -864,6 +866,6 @@ public  final class Resource extends
     defaultInstance.initFields();
   }
   
-  // @@protoc_insertion_point(class_scope:alerts.cap.Resource)
+  // @@protoc_insertion_point(class_scope:publicalerts.cap.Resource)
 }
 

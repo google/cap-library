@@ -44,10 +44,10 @@ public class CapJsonBuilderTest extends TestCase {
         .setIdentifier("43b080713727")
         .setSender("hsas@dhs.gov")
         .setSent("2003-04-02T14:39:01-05:00")
-        .setStatus(Alert.Status.Actual)
-        .setMsgType(Alert.MsgType.Alert)
+        .setStatus(Alert.Status.ACTUAL)
+        .setMsgType(Alert.MsgType.ALERT)
         .setSource("a source")
-        .setScope(Alert.Scope.Public)
+        .setScope(Alert.Scope.PUBLIC)
         .setRestriction("a restriction")
         .setAddresses(Group.newBuilder()
             .addValue("address 1").addValue("address2").build())
@@ -79,12 +79,12 @@ public class CapJsonBuilderTest extends TestCase {
 
   public void testInfo() throws Exception {
     Info info1 = Info.newBuilder()
-        .addCategory(Info.Category.Security)
-        .addCategory(Info.Category.Safety)
+        .addCategory(Info.Category.SECURITY)
+        .addCategory(Info.Category.SAFETY)
         .setEvent("Homeland Security Advisory System Update")
-        .setUrgency(Info.Urgency.Unknown_Urgency)
-        .setSeverity(Info.Severity.Unknown_Severity)
-        .setCertainty(Info.Certainty.Unknown_Certainty)
+        .setUrgency(Info.Urgency.UNKNOWN_URGENCY)
+        .setSeverity(Info.Severity.UNKNOWN_SEVERITY)
+        .setCertainty(Info.Certainty.UNKNOWN_CERTAINTY)
         .setSenderName("Department of Homeland Security")
         .setHeadline("Homeland Security Sets Code ORANGE")
         .setDescription("DHS has set the threat level to ORANGE.")
@@ -252,7 +252,7 @@ public class CapJsonBuilderTest extends TestCase {
         .buildPartial();
 
     Info info = Info.newBuilder()
-        .setCertainty(Info.Certainty.VeryLikely)
+        .setCertainty(Info.Certainty.VERY_LIKELY)
         .addParameter(ValuePair.newBuilder()
             .setValueName("HSAS").setValue("ORANGE").build())
         .addEventCode(ValuePair.newBuilder()
@@ -281,12 +281,12 @@ public class CapJsonBuilderTest extends TestCase {
         .buildPartial();
     Info info = Info.newBuilder()
         .addCategory(Info.Category.CBRNE)
-        .addResponseType(Info.ResponseType.Evacuate)
+        .addResponseType(Info.ResponseType.EVACUATE)
         .addResource(resource)
         .buildPartial();
     Alert alert = Alert.newBuilder().setXmlns(CapValidator.CAP11_XMLNS)
-        .setStatus(Alert.Status.Draft)
-        .setScope(Alert.Scope.Public)
+        .setStatus(Alert.Status.DRAFT)
+        .setScope(Alert.Scope.PUBLIC)
         .addInfo(info)
         .buildPartial();
 
@@ -303,8 +303,8 @@ public class CapJsonBuilderTest extends TestCase {
 
   public void testCap12() throws Exception {
     Info info = Info.newBuilder()
-        .addResponseType(Info.ResponseType.Avoid)
-        .addResponseType(Info.ResponseType.AllClear)
+        .addResponseType(Info.ResponseType.AVOID)
+        .addResponseType(Info.ResponseType.ALL_CLEAR)
         .buildPartial();
     Alert alert = Alert.newBuilder().setXmlns(CapValidator.CAP12_XMLNS)
         .addInfo(info)

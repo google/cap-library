@@ -19,7 +19,7 @@ option java_outer_classname = "Cap";
 option java_multiple_files = true;
 option java_generate_equals_and_hash = true;
 
-package alerts.cap;
+package publicalerts.cap;
 
 // Protocol buffer representation of the CAP spec.
 // Supports versions 1.0, 1.1, and 1.2.
@@ -154,22 +154,22 @@ message Info {
   optional string language = 1 [default="en-US"];
 
   enum Category {
-    Geo = 0;       // Geophysical (inc. landslide)
-    Met = 1;       // Meteorological (inc. flood)
-    Safety = 2;    // General emergency and public safety
-    Security = 3;  // Law enforcement, military, homeland and local/private
+    GEO = 0;       // Geophysical (inc. landslide)
+    MET = 1;       // Meteorological (inc. flood)
+    SAFETY = 2;    // General emergency and public safety
+    SECURITY = 3;  // Law enforcement, military, homeland and local/private
                    // security
-    Rescue = 4;    // Rescue and recovery
-    Fire = 5;      // Fire suppression and rescue
-    Health = 6;    // Medical and public health
-    Env = 7;       // Pollution and other environmental
-    Transport = 8; // Public and private transportation
-    Infra = 9;     // Utility, telecommunication, other non-transport
+    RESCUE = 4;    // Rescue and recovery
+    FIRE = 5;      // Fire suppression and rescue
+    HEALTH = 6;    // Medical and public health
+    ENV = 7;       // Pollution and other environmental
+    TRANSPORT = 8; // Public and private transportation
+    INFRA = 9;     // Utility, telecommunication, other non-transport
                    // infrastructure
     CBRNE = 10;    // Chemical, Biological, Radiological, Nuclear or
                    // High-Yield Explosive threat or attack
                    // Added in CAP 1.1
-    Other = 11;    // Other events
+    OTHER = 11;    // Other events
   }
 
   // The code denoting the category of the subject event of the alert
@@ -180,21 +180,21 @@ message Info {
   required string event = 3;
 
   enum ResponseType {
-    Shelter = 0;  // Take shelter in place or per <instruction>
-    Evacuate = 1; // Relocate as instructed in the <instruction>
-    Prepare = 2;  // Make preparations per the <instruction>
-    Execute = 3;  // Execute a pre-planned activity identified in
-                  // <instruction>
-    Avoid = 4;    // Avoid the subject event as per the <instruction>
-                  // Added in CAP 1.2.
-    Monitor = 5;  // Attend to information sources as described in
-                  // <instruction>
-    Assess = 6;   // Evaluate the information in this message. (This value
-                  // SHOULD NOT be used in public warning applications.)
-    AllClear = 7; // The subject event no longer poses a thread or concern
-                  // and any follow on action is described in <instruction>.
-                  // Added in CAP 1.2.
-    None = 8;     // No action recommended.
+    SHELTER = 0;   // Take shelter in place or per <instruction>
+    EVACUATE = 1;  // Relocate as instructed in the <instruction>
+    PREPARE = 2;   // Make preparations per the <instruction>
+    EXECUTE = 3;   // Execute a pre-planned activity identified in
+                   // <instruction>
+    AVOID = 4;     // Avoid the subject event as per the <instruction>
+                   // Added in CAP 1.2.
+    MONITOR = 5;   // Attend to information sources as described in
+                   // <instruction>
+    ASSESS = 6;    // Evaluate the information in this message. (This value
+                   // SHOULD NOT be used in public warning applications.)
+    ALL_CLEAR = 7; // The subject event no longer poses a thread or concern
+                   // and any follow on action is described in <instruction>.
+                   // Added in CAP 1.2.
+    NONE = 8;      // No action recommended.
   }
 
   // The code denoting the type of action recommended for the target
@@ -202,13 +202,13 @@ message Info {
   repeated ResponseType response_type = 4;
 
   enum Urgency {
-    Immediate = 0;       // Responsive action SHOULD be taken immediately
-    Expected = 1;        // Responsive action SHOULD be taken soon
+    IMMEDIATE = 0;       // Responsive action SHOULD be taken immediately
+    EXPECTED = 1;        // Responsive action SHOULD be taken soon
                          // (within next hour)
-    Future = 2;          // Responsive action SHOULD be taken in the near future
-    Past = 3;            // Responsive action is no longer required
-    Unknown_Urgency = 4; // Urgency not known
-                         // Not named "Unknown" because enum values use C++
+    FUTURE = 2;          // Responsive action SHOULD be taken in the near future
+    PAST = 3;            // Responsive action is no longer required
+    UNKNOWN_URGENCY = 4; // Urgency not known
+                         // Not named "UNKNOWN" because enum values use C++
                          // scoping rules, which would conflict with
                          // Severity.Unknown and Certainty.Unknown
   }
@@ -217,12 +217,12 @@ message Info {
   required Urgency urgency = 5;
 
   enum Severity {
-    Extreme = 0;          // Extraordinary threat to life or property
-    Severe = 1;           // Significant threat to life or property
-    Moderate = 2;         // Possible threat to life or property
-    Minor = 3;            // Minimal threat to life or property
-    Unknown_Severity = 4; // Severity unknown
-                          // Not named "Unknown" because enum values use C++
+    EXTREME = 0;          // Extraordinary threat to life or property
+    SEVERE = 1;           // Significant threat to life or property
+    MODERATE = 2;         // Possible threat to life or property
+    MINOR = 3;            // Minimal threat to life or property
+    UNKNOWN_SEVERITY = 4; // Severity unknown
+                          // Not named "UNKNOWN" because enum values use C++
                           // scoping rules, which would conflict with
                           // Urgency.Unknown and Certainty.Unknown
   }
@@ -232,12 +232,12 @@ message Info {
   required Severity severity = 6;
 
   enum Certainty {
-    Observed = 0;          // Determined to have occurred or to be ongoing.
-    VeryLikely = 1;        // DEPRECATED as of CAP 1.1, use Likely instead
-    Likely = 2;            // Likely (p > ~50%)
-    Possible = 3;          // Possible but not likely (p <= ~50%)
-    Unlikely = 4;          // Not expected to occur (p ~ 0)
-    Unknown_Certainty = 5; // Certainty unknown
+    OBSERVED = 0;          // Determined to have occurred or to be ongoing.
+    VERY_LIKELY = 1;       // DEPRECATED as of CAP 1.1, use Likely instead
+    LIKELY = 2;            // Likely (p > ~50%)
+    POSSIBLE = 3;          // Possible but not likely (p <= ~50%)
+    UNLIKELY = 4;          // Not expected to occur (p ~ 0)
+    UNKNOWN_CERTAINTY = 5; // Certainty unknown
                            // Not named "Unknown" because enum values use C++
                            // scoping rules, which would conflict with
                            // Urgency.Unknown and Severity.Unknown 
@@ -358,12 +358,12 @@ message Alert {
   required string sent = 5;
 
   enum Status {
-    Actual = 0;   // Actionable by all targeted recipients
-    Exercise = 1; // Actionable only by designated exercise participants;
+    ACTUAL = 0;   // Actionable by all targeted recipients
+    EXERCISE = 1; // Actionable only by designated exercise participants;
                   // exercise identifier SHOULD appear in <note>
-    System = 2;   // For messages that support alert network internal functions.
-    Test = 3;     // Technical testing only, all recipients disregard.
-    Draft = 4;    // A preliminary template or draft, not actionable in its
+    SYSTEM = 2;   // For messages that support alert network internal functions.
+    TEST = 3;     // Technical testing only, all recipients disregard.
+    DRAFT = 4;    // A preliminary template or draft, not actionable in its
                   // current form. Added in CAP 1.1
   }
 
@@ -371,14 +371,14 @@ message Alert {
   required Status status = 6;
 
   enum MsgType {
-    Alert = 0;  // Initial information requiring attention by targeted
+    ALERT = 0;  // Initial information requiring attention by targeted
                 // recipients
-    Update = 1; // Updates and supercedes the earlier message(s) identified in
+    UPDATE = 1; // Updates and supercedes the earlier message(s) identified in
                 // <references>
-    Cancel = 2; // Cancels the earlier message(s) identified in <references>
-    Ack = 3;    // Acknowledges receipt and acceptance of the message(s))
+    CANCEL = 2; // Cancels the earlier message(s) identified in <references>
+    ACK = 3;    // Acknowledges receipt and acceptance of the message(s))
                 // identified in <references>
-    Error = 4;  // Indicates rejection of the message(s) identified in
+    ERROR = 4;  // Indicates rejection of the message(s) identified in
                 // <references>
   }
 
@@ -389,10 +389,10 @@ message Alert {
   optional string source = 8;
 
   enum Scope {
-    Public = 0;     // For general dissemination to unrestricted audiences
-    Restricted = 1; // For dissemination only to users with a known operational
+    PUBLIC = 0;     // For general dissemination to unrestricted audiences
+    RESTRICTED = 1; // For dissemination only to users with a known operational
                     // requirement (see <restriction>, below)
-    Private = 2;    // For dissemination only to specified addresses
+    PRIVATE = 2;    // For dissemination only to specified addresses
                     // (see <address> below)
   }
 
