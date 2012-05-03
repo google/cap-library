@@ -22,6 +22,7 @@ import com.google.publicalerts.cap.Area;
 import com.google.publicalerts.cap.CapException;
 import com.google.publicalerts.cap.CapException.Reason;
 import com.google.publicalerts.cap.CapUtil;
+import com.google.publicalerts.cap.Circle;
 import com.google.publicalerts.cap.Info;
 import com.google.publicalerts.cap.ValuePair;
 
@@ -270,6 +271,14 @@ public class GoogleProfile extends AbstractCapProfile {
         if (area.getCircleCount() != 0 || area.getPolygonCount() != 0) {
           hasPolygonOrCircle = true;
         }
+        for (int k = 0; k < area.getCircleCount(); k++) {
+          Circle circle = area.getCircle(k);
+          if (circle.getRadius() == 0) {
+            reasons.add(new Reason(
+                xpath + "/area[" + j + "]/circle[" + k + "]",
+                RecommendationType.NONZERO_CIRCLE_RADIUS_RECOMMENDED));
+          }
+        }
       }
       if (!hasPolygonOrCircle && info.getAreaCount() > 0) {
         reasons.add(new Reason(xpath + "/area[0]",
@@ -344,6 +353,9 @@ public class GoogleProfile extends AbstractCapProfile {
     UNKNOWN_CERTAINTY_DISCOURAGED("Unknown <certainty> is discouraged."),
     CONTACT_IS_RECOMMENDED("<contact> is recommended to give users a way to " +
         "provide feedback and respond to the alert."),
+    NONZERO_CIRCLE_RADIUS_RECOMMENDED("A CAP <area> defines the area inside " + 
+        "which people should be alerted, not the area of the event causing " +
+        "the alert. This area should normally have nonzero radius"),
     ;
     private final String message;
 
