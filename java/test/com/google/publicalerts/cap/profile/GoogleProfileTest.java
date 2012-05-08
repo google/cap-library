@@ -19,7 +19,9 @@ package com.google.publicalerts.cap.profile;
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.Alert.MsgType;
 import com.google.publicalerts.cap.Area;
+import com.google.publicalerts.cap.Circle;
 import com.google.publicalerts.cap.Info;
+import com.google.publicalerts.cap.Point;
 import com.google.publicalerts.cap.profile.GoogleProfile.ErrorType;
 import com.google.publicalerts.cap.profile.GoogleProfile.RecommendationType;
 
@@ -80,7 +82,7 @@ public class GoogleProfileTest extends CapProfileTestCase {
         ErrorType.URGENCY_IS_REQUIRED,
         ErrorType.SEVERITY_IS_REQUIRED,
         ErrorType.CERTAINTY_IS_REQUIRED);
-    
+
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).clearArea();
     assertErrors(alert, ErrorType.AREA_IS_REQUIRED);
@@ -94,11 +96,11 @@ public class GoogleProfileTest extends CapProfileTestCase {
   }
 
   public void testCheckForRecommendations() throws Exception {
-    Alert.Builder alert = loadAlert("canada.cap").toBuilder();
+    Alert.Builder alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(0).setContact("Call 911");
     alert.getInfoBuilder(1).setContact("Call 911");
     assertNoRecommendations(alert);
-    
+
     alert.setSent("2002-01-01T00:00:00+00:00")
         .getInfoBuilder(0)
         .clearHeadline()
@@ -111,7 +113,7 @@ public class GoogleProfileTest extends CapProfileTestCase {
         RecommendationType.ONSET_INCLUDE_TIMEZONE_OFFSET,
         RecommendationType.EXPIRES_INCLUDE_TIMEZONE_OFFSET);
 
-    alert = loadAlert("canada.cap").toBuilder();
+    alert = loadAlert("australia.cap").toBuilder();
     String longHeadline = "This is a headline that is longer than 140 " +
         "characters; I don't know why anyone would want to make a " +
         "headline that long. It seems rather absurd.";
@@ -124,7 +126,10 @@ public class GoogleProfileTest extends CapProfileTestCase {
         .setUrgency(Info.Urgency.UNKNOWN_URGENCY)
         .setSeverity(Info.Severity.UNKNOWN_SEVERITY)
         .setCertainty(Info.Certainty.UNKNOWN_CERTAINTY)
-        .clearContact();
+        .clearContact()
+        .getAreaBuilder(0).addCircle(Circle.newBuilder()
+            .setPoint(Point.newBuilder().setLatitude(0).setLongitude(0))
+            .setRadius(0));
     alert.getInfoBuilder(1).setContact("Call 911");
     assertRecommendations(alert,
         RecommendationType.SENDER_NAME_STRONGLY_RECOMMENDED,
@@ -135,9 +140,10 @@ public class GoogleProfileTest extends CapProfileTestCase {
         RecommendationType.UNKNOWN_URGENCY_DISCOURAGED,
         RecommendationType.UNKNOWN_SEVERITY_DISCOURAGED,
         RecommendationType.UNKNOWN_CERTAINTY_DISCOURAGED,
-        RecommendationType.CONTACT_IS_RECOMMENDED);
+        RecommendationType.CONTACT_IS_RECOMMENDED,
+        RecommendationType.NONZERO_CIRCLE_RADIUS_RECOMMENDED);
 
-    alert = loadAlert("canada.cap").toBuilder();
+    alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(0).setContact("Call 911");
     alert.getInfoBuilder(1).setContact("Call 911");
     Info.Builder info = alert.getInfoBuilder(0);
@@ -151,3 +157,4 @@ public class GoogleProfileTest extends CapProfileTestCase {
         RecommendationType.CIRCLE_POLYGON_ENCOURAGED);
   }
 }
+

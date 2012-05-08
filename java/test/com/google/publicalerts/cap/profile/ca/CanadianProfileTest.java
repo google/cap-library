@@ -80,18 +80,6 @@ public class CanadianProfileTest extends CapProfileTestCase {
     assertNoRecommendations(alert);
 
     alert = loadAlert("canada.cap").toBuilder();
-    alert.setSent("2002-01-01T00:00:00+00:00")
-        .getInfoBuilder(0)
-        .setEffective("2003-01-01T00:00:00+00:00")
-        .setOnset("2004-01-01T00:00:00+00:00")
-        .setExpires("2005-01-01T00:00:00+00:00");
-    assertRecommendations(alert,
-        RecommendationType.SENT_INCLUDE_TIMEZONE_OFFSET,
-        RecommendationType.EFFECTIVE_INCLUDE_TIMEZONE_OFFSET,
-        RecommendationType.ONSET_INCLUDE_TIMEZONE_OFFSET,
-        RecommendationType.EXPIRES_INCLUDE_TIMEZONE_OFFSET);
-
-    alert = loadAlert("canada.cap").toBuilder();
     alert.getInfoBuilder(0)
         .setLanguage("es")
         .clearExpires()
