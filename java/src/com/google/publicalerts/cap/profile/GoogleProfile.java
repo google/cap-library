@@ -64,7 +64,7 @@ public class GoogleProfile extends AbstractCapProfile {
 
   @Override
   public String getName() {
-    return "Google CAP profile v1.0";
+    return "Google Public Alerts v1.0";
   }
 
   @Override
