@@ -64,7 +64,7 @@ public class GoogleProfile extends AbstractCapProfile {
 
   @Override
   public String getName() {
-    return "Google Public Alerts v1.0";
+    return "Google Public Alerts CAP v1.0";
   }
 
   @Override
@@ -114,7 +114,8 @@ public class GoogleProfile extends AbstractCapProfile {
       if (categories == null) {
         categories = cats;
       } else if (!categories.equals(cats)) {
-        reasons.add(new Reason(xpath, ErrorType.CATEGORIES_MUST_MATCH));
+        reasons.add(new Reason(xpath + "/category",
+            ErrorType.CATEGORIES_MUST_MATCH));
       }
 
       Set<ValuePair> ecs = new HashSet<ValuePair>();
@@ -122,30 +123,35 @@ public class GoogleProfile extends AbstractCapProfile {
       if (eventCodes == null) {
         eventCodes = ecs;
       } else if (!eventCodes.equals(ecs)) {
-        reasons.add(new Reason(xpath, ErrorType.EVENT_CODES_MUST_MATCH));
+        reasons.add(new Reason(xpath + "/eventCode",
+            ErrorType.EVENT_CODES_MUST_MATCH));
       }
 
       if (eventByLanguage.containsKey(info.getLanguage())) {
         if (!info.getEvent().equals(eventByLanguage.get(info.getLanguage()))) {
-          reasons.add(new Reason(xpath, ErrorType.EVENTS_IN_SAME_LANGUAGE_MUST_MATCH));
+          reasons.add(new Reason(xpath + "/event",
+              ErrorType.EVENTS_IN_SAME_LANGUAGE_MUST_MATCH));
         }
       } else {
         eventByLanguage.put(info.getLanguage(), info.getEvent());
       }
 
       // <description> is required
-      if (!info.hasDescription() || CapUtil.isEmptyOrWhitespace(info.getDescription())) {
+      if (!info.hasDescription()
+          || CapUtil.isEmptyOrWhitespace(info.getDescription())) {
         reasons.add(new Reason(xpath, ErrorType.DESCRIPTION_IS_REQUIRED));
       }
 
       // <effective> should be before <expires>
       if (info.hasExpires()) {
-        String effective = info.hasEffective() ? info.getEffective() : alert.getSent();
+        String effective = info.hasEffective()
+            ? info.getEffective() : alert.getSent();
         Date effectiveDate = CapUtil.toJavaDate(effective);
         Date expiresDate = CapUtil.toJavaDate(info.getExpires());
 
         if (effectiveDate.after(expiresDate)) {
-          reasons.add(new Reason(xpath, ErrorType.DESCRIPTION_IS_REQUIRED));
+          reasons.add(new Reason(xpath + "/effective",
+              ErrorType.EFFECTIVE_NOT_AFTER_EXPIRES));
         }
       }
 
@@ -229,32 +235,32 @@ public class GoogleProfile extends AbstractCapProfile {
 
       // Headline should be < 140 chars
       if (info.hasHeadline() && info.getHeadline().length() > 140) {
-        reasons.add(new Reason(xpath,
+        reasons.add(new Reason(xpath + "/headline",
             RecommendationType.HEADLINE_TOO_LONG));
       }
 
       if (info.getDescription().equals(info.getHeadline())) {
-        reasons.add(new Reason(xpath,
+        reasons.add(new Reason(xpath + "/headline",
             RecommendationType.HEADLINE_AND_DESCRIPTION_SHOULD_DIFFER));
       }
 
       if (info.hasInstruction()
           && !CapUtil.isEmptyOrWhitespace(info.getInstruction())
           && info.getDescription().equals(info.getInstruction())) {
-        reasons.add(new Reason(xpath,
+        reasons.add(new Reason(xpath + "/description",
             RecommendationType.DESCRIPTION_AND_INSTRUCTION_SHOULD_DIFFER));
       }
 
       if (info.getUrgency() == Info.Urgency.UNKNOWN_URGENCY) {
-        reasons.add(new Reason(xpath,
+        reasons.add(new Reason(xpath + "/urgency",
             RecommendationType.UNKNOWN_URGENCY_DISCOURAGED));
       }
       if (info.getSeverity() == Info.Severity.UNKNOWN_SEVERITY) {
-        reasons.add(new Reason(xpath,
+        reasons.add(new Reason(xpath + "/severity",
             RecommendationType.UNKNOWN_SEVERITY_DISCOURAGED));
       }
       if (info.getCertainty() == Info.Certainty.UNKNOWN_CERTAINTY) {
-        reasons.add(new Reason(xpath,
+        reasons.add(new Reason(xpath + "/certainty",
             RecommendationType.UNKNOWN_CERTAINTY_DISCOURAGED));
       }
 
@@ -305,6 +311,7 @@ public class GoogleProfile extends AbstractCapProfile {
     DESCRIPTION_IS_REQUIRED("<description> must be present"),
     WEB_IS_REQUIRED("<web> must be present"),
     EXPIRES_IS_REQUIRED("<expires> must be present"),
+    EFFECTIVE_NOT_AFTER_EXPIRES("<effective> should not come after <expires>"),
     URGENCY_IS_REQUIRED("<urgency> must be present"),
     SEVERITY_IS_REQUIRED("<severity> must be present"),
     CERTAINTY_IS_REQUIRED("<certainty> must be present"),

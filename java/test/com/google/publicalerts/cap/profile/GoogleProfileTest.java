@@ -66,8 +66,17 @@ public class GoogleProfileTest extends CapProfileTestCase {
     assertErrors(alert, ErrorType.EVENTS_IN_SAME_LANGUAGE_MUST_MATCH);
 
     alert = loadAlert("australia.cap").toBuilder();
+    alert.getInfoBuilder(1)
+        .setEffective("2012-05-08T12:34:56-04:00")
+        .setExpires("2012-05-08T12:34:56-04:00");
     alert.getInfoBuilder(1).getEventCodeBuilder(0).setValueName("foo");
     assertErrors(alert, ErrorType.EVENT_CODES_MUST_MATCH);
+
+    alert = loadAlert("australia.cap").toBuilder();
+    alert.getInfoBuilder(1)
+        .setEffective("2012-05-08T12:34:57-04:00")
+        .setExpires("2012-05-08T12:34:56-04:00");
+    assertErrors(alert, ErrorType.EFFECTIVE_NOT_AFTER_EXPIRES);
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).clearDescription()
@@ -157,4 +166,3 @@ public class GoogleProfileTest extends CapProfileTestCase {
         RecommendationType.CIRCLE_POLYGON_ENCOURAGED);
   }
 }
-
