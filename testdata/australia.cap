@@ -2,7 +2,7 @@
 <cap:alert xmlns:cap="urn:oasis:names:tc:emergency:cap:1.2">
   <cap:identifier>tag:www.rfs.nsw.gov.au2011-10-06:40184</cap:identifier>
   <cap:sender>webmaster@rfs.nsw.gov.au</cap:sender>
-  <cap:sent>2011-10-05T23:04:00-00:00</cap:sent>
+  <cap:sent>2011-10-05T23:04:00+10:00</cap:sent>
   <cap:status>Actual</cap:status>
   <cap:msgType>Alert</cap:msgType>
   <cap:scope>Public</cap:scope>
@@ -21,8 +21,8 @@
       <cap:valueName>urn:oasis:names:tc:emergency:cap:1.2:profile:CAP-AU:1.0:AUeventLIST:1.0</cap:valueName>
       <cap:value>fire</cap:value>
     </cap:eventCode>
-    <cap:effective>2011-10-05T23:04:00-00:00</cap:effective>
-    <cap:expires>2011-10-06T23:04:00-00:00</cap:expires>
+    <cap:effective>2011-10-05T23:04:00+10:00</cap:effective>
+    <cap:expires>2011-10-06T23:04:00+10:00</cap:expires>
     <cap:senderName>NSW Rural Fire Service</cap:senderName>
     <cap:headline>Yerong Creek Structure Fire</cap:headline>
     <cap:description>ALERT LEVEL: Not Applicable&lt;br /&gt;LOCATION: 12 Cox Street, Yerong Creek&lt;br /&gt;COUNCIL AREA: Lockhart&lt;br /&gt;STATUS: Out of Control&lt;br /&gt;TYPE: Structure fire (A fire involving a residential, commercial or industrial building)&lt;br /&gt;SIZE: 0 ha&lt;br /&gt;RESPONSIBLE AGENCY: Rural Fire Service&lt;br /&gt;UPDATED: 6 Oct 2011 10:04</cap:description>
@@ -69,7 +69,7 @@
     <cap:area>
 
       <cap:areaDesc>Yerong Creek Structure Fire</cap:areaDesc>
-      <cap:circle>-35.3888,147.0598 0.0</cap:circle>
+      <cap:circle>-35.3888,147.0598 25.0</cap:circle>
       <cap:geocode>
         <cap:valueName>urn:oasis:names:tc:emergency:cap:1.2:profile:CAP-AU:1.0:ISO 3166-2</cap:valueName>
         <cap:value>AU-NSW</cap:value>
@@ -90,8 +90,8 @@
       <cap:valueName>urn:oasis:names:tc:emergency:cap:1.2:profile:CAP-AU:1.0:AUeventLIST:1.0</cap:valueName>
       <cap:value>fire</cap:value>
     </cap:eventCode>
-    <cap:effective>2011-10-05T23:04:00-00:00</cap:effective>
-    <cap:expires>2011-10-06T23:04:00-00:00</cap:expires>
+    <cap:effective>2011-10-05T23:04:00+10:00</cap:effective>
+    <cap:expires>2011-10-06T23:04:00+10:00</cap:expires>
     <cap:senderName>NSW Rural Fire Service</cap:senderName>
     <cap:headline>Yerong Creek Structure Fire</cap:headline>
     <cap:description>ALERT LEVEL: Not Applicable&lt;br /&gt;LOCATION: 12 Cox Street, Yerong Creek&lt;br /&gt;COUNCIL AREA: Lockhart&lt;br /&gt;STATUS: Out of Control&lt;br /&gt;TYPE: Structure fire (A fire involving a residential, commercial or industrial building)&lt;br /&gt;SIZE: 0 ha&lt;br /&gt;RESPONSIBLE AGENCY: Rural Fire Service&lt;br /&gt;UPDATED: 6 Oct 2011 10:04</cap:description>
@@ -138,7 +138,7 @@
     <cap:area>
 
       <cap:areaDesc>Yerong Creek Structure Fire</cap:areaDesc>
-      <cap:circle>-35.3888,147.0598 0.0</cap:circle>
+      <cap:circle>-35.3888,147.0598 25.0</cap:circle>
       <cap:geocode>
         <cap:valueName>urn:oasis:names:tc:emergency:cap:1.2:profile:CAP-AU:1.0:ISO 3166-2</cap:valueName>
         <cap:value>AU-NSW</cap:value>

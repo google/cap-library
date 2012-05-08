@@ -157,3 +157,4 @@ public class GoogleProfileTest extends CapProfileTestCase {
         RecommendationType.CIRCLE_POLYGON_ENCOURAGED);
   }
 }
+

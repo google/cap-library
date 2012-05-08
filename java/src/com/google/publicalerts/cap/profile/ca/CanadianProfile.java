@@ -46,7 +46,7 @@ import java.util.Set;
  */
 public class CanadianProfile extends AbstractCapProfile {
 
-  static final String CAPCP_LOCATION = "layer:EC:1.0:CLC";
+  static final String CAPCP_LOCATION = "profile:CAP-CP:Location";
   static final String CAPCP_EVENT = "profile:CAP-CP:Event:";
 
   public CanadianProfile() {
@@ -182,10 +182,6 @@ public class CanadianProfile extends AbstractCapProfile {
     // 7. Use established <event> values
     // TODO(shakusa) Lookup established event values?
 
-    // 4. Time zone field must be included in all time values
-    checkZeroTimezone(reasons, alert.getSent(), "/alert/sent",
-        RecommendationType.SENT_INCLUDE_TIMEZONE_OFFSET);
-
     Set<String> languages = new HashSet<String>();
     for (int i = 0; i < alert.getInfoCount(); i++) {
       Info info = alert.getInfo(i);
@@ -199,14 +195,6 @@ public class CanadianProfile extends AbstractCapProfile {
         reasons.add(new Reason(xpath,
             RecommendationType.EXPIRES_STRONGLY_RECOMMENDED));
       }
-
-      // 4. Time zone field must be included in all time values
-      checkZeroTimezone(reasons, info.getEffective(), xpath + "/effective",
-          RecommendationType.EFFECTIVE_INCLUDE_TIMEZONE_OFFSET);
-      checkZeroTimezone(reasons, info.getOnset(), xpath + "/onset",
-          RecommendationType.ONSET_INCLUDE_TIMEZONE_OFFSET);
-      checkZeroTimezone(reasons, info.getExpires(), xpath + "/expires",
-          RecommendationType.EXPIRES_INCLUDE_TIMEZONE_OFFSET);
 
       // 14. A <senderName> is strongly recommended
       if (CapUtil.isEmptyOrWhitespace(info.getSenderName())) {
@@ -309,14 +297,6 @@ public class CanadianProfile extends AbstractCapProfile {
         "contrary to what is currently defined in CAP, which recognizes the " +
         "area as the combination of the <geocode>, <polygon> and <circle> " +
         "values"),
-    SENT_INCLUDE_TIMEZONE_OFFSET("Time zone field must be included in " +
-        "<sent>. An offset of 0 is unlikely for Canadian alerts."),
-    EFFECTIVE_INCLUDE_TIMEZONE_OFFSET("Time zone field must be included in " +
-        "<effective>. An offset of 0 is unlikely for Canadian alerts."),
-    ONSET_INCLUDE_TIMEZONE_OFFSET("Time zone field must be included in " +
-        "<onset>. An offset of 0 is unlikely for Canadian alerts."),
-    EXPIRES_INCLUDE_TIMEZONE_OFFSET("Time zone field must be included in " +
-        "<expires>. An offset of 0 is unlikely for Canadian alerts."),
     ;
     private final String message;
 
