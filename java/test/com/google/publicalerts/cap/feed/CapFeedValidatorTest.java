@@ -29,6 +29,7 @@ import com.google.publicalerts.cap.testing.TestResources;
 
 import com.sun.syndication.feed.atom.Entry;
 import com.sun.syndication.feed.atom.Feed;
+import com.sun.syndication.feed.atom.Link;
 import com.sun.syndication.feed.rss.Channel;
 import com.sun.syndication.feed.rss.Item;
 import com.sun.syndication.feed.synd.SyndFeed;
@@ -65,6 +66,32 @@ public class CapFeedValidatorTest extends TestCase {
     Entry entry = (Entry) feed.getEntries().get(0);
     entry.getOtherLinks().clear();
     entry.getAlternateLinks().clear();
+    assertErrors(syndFeed, FeedErrorType.ATOM_ENTRY_MISSING_CAP_LINK);
+
+    Link link = new Link();
+    link.setType("text/plain");
+    entry.getAlternateLinks().add(link);
+    assertNoErrors(syndFeed);
+
+    // Ignore image, audio, video mime types
+    link = new Link();
+    link.setType("image/jpeg");
+    entry.getOtherLinks().add(link);
+
+    link = new Link();
+    link.setType("audio/mpeg");
+    entry.getOtherLinks().add(link);
+
+    link = new Link();
+    link.setType("video/mpeg");
+    entry.getOtherLinks().add(link);
+
+    assertNoErrors(syndFeed);
+
+    // But add another link with no CAP type and it's ambiguous
+    link = new Link();
+    entry.getOtherLinks().add(link);
+    assertEquals(4, entry.getOtherLinks().size());
     assertErrors(syndFeed, FeedErrorType.ATOM_ENTRY_MISSING_CAP_LINK);
   }
 

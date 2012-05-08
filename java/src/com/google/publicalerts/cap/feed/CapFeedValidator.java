@@ -89,12 +89,17 @@ public class CapFeedValidator {
     if (links.size() == 1) {
       return true;
     }
+    int possibleLinkCount = 0;
     for (Link link : links) {
-      if (CapFeedParser.CAP_CONTENT_TYPE.equals(link.getType())) {
+      String type = link.getType();
+      if (CapFeedParser.CAP_CONTENT_TYPE.equals(type)) {
         return true;
+      } else if (type == null || (type != null && !type.startsWith("image") &&
+          !type.startsWith("audio") && !type.startsWith("video"))) {
+        possibleLinkCount++;
       }
     }
-    return false;
+    return possibleLinkCount == 1;
   }
 
   /**
