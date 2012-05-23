@@ -39,7 +39,7 @@ import java.util.Set;
  * A CAP profile for alerts intended for the Google Public Alerts
  * platform.
  * <p>
- * Based on http://goo.gl/yb0tC
+ * Based on http://goo.gl/jgHTe
  * <p>
  * Most of these checks are not possible to represent with an
  * xsd schema.
@@ -74,7 +74,7 @@ public class GoogleProfile extends AbstractCapProfile {
 
   @Override
   public String getDocumentationUrl() {
-    return "http://goo.gl/yb0tC";
+    return "http://goo.gl/jgHTe";
   }
 
   @Override
