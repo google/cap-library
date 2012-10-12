@@ -201,6 +201,7 @@ public class Ipaws1Profile extends AbstractCapProfile {
       }
 
       // instruction should be there
+
       if (!info.hasInstruction()) {
         reasons.add(new Reason(xpath,
             RecommendationType.INFO_INSTRUCTION_RECOMMENDED));
