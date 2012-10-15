@@ -191,23 +191,16 @@ public class Ipaws1Profile extends AbstractCapProfile {
       }
 
       // description should be there
-      if (!info.hasDescription()) {
-        reasons.add(new Reason(xpath,
-            RecommendationType.INFO_DESCRIPTION_RECOMMENDED));
-      }
-      else if (CapUtil.isEmptyOrWhitespace(info.getDescription())) {
-        reasons.add(new Reason(xpath+"/description",
+      if (CapUtil.isEmptyOrWhitespace(info.getDescription())) {
+        reasons.add(new Reason(CapUtil.getXPath(
+        		xpath,"description",info.hasDescription()),
             RecommendationType.INFO_DESCRIPTION_RECOMMENDED));
       }
 
       // instruction should be there
-
-      if (!info.hasInstruction()) {
-        reasons.add(new Reason(xpath,
-            RecommendationType.INFO_INSTRUCTION_RECOMMENDED));
-      }
-      else if (CapUtil.isEmptyOrWhitespace(info.getInstruction())) {
-        reasons.add(new Reason(xpath+"/instruction",
+      if (CapUtil.isEmptyOrWhitespace(info.getInstruction())) {
+        reasons.add(new Reason(CapUtil.getXPath(
+        		xpath,"instruction",info.hasInstruction()),
             RecommendationType.INFO_INSTRUCTION_RECOMMENDED));
       }
 
