@@ -299,12 +299,13 @@ public class CapUtil {
    * 
    * @param baseXPath xpath of base element that contains fieldName
    * @param fieldName name of xml field contained by base element
-   * @param fieldPresent true if fieldName is present under base, false otherwise
-   * @return baseXPath plus fieldname is field is non null, baseXPath otherwise 
+   * @param fieldPresent true if fieldName is present under base, 
+   *        false otherwise
+   * @return baseXPath plus fieldname if field is non null, baseXPath otherwise 
    */
   public static String getXPath(
 		  String baseXPath, String fieldName, boolean fieldPresent) {
-	  return(baseXPath+(fieldPresent?"/"+fieldName:""));
+	  return(baseXPath + (fieldPresent ? "/" + fieldName : ""));
   }
 
   private CapUtil() {}
