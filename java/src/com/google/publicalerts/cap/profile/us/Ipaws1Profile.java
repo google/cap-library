@@ -192,13 +192,15 @@ public class Ipaws1Profile extends AbstractCapProfile {
 
       // description should be there
       if (CapUtil.isEmptyOrWhitespace(info.getDescription())) {
-        reasons.add(new Reason(xpath,
+        reasons.add(new Reason(CapUtil.getXPath(
+                xpath, "description", info.hasDescription()),
             RecommendationType.INFO_DESCRIPTION_RECOMMENDED));
       }
 
       // instruction should be there
       if (CapUtil.isEmptyOrWhitespace(info.getInstruction())) {
-        reasons.add(new Reason(xpath,
+        reasons.add(new Reason(CapUtil.getXPath(
+                xpath, "instruction", info.hasInstruction()),
             RecommendationType.INFO_INSTRUCTION_RECOMMENDED));
       }
 

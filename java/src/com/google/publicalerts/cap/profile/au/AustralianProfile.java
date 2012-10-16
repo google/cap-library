@@ -303,7 +303,8 @@ public class AustralianProfile extends AbstractCapProfile {
       }
 
       if (CapUtil.isEmptyOrWhitespace(info.getInstruction())) {
-        reasons.add(new Reason(xpath,
+        reasons.add(new Reason(CapUtil.getXPath(
+                xpath, "instruction", info.hasInstruction()),
             RecommendationType.INSTRUCTION_STRONGLY_RECOMMENDED));
       }
 

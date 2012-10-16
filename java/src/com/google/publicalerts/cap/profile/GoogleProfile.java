@@ -229,7 +229,8 @@ public class GoogleProfile extends AbstractCapProfile {
             RecommendationType.RESPONSE_TYPE_STRONGLY_RECOMMENDED));
       }
       if (CapUtil.isEmptyOrWhitespace(info.getInstruction())) {
-        reasons.add(new Reason(xpath,
+        reasons.add(new Reason(CapUtil.getXPath(
+                xpath, "instruction", info.hasInstruction()),
             RecommendationType.INSTRUCTION_STRONGLY_RECOMMENDED));
       }
 
