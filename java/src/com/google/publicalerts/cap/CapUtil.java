@@ -305,7 +305,7 @@ public class CapUtil {
    */
   public static String getXPath(
 		  String baseXPath, String fieldName, boolean fieldPresent) {
-	  return(baseXPath + (fieldPresent ? "/" + fieldName : ""));
+	  return (baseXPath + (fieldPresent ? "/" + fieldName : ""));
   }
 
   private CapUtil() {}
