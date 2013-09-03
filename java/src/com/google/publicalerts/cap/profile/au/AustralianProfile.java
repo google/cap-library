@@ -40,7 +40,7 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * <a href="https://govshare.gov.au/xmlui/handle/10772/6380">
+ * <a href="http://docs.oasis-open.org/emergency/edxl-cap1.2-au/v1.0/cs01/edxl-cap1.2-au-v1.0-cs01.html">
  * CAP v1.2 Australian profile, CAP-AU-STD, version 1</a>.
  *
  * This class does not currently validate location codes, event codes, or
@@ -93,7 +93,7 @@ public class AustralianProfile extends AbstractCapProfile {
 
   @Override
   public String getDocumentationUrl() {
-    return "https://govshare.gov.au/xmlui/handle/10772/6380";
+      return "http://docs.oasis-open.org/emergency/edxl-cap1.2-au/v1.0/cs01/edxl-cap1.2-au-v1.0-cs01.html";
   }
 
   @Override
@@ -303,7 +303,8 @@ public class AustralianProfile extends AbstractCapProfile {
       }
 
       if (CapUtil.isEmptyOrWhitespace(info.getInstruction())) {
-        reasons.add(new Reason(xpath,
+        reasons.add(new Reason(CapUtil.getXPath(
+                xpath, "instruction", info.hasInstruction()),
             RecommendationType.INSTRUCTION_STRONGLY_RECOMMENDED));
       }
 
