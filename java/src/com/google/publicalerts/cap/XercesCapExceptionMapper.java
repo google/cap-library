@@ -186,7 +186,7 @@ public class XercesCapExceptionMapper {
   }
 
   private String extractMessageCode(String message) {
-    if (message == null) {
+    if (message == null || message.indexOf(':') < 0) {
       return null;
     }
     return message.substring(0, message.indexOf(':'));

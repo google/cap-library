@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <identifier>PAAQ-2-lqw6d6</identifier>
+  <sender>http://newwcatwc.arh.noaa.gov/tsuPortal/</sender>
+  <sent>2011-09-02T11:36:50-00:00</sent>
+  <status>Actual</status>
+  <msgType>Update</msgType>
+  <source>NWS West Coast/Alaska Tsunami Warning Center Palmer AK</source>
+  <scope>Public</scope>
+  <code>WEPA41</code>
+  <references>PAAQ,PAAQ-1-lqw6d6,2011-09-02T10:55:55-00:00</references>
+  <incidents>lqw6d6</incidents>
+  <info>
+    <category>Geo</category>
+    <event>Tsunami Warning</event>
+    <responseType>Prepare</responseType>
+    <urgency>Immediate</urgency>
+    <severity>Extreme</severity>
+    <certainty>Likely</certainty>
+    <onset>2011-09-02T11:36:50-00:00</onset>
+    <expires>2011-09-02T12:36:50-00:00</expires>
+    <senderName>NWS West Coast/Alaska Tsunami Warning Center Palmer AK</senderName>
+    <headline>The tsunami Warning continues in effect for the coastal areas of Alaska from Unimak Pass, Alaska (80 miles NE of Dutch Harbor) to Amchitka Pass, Alaska (125 miles W of Adak)</headline>
+    <description>The tsunami Warning continues in effect for the coastal areas of Alaska from Unimak Pass, Alaska (80 miles NE of Dutch Harbor) to Amchitka Pass, Alaska (125 miles W of Adak) - Event details: Preliminary magnitude 7.1 (Mw) earthquake / Lat: 51.800, Lon: -171.400 at 2011-09-02T10:55:55Z Tsunami warnings mean that a tsunami with significant widespread inundation is imminent, expected, or occurring.  Warnings indicate that widespread dangerous coastal flooding accompanied by powerful currents is possible and may continue for several hours after the initial wave arrival. </description>
+    <instruction>Recommended Actions: Persons in low-lying coastal areas should be alert to instructions from their local emergency officials. Evacuations are only ordered by emergency response agencies.  Persons in tsunami warning coastal areas should move inland to higher ground.  This message will be updated in 30 minutes or sooner if the situation warrants. The tsunami message will remain in effect until further notice. Refer to the internet site wcatwc.arh.noaa.gov for more information.</instruction>
+    <web>http://newwcatwc.arh.noaa.gov/tsuPortal/events/PAAQ/2011/09/02/lqw6d6/2/WEPA41/WEPA41.txt</web>
+    <parameter>
+      <valueName>EventLocationName</valueName>
+      <value>45 miles/72 Km SE of Amukta Pass, Alaska</value>
+    </parameter>
+    <parameter>
+      <valueName>EventPreliminaryMagnitude</valueName>
+      <value>7.1</value>
+    </parameter>
+    <parameter>
+      <valueName>EventPreliminaryMagnitudeType</valueName>
+      <value>Mw</value>
+    </parameter>
+    <parameter>
+      <valueName>EventOriginTime</valueName>
+      <value>2011-09-02T10:55:55-00:00</value>
+    </parameter>
+    <parameter>
+      <valueName>EventDepth</valueName>
+      <value>39 kilometers</value>
+    </parameter>
+    <parameter>
+      <valueName>EventLatLon</valueName>
+      <value>51.800,-171.400 0.000</value>
+    </parameter>
+    <parameter>
+      <valueName>NWSVTEC</valueName>
+      <value>/O.CON.PAAQ.TS.W.0021.000000T0000Z-000000T0000Z/</value>
+    </parameter>
+    <parameter>
+      <valueName>NWSUGC</valueName>
+      <value>AKZ185-187-021236-</value>
+    </parameter>
+    <parameter>
+      <valueName>ProductDefinition</valueName>
+      <value>Tsunami warnings mean that a tsunami with significant widespread inundation is imminent, expected, or occurring.  Warnings indicate that widespread dangerous coastal flooding accompanied by powerful currents is possible and may continue for several hours after the initial wave arrival. </value>
+    </parameter>
+    <parameter>
+      <valueName>WEPA41</valueName>
+      <value>Tsunami Warnings, Watches, and Advisories for AK, BC, and US West Coast</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Langara Island, British Columbia";2012-10-27T21:16:00-08:00;54.3;-133.1;BCZ110;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Sitka, Alaska";2012-10-27T20:42:00-09:00;57.1;-135.3;PKZ042;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Elfin Cove, Alaska";2012-10-27T20:53:00-09:00;58.2;-136.4;AKZ022;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Tofino, British Columbia";2012-10-27T22:09:00-08:00;49.2;-125.9;BCZ141;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>observedArrivalTime</valueName>
+      <value>"Craig, Alaska";2012-10-27T20:25:00-09:00;55.5;-133.1;PKZ041;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>observedWaveHeight</valueName>
+      <value>"Craig, Alaska";"0.091m 0.300ft";55.5;-133.1;PKZ041;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedWaveHeight</valueName>
+      <value>"Neah Bay, Washington";"1.000m 3.000ft";48.4;-124.6;PZZ130;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Neah Bay, Washington";2012-10-27T22:18:00-08:00;48.4;-124.6;PZZ130;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Seaside, Oregon";2012-10-27T22:36:00-08:00;46.0;-123.9;ORZ001;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Charleston, Oregon";2012-10-27T22:36:00-08:00;43.3;-124.3;PZZ310;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Westport, Washington";2012-10-27T22:36:00-08:00;46.9;-124.1;WAZ517;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Yakutat, Alaska";2012-10-27T21:40:00-09:00;59.5;-139.7;PKZ053;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Crescent City, California";2012-10-27T22:53:00-08:00;41.7;-124.2;CAZ001;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Seward, Alaska";2012-10-27T22:16:00-09:00;60.1;-149.4;AKZ125;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Kodiak, Alaska";2012-10-27T22:23:00-09:00;57.7;-152.5;AKZ171;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Valdez, Alaska";2012-10-27T22:31:00-09:00;61.1;-146.3;AKZ131;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Cordova, Alaska";2012-10-27T22:40:00-09:00;60.5;-145.8;PKZ125;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Sand Point, Alaska";2012-10-27T23:00:00-09:00;55.3;-160.5;AKZ181;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"San Francisco, California";2012-10-28T00:02:00-08:00;37.8;-122.5;PZZ530;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Dutch Harbor, Alaska";2012-10-27T23:21:00-09:00;53.9;-166.5;PKZ171;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Santa Barbara, California";2012-10-28T00:22:00-08:00;34.4;-119.7;CAZ039;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Homer, Alaska";2012-10-27T23:27:00-09:00;59.6;-151.4;AKZ121;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"San Pedro, California";2012-10-28T00:39:00-08:00;33.7;-118.3;PZZ655;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Cold Bay, Alaska";2012-10-27T23:43:00-09:00;55.2;-162.7;AKZ181;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Adak, Alaska";2012-10-27T23:45:00-09:00;51.9;-176.6;AKZ187;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"La Jolla, California";2012-10-28T00:51:00-08:00;32.9;-117.3;CAZ043;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"Shemya, Alaska";2012-10-28T00:29:00-09:00;52.7;174.1;AKZ191;"CAP-TSU:1.0"</value>
+    </parameter>
+    <parameter>
+      <valueName>predictedArrivalTime</valueName>
+      <value>"St. Paul, Alaska";2012-10-28T00:42:00-09:00;57.1;-170.3;AKZ195;"CAP-TSU:1.0"</value>
+    </parameter>
+    <resource>
+      <resourceDesc>Energy Map</resourceDesc>
+      <mimeType>image/jpeg</mimeType>
+      <uri>http://newwcatwc.arh.noaa.gov/tsuPortal/events/PAAQ/2011/09/02/lqw6d6/2/WEPA41/2011/09/02/lqw6d6/energylqw6d6-02.jpg</uri>
+    </resource>
+    <resource>
+      <resourceDesc>Tsunami Travel Time Map</resourceDesc>
+      <mimeType>image/jpeg</mimeType>
+      <uri>http://newwcatwc.arh.noaa.gov/tsuPortal/events/PAAQ/2011/09/02/lqw6d6/2/WEPA41/2011/09/02/lqw6d6/02/ttvulqw6d6-02.jpg</uri>
+    </resource>
+    <resource>
+      <resourceDesc>Event Data as a JSON document</resourceDesc>
+      <mimeType>application/json</mimeType>
+      <uri>http://newwcatwc.arh.noaa.gov/tsuPortal/events/PAAQ/2011/09/02/lqw6d6/2/WEPA41/PAAQ.js</uri>
+    </resource>
+    <area>
+      <areaDesc>Coastal areas between and including Unimak Pass, Alaska (80 miles NE of Dutch Harbor) to Amchitka Pass, Alaska (125 miles W of Adak)</areaDesc>
+      <geocode>
+        <valueName>UGC</valueName>
+        <value>AKZ185</value>
+      </geocode>
+      <geocode>
+        <valueName>UGC</valueName>
+        <value>AKZ187</value>
+      </geocode>
+    </area>
+  </info>
+</alert>

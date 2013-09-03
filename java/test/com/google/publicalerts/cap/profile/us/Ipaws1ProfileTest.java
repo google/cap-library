@@ -45,25 +45,25 @@ public class Ipaws1ProfileTest extends CapProfileTestCase {
   }
 
   public void testCheckForErrors() throws Exception {
-    Alert.Builder alert = loadAlert("earthquake.cap").toBuilder();
+    Alert.Builder alert = loadAlertWithTwoInfos();
     assertNoErrors(alert);
 
     alert.clearCode();
     assertErrors(alert, ErrorType.VERSION_CODE_REQUIRED);
 
-    alert = loadAlert("earthquake.cap").toBuilder();
+    alert = loadAlertWithTwoInfos();
     alert.setMsgType(MsgType.UPDATE);
     alert.clearReferences();
     assertErrors(alert, ErrorType.UPDATE_OR_CANCEL_MUST_REFERENCE);
 
-    alert = loadAlert("earthquake.cap").toBuilder();
+    alert = loadAlertWithTwoInfos();
     alert.getInfoBuilder(1).getEventCodeBuilder(0).setValue("changed");
     alert.getInfoBuilder(0).addCategory(Category.CBRNE);
     assertErrors(alert, ErrorType.EVENT_CODES_MUST_MATCH,
         ErrorType.CATEGORIES_MUST_MATCH,
         ErrorType.SAME_EVENT_CODE_REQUIRED);
 
-    alert = loadAlert("earthquake.cap").toBuilder();
+    alert = loadAlertWithTwoInfos();
     alert.getInfoBuilder(0).clearExpires()
         .clearArea()
         .clearEventCode();
@@ -72,13 +72,13 @@ public class Ipaws1ProfileTest extends CapProfileTestCase {
         ErrorType.AREA_IS_REQUIRED,
         ErrorType.SAME_EVENT_CODE_REQUIRED);
 
-    alert = loadAlert("earthquake.cap").toBuilder();
+    alert = loadAlertWithTwoInfos();
     alert.getInfoBuilder(0).setExpires("2002-01-01T00:00:00+00:00");
     assertErrors(alert, ErrorType.EXPIRES_INCLUDE_TIMEZONE_OFFSET);
   }
 
   public void testCheckForRecommendations() throws Exception {
-    Alert.Builder alert = loadAlert("earthquake.cap").toBuilder();
+    Alert.Builder alert = loadAlertWithTwoInfos();
     alert.getInfoBuilder(0).setInstruction("test")
         .getAreaBuilder(0).addGeocode(
             ValuePair.newBuilder().setValueName("SAME").setValue("AKZ001"));
@@ -100,5 +100,12 @@ public class Ipaws1ProfileTest extends CapProfileTestCase {
         RecommendationType.INFO_DESCRIPTION_RECOMMENDED,
         RecommendationType.INFO_INSTRUCTION_RECOMMENDED,
         RecommendationType.AREA_SAME_GEOCODE_RECOMMENDED);
+  }
+
+  private Alert.Builder loadAlertWithTwoInfos() throws Exception {
+    Alert.Builder alert = loadAlert("earthquake.cap").toBuilder();
+    assertEquals(1, alert.getInfoCount());
+    alert.addInfo(alert.getInfoBuilder(0).clone().setLanguage("sp-US"));
+    return alert;
   }
 }

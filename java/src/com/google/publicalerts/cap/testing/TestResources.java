@@ -17,6 +17,7 @@
 package com.google.publicalerts.cap.testing;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -39,6 +40,18 @@ public class TestResources {
       sb.append(line).append('\n');
     }
     return sb.toString();
+  }
+
+  public static byte[] loadBytes(String filename) throws IOException {
+    InputStream stream = TestResources.class.getResourceAsStream("testdata/" + filename);
+    ByteArrayOutputStream buffer = new ByteArrayOutputStream();
+    byte[] chunk = new byte[8192];
+    int bytesRead = -1;
+    while ((bytesRead = stream.read(chunk)) > 0) {
+      buffer.write(chunk, 0, bytesRead);
+    }
+    stream.close();
+    return buffer.toByteArray();
   }
 
   private TestResources() { }

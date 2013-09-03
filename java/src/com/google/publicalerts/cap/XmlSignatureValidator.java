@@ -17,6 +17,7 @@
 package com.google.publicalerts.cap;
 
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
@@ -25,10 +26,16 @@ import java.io.Reader;
 import java.io.StringReader;
 import java.security.KeyException;
 import java.security.PublicKey;
+import java.security.cert.CertificateExpiredException;
+import java.security.cert.CertificateNotYetValidException;
+import java.security.cert.X509Certificate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.crypto.AlgorithmMethod;
 import javax.xml.crypto.KeySelector;
@@ -44,6 +51,7 @@ import javax.xml.crypto.dsig.XMLSignatureFactory;
 import javax.xml.crypto.dsig.dom.DOMValidateContext;
 import javax.xml.crypto.dsig.keyinfo.KeyInfo;
 import javax.xml.crypto.dsig.keyinfo.KeyValue;
+import javax.xml.crypto.dsig.keyinfo.X509Data;
 
 /**
  * Uses the java XML Digital Signature API to validate an enveloped
@@ -54,6 +62,9 @@ import javax.xml.crypto.dsig.keyinfo.KeyValue;
  * @author shakusa@google.com (Steve Hakusa)
  */
 public class XmlSignatureValidator {
+  private static final Logger log = Logger.getLogger(
+      XmlSignatureValidator.class.getName());
+
   private final TrustStrategy trustStrategy;
 
   public XmlSignatureValidator(TrustStrategy trustStrategy) {
@@ -150,12 +161,43 @@ public class XmlSignatureValidator {
   public Result validate(InputSource is) throws SAXParseException {
     Document doc = XmlUtil.parseDocument(is);
     NodeList nl = doc.getElementsByTagNameNS(XMLSignature.XMLNS, "Signature");
-    if (nl.getLength() == 0) {
+    int numSignatures = nl.getLength();
+    if (numSignatures == 0) {
       return new Result(trustStrategy.allowMissingSignatures(), Result.Detail.SIGNATURE_MISSING);
     }
 
-    DOMValidateContext context = new DOMValidateContext(new KeyValueKeySelector(), nl.item(0));
     XMLSignatureFactory factory = XMLSignatureFactory.getInstance("DOM");
+    if (numSignatures == 1) {
+      return validateInternal(nl.item(0), factory);
+    }
+
+    // We assume that each signature was applied to the document without any
+    // other signature nodes.  Thus we remove all signature nodes and add back
+    // one-at-a-time each we test for validity.
+    List<Result.Detail> details = new ArrayList<Result.Detail>();
+    Node parent = nl.item(0).getParentNode();
+    List<Node> signatureNodes = new ArrayList<Node>();
+    for (int i = 0; i < numSignatures; i++) {
+      // Note NodeList is just a view on the DOM, it gets mutated each time you call
+      // removeChild, therefore we always remove the 0th child.
+      signatureNodes.add(parent.removeChild(nl.item(0)));
+    }
+    for (int i = 0; i < numSignatures; i++) {
+      parent.appendChild(signatureNodes.get(i));
+      Result localResult = validateInternal(signatureNodes.get(i), factory);
+      parent.removeChild(signatureNodes.get(i));
+
+      if (localResult.isSignatureValid()) {
+        return localResult;
+      }
+      details.addAll(localResult.details());
+    }
+    // If we get here, we failed validating all signatures.
+    return new Result(false, details.toArray(new Result.Detail[details.size()]));
+  }
+
+  private Result validateInternal(Node signatureNode, XMLSignatureFactory factory) {
+    DOMValidateContext context = new DOMValidateContext(new KeyValueKeySelector(), signatureNode);
 
     try {
       // Is the signature valid?
@@ -216,6 +258,33 @@ public class XmlSignatureValidator {
           // Make sure algorithm is compatible with method
           if (algEquals(sm.getAlgorithm(), pk.getAlgorithm())) {
             return SimpleKeySelectorResult.cacheKeyResult(pk, context);
+          }
+        } else if (keyInfoChildNode instanceof X509Data) {
+          List content = ((X509Data) keyInfoChildNode).getContent();
+          for (Object obj : content) {
+            if (obj instanceof X509Certificate) {
+              X509Certificate cert = (X509Certificate) obj;
+              try {
+                cert.checkValidity();
+              } catch (CertificateExpiredException e) {
+                // Note we validate dates for stored x509 certs inside
+                // PublisherTrustStrategy, which gives us the option to disable
+                // "require trusted keys" if we need to bypass the check for some reason.
+                log.log(Level.WARNING, e.getMessage(), e);
+              } catch (CertificateNotYetValidException e) {
+                // Note we validate dates for stored x509 certs inside
+                // PublisherTrustStrategy, which gives us the option to disable
+                // "require trusted keys" if we need to bypass the check for some reason.
+                log.log(Level.WARNING, e.getMessage(), e);
+              }
+
+              PublicKey pk = ((X509Certificate) obj).getPublicKey();
+
+              // Make sure algorithm is compatible with method
+              if (algEquals(sm.getAlgorithm(), pk.getAlgorithm())) {
+                return SimpleKeySelectorResult.cacheKeyResult(pk, context);
+              }
+            }
           }
         }
       }

@@ -345,11 +345,13 @@ public class CapJsonBuilderTest extends TestCase {
   }
 
   public void testEscaping() {
+    String evilNote = "\"',{}[]&<>\u0000";
     Alert alert = Alert.newBuilder().setXmlns(CapValidator.CAP12_XMLNS)
-        .setNote("\"',{}[]&<>\u0000")
+        .setNote(evilNote)
         .buildPartial();
 
-    assertEquals("{\"note\": \"\\\"',{}[]&<>\\u0000\"}", builder.toJson(alert));
+    assertEquals("{\"note\": " + JSONObject.quote(evilNote) + "}",
+        builder.toJson(alert));
   }
 
   private String getStringFromArray(JSONObject parent, String name, int index)

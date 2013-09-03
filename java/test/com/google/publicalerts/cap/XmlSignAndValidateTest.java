@@ -22,6 +22,12 @@ import com.google.publicalerts.cap.testing.TestResources;
 
 import junit.framework.TestCase;
 
+import org.xml.sax.InputSource;
+
+import java.io.ByteArrayInputStream;
+import java.security.cert.CertificateFactory;
+import java.security.cert.X509Certificate;
+
 /**
  * Tests for {@link XmlSigner} and {@link XmlSignatureValidator}.
  *
@@ -113,5 +119,34 @@ public class XmlSignAndValidateTest extends TestCase {
     String signedXml = TestResources.load("earthquake_signed.cap");
     assertTrue("Alert signed by 3rd party with in-band key",
         validator.validate(signedXml).isSignatureValid());
+  }
+
+  public void testValidateExternallySignedX509AlertWithMultipleSignatures() throws Exception {
+    CertificateFactory factory = CertificateFactory.getInstance("X.509");
+
+    // Neither key is trusted -- signature doesn't validate
+    byte[] xmlBytes = TestResources.loadBytes("canada_signed.cap");
+    ByteArrayInputStream bais = new ByteArrayInputStream(xmlBytes);
+    assertFalse("Alert signed by 3rd party with in-band X509 cert",
+        validator.validate(new InputSource(bais)).isSignatureValid());
+
+    // Only trust the key associated with first signature
+    X509Certificate naadsCert = (X509Certificate) factory.generateCertificate(
+        new ByteArrayInputStream(TestResources.loadBytes("naads_x509_cert.pem")));
+    trustStrategy.addTrustedKey(naadsCert.getPublicKey());
+
+    bais = new ByteArrayInputStream(xmlBytes);
+    assertTrue("Alert signed by 3rd party with in-band X509 cert",
+        validator.validate(new InputSource(bais)).isSignatureValid());
+
+    // Only trust the key associated with second signature
+    trustStrategy.clearTrustedKeys();
+    X509Certificate envCanadaCert = (X509Certificate) factory.generateCertificate(
+        new ByteArrayInputStream(TestResources.loadBytes("environment_canada_x509_cert.pem")));
+    trustStrategy.addTrustedKey(envCanadaCert.getPublicKey());
+
+    bais = new ByteArrayInputStream(xmlBytes);
+    assertTrue("Alert signed by 3rd party with in-band X509 cert",
+        validator.validate(new InputSource(bais)).isSignatureValid());
   }
 }

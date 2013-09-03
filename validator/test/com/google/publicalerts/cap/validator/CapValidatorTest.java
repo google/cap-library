@@ -131,9 +131,9 @@ public class CapValidatorTest extends TestCase {
         Sets.<CapProfile>newHashSet(new Ipaws1Profile()));
     // Expect no errors, 2 recommendations from the profile
     assertTrue(result.getByLineErrorMap().isEmpty());
-    assertEquals(4, result.getByLineRecommendationMap().size());
+    assertEquals(2, result.getByLineRecommendationMap().size());
     assertFalse(result.getByLineRecommendationMap().get(11).isEmpty());
-    assertFalse(result.getByLineRecommendationMap().get(72).isEmpty());
+    assertFalse(result.getByLineRecommendationMap().get(75).isEmpty());
   }
 
   public void testFatAtomFeedCapProfile() throws Exception {

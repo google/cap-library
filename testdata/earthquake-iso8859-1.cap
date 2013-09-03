@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="ISO-8859-1"?><alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+    <identifier>USGS-earthquakes-usB000D5T4.3947362.7.20121014T225304.360Z.0</identifier>
+    <sender>http://earthquake.usgs.gov/research/monitoring/anss/neic/</sender>
+    <sent>2012-10-14T22:53:04+00:00</sent>
+    <status>Actual</status>
+    <msgType>Alert</msgType>
+    <scope>Public</scope>
+    <addresses>0</addresses>
+    <code>IPAWSv1.0</code>
+    <info>
+        <category>Geo</category>
+        <event>Earthquake</event>
+        <urgency>Past</urgency>
+        <severity>Unknown</severity>
+        <certainty>Likely</certainty>
+        <eventCode>
+            <valueName>SAME</valueName>
+            <value>EQW</value>
+        </eventCode>
+        <onset>2012-10-14T22:40:56+00:00</onset>
+        <expires>2012-10-21T22:53:04+00:00</expires>
+        <senderName>U.S. Geological Survey</senderName>
+        <headline>EQ 4.6 Usulután, Usulután, El Salvador - PRELIMINARY REPORT</headline>
+        <description>An earthquake with magnitude 4.6 occurred near Usulután, Usulután, El Salvador at 22:40:56.42 UTC on Oct 14, 2012. (This event has been reviewed by a seismologist.)</description>
+        <instruction>None</instruction>
+        <web>http://earthquake.usgs.gov/earthquakes/eventpage/usB000D5T4</web>
+        <contact>http://earthquake.usgs.gov/research/monitoring/anss/neic/</contact>
+        <parameter>
+            <valueName>EventTime</valueName>
+            <value>20121014T224056.420Z</value>
+        </parameter>
+        <parameter>
+            <valueName>EventIDKey</valueName>
+            <value>usB000D5T4</value>
+        </parameter>
+        <parameter>
+            <valueName>Version</valueName>
+            <value>7</value>
+        </parameter>
+        <parameter>
+            <valueName>Magnitude</valueName>
+            <value>4.6</value>
+        </parameter>
+        <parameter>
+            <valueName>Depth</valueName>
+            <value>66.5 km (41.3 miles)</value>
+        </parameter>
+        <parameter>
+            <valueName>HorizontalError</valueName>
+            <value>40.9 km</value>
+        </parameter>
+        <parameter>
+            <valueName>VerticalError</valueName>
+            <value>12.9 km</value>
+        </parameter>
+        <parameter>
+            <valueName>NumStations</valueName>
+            <value>108</value>
+        </parameter>
+        <parameter>
+            <valueName>NumPhases</valueName>
+            <value>109</value>
+        </parameter>
+        <parameter>
+            <valueName>MinDistance</valueName>
+            <value>498.7 km</value>
+        </parameter>
+        <parameter>
+            <valueName>RMSTimeError</valueName>
+            <value>1.14 seconds</value>
+        </parameter>
+        <parameter>
+            <valueName>AzimuthalGap</valueName>
+            <value>180 degrees</value>
+        </parameter>
+        <area>
+            <areaDesc>47 miles (76 km) SSW of Usulután, Usulután, El Salvador; 53 miles (86 km) S of Zacatecoluca, La Paz, El Salvador; 62 miles (99 km) S of San Vicente, San Vicente, El Salvador; 64 miles (104 km) SW of San Miguel, San Miguel, El Salvador; 69 miles (110 km) SSE of SAN SALVADOR, El Salvador</areaDesc>
+            <circle>12.747,-88.783 0.0</circle>
+        </area>
+    </info>
+<Signature xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315#WithComments"/><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1"/><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature"/></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1"/><DigestValue>dN+uAR76Jz+o9jxgpPdQnHQHS/A=</DigestValue></Reference></SignedInfo><SignatureValue>m8QF/V3q/EYE7mdpufKa4cpyE6sEXRyHwOX+OLVhkYkzNYcb0KXbasoHIdIixy3/fZby7UHcM1eE
+qir5MrTRdgTrQTjgHR2F08/au8LWCjhEZZS4AQ1aXvxzA0ZcNXQDey/5vtr8fK1a0vcHgmzHkS2H
+TIU/YSS0DCSxXCoAg5owdADvullveXUWvwU7mIbNroNup6mqfhHknBjCD5+SqEt/UIWDLdjJ0wbb
+qgPCe7PyYPC8x0J+0VOeyZGTaU/5cMw8PTw7/svaDEEaGfEYS0n8jAmBEyT833JLPaYCnxghp6cc
+tw8We4XlvqdC1EhIeNrg0CqqdRI1V2ig84y7eg==</SignatureValue><KeyInfo><KeyValue><RSAKeyValue><Modulus>xpVvSZiG8aJgbJZZJB0sOkGeGetDrQs0m/McENvtjuG3Fh8L6oMbxZ4m1aVY58kwUyeOB5UFZNC5
+1rWEeI7q+E0LVGRniZ9RkkPOscYRRz842NiPvKwRe9GDcvMgQTHGTXRLDaJu5skpgU6qZWLVwpnz
+6ZPC3b265O/PlqQAkBZDzRn/xXRY8ZbuXH6JC03Xc5GasfsQsG5wnKljmGN37q1GdglxezsVKjpT
+Unv0xT0HOXToXAG454cXkq7Z9aZ7SvdxTou/ZftkIkBG3Mw7cB2KMB8GqwTWVA/HOsn22qGMBOJb
+zO/2evPSqoDkx0i15RajzCNs0u5uT0o2VR+Oow==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue></KeyValue></KeyInfo></Signature></alert>

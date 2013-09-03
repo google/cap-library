@@ -129,7 +129,7 @@ public class CapXmlParser {
   /**
    * Parse the given alert.
    *
-   * @param str the CAP XML to parse, as a string
+   * @param str the CAP XML to parse, as a UTF-8 string
    * @return the parsed alert
    * @throws CapException if validate is true and there are parse-related
    * errors (e.g. couldn't parse an integer field to an int).
@@ -144,7 +144,7 @@ public class CapXmlParser {
   /**
    * Parse the given alert.
    *
-   * @param str the CAP XML to parse, as a string
+   * @param str the CAP XML to parse, as a UTF-8 string
    * @param parseErrors a list to which to add any non-fatal errors during parsing
    * @return the parsed alert
    * @throws NotCapException if the XML is not CAP XML

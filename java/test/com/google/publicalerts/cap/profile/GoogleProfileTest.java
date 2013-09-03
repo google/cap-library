@@ -62,10 +62,6 @@ public class GoogleProfileTest extends CapProfileTestCase {
     assertErrors(alert, ErrorType.CATEGORIES_MUST_MATCH);
 
     alert = loadAlert("australia.cap").toBuilder();
-    alert.getInfoBuilder(1).setEvent("foo");
-    assertErrors(alert, ErrorType.EVENTS_IN_SAME_LANGUAGE_MUST_MATCH);
-
-    alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1)
         .setEffective("2012-05-08T12:34:56-04:00")
         .setExpires("2012-05-08T12:34:56-04:00");
@@ -105,9 +101,7 @@ public class GoogleProfileTest extends CapProfileTestCase {
   }
 
   public void testCheckForRecommendations() throws Exception {
-    Alert.Builder alert = loadAlert("australia.cap").toBuilder();
-    alert.getInfoBuilder(0).setContact("Call 911");
-    alert.getInfoBuilder(1).setContact("Call 911");
+    Alert.Builder alert = loadValidAustraliaCap();
     assertNoRecommendations(alert);
 
     alert.setSent("2002-01-01T00:00:00+00:00")
@@ -152,9 +146,7 @@ public class GoogleProfileTest extends CapProfileTestCase {
         RecommendationType.CONTACT_IS_RECOMMENDED,
         RecommendationType.NONZERO_CIRCLE_RADIUS_RECOMMENDED);
 
-    alert = loadAlert("australia.cap").toBuilder();
-    alert.getInfoBuilder(0).setContact("Call 911");
-    alert.getInfoBuilder(1).setContact("Call 911");
+    alert = loadValidAustraliaCap();
     Info.Builder info = alert.getInfoBuilder(0);
     info.setDescription("foo")
         .setInstruction("foo");
@@ -164,5 +156,37 @@ public class GoogleProfileTest extends CapProfileTestCase {
     assertRecommendations(alert,
         RecommendationType.DESCRIPTION_AND_INSTRUCTION_SHOULD_DIFFER,
         RecommendationType.CIRCLE_POLYGON_ENCOURAGED);
+    
+    alert = loadValidAustraliaCap();
+    alert.setStatus(Alert.Status.TEST);
+    assertRecommendations(alert, RecommendationType.TEST_ALERT_DISCOURAGED);
+
+    // Empty <valueName> field
+    alert = loadValidAustraliaCap();
+    alert.getInfoBuilder(1).getAreaBuilder(0).getGeocodeBuilder(0).setValueName("");
+    assertRecommendations(alert, RecommendationType.EMPTY_GEOCODE_FIELD);
+
+    // Empty <value> field
+    alert = loadValidAustraliaCap();
+    alert.getInfoBuilder(0).getAreaBuilder(0).getGeocodeBuilder(0).setValue("");
+    assertRecommendations(alert, RecommendationType.EMPTY_GEOCODE_FIELD);
+
+    // Different <event> with same <language> in separate <info> blocks
+    alert = loadValidAustraliaCap();
+    alert.getInfoBuilder(1).setEvent("foo");
+    assertRecommendations(alert, RecommendationType.EVENTS_IN_SAME_LANGUAGE_SHOULD_MATCH);
+  }
+
+ /**
+  * Returns an Alert.Builder, based on the australia CAP example, which will not
+  * throw any errors or warnings when checked for validity. Loads the alert in the
+  * australia.cap testdata file and then sets the <contact> field for both <info>
+  * blocks therein in order to avoid triggering a CONTACT_IS_RECOMMENDED warning.
+  */
+  private Alert.Builder loadValidAustraliaCap() throws Exception {
+    Alert.Builder alert = loadAlert("australia.cap").toBuilder();
+    alert.getInfoBuilder(0).setContact("Call 911");
+    alert.getInfoBuilder(1).setContact("Call 911");
+    return alert;
   }
 }
