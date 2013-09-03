@@ -158,7 +158,7 @@ public class CapValidator {
     }
 
     return Collections.singletonList(
-        new Reason(xpath + "/langauge", Type.INVALID_LANGUAGE, language));
+        new Reason(xpath + "/language", Type.INVALID_LANGUAGE, language));
   }
 
   List<Reason> validateArea(AreaOrBuilder area, String xpath,

@@ -1,0 +1,476 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <identifier>2.49.0.1.124.f2c83f5f.2013</identifier>
+  <sender>cap-pac@ec.gc.ca</sender>
+  <sent>2013-01-24T21:26:00-00:00</sent>
+  <status>Actual</status>
+  <msgType>Update</msgType>
+  <source>Environment Canada - Environnement Canada - Toronto (CWTO)</source>
+  <scope>Public</scope>
+  <restriction />
+  <addresses />
+  <code>profile:CAP-CP:0.4</code>
+  <code>layer:EC-MSC-SMC:1.0</code>
+  <code>layer:SOREM:1.0</code>
+  <note />
+  <references>cap-pac@ec.gc.ca,2.49.0.1.124.726d2331.2013,2013-01-23T21:31:00-00:00 cap-pac@ec.gc.ca,2.49.0.1.124.dbd93ecf.2013,2013-01-23T21:31:00-00:00 cap-pac@ec.gc.ca,2.49.0.1.124.776b7be9.2013,2013-01-24T03:46:00-00:00 cap-pac@ec.gc.ca,2.49.0.1.124.644896f9.2013,2013-01-24T03:46:00-00:00 cap-pac@ec.gc.ca,2.49.0.1.124.775add0e.2013,2013-01-24T10:37:00-00:00 cap-pac@ec.gc.ca,2.49.0.1.124.be023d99.2013,2013-01-24T10:37:00-00:00 cap-pac@ec.gc.ca,2.49.0.1.124.55e158d5.2013,2013-01-24T16:35:00-00:00 cap-pac@ec.gc.ca,2.49.0.1.124.aa4c1c13.2013,2013-01-24T16:35:00-00:00 cap-pac@ec.gc.ca,2.49.0.1.124.b5af9b7c.2013,2013-01-24T21:26:00-00:00</references>
+  <incidents />
+  <info>
+    <language>en-CA</language>
+    <category>Met</category>
+    <event>snowfall</event>
+    <responseType>Monitor</responseType>
+    <urgency>Future</urgency>
+    <severity>Moderate</severity>
+    <certainty>Likely</certainty>
+    <audience>General Public</audience>
+    <eventCode>
+      <valueName>profile:CAP-CP:Event:0.4</valueName>
+      <value>snowfall</value>
+    </eventCode>
+    <eventCode>
+      <valueName>SAME</valueName>
+      <value>WSW</value>
+    </eventCode>
+    <effective>2013-01-24T21:26:00-00:00</effective>
+    <expires>2013-01-25T13:26:00-00:00</expires>
+    <senderName>Environment Canada</senderName>
+    <headline>snowfall warning</headline>
+    <description>No further significant accumulations expected.
+
+The low that gave near 10 centimetres of snow to Central Saskatchewan is now departing the province. As such no further significant accumulation of snow is expected, however light snow will continue to fall early this evening.</description>
+    <instruction>"Please monitor for further updates to this alert."</instruction>
+    <web>http://www.weatheroffice.gc.ca/warnings/warnings_e.html</web>
+    <contact />
+    <parameter>
+      <valueName>layer:EC-MSC-SMC:1.0:Alert_Type</valueName>
+      <value>warning</value>
+    </parameter>
+    <parameter>
+      <valueName>layer:EC-MSC-SMC:1.0:Broadcast_Intrusive</valueName>
+      <value>no</value>
+    </parameter>
+    <parameter>
+      <valueName>layer:SOREM:1.0:Broadcast_Immediately</valueName>
+      <value>No</value>
+    </parameter>
+    <parameter>
+      <valueName>layer:EC-MSC-SMC:1.0:Parent_URI</valueName>
+      <value>msc/alert/environment/hazard/mfile-1.0-ascii/decoded_consolidated-xml-2.0/20130124212600000/ww_14_74_cwwg/sfw/ww_14_74_cwwg_201301232131_sfw/public/2013_14262/non-bi/en_proper_complete/fr_proper_complete</value>
+    </parameter>
+    <parameter>
+      <valueName>layer:EC-MSC-SMC:1.0:CAP_count</valueName>
+      <value>5952</value>
+    </parameter>
+    <parameter>
+      <valueName>profile:CAP-CP:0.4:MinorChange</valueName>
+      <value>text</value>
+    </parameter>
+    <area>
+      <areaDesc>La Ronge - Prince Albert Nat. Park - Narrow Hills Prov. Park</areaDesc>
+      <polygon>54.4054,-104.2 53.8013,-104.2 53.8021,-105.1299 53.9765,-105.1293 53.9767,-105.3779 53.9767,-105.378 53.9766,-105.874 53.9766,-105.8741 53.9754,-106.0012 53.9754,-106.0013 53.5976,-106.0037 53.5685,-106.0037 53.5835,-106.1017 53.5835,-106.1019 53.5835,-106.446 53.5835,-106.4462 53.5832,-106.5412 53.6033,-106.5446 53.636,-106.5929 53.6415,-106.6557 53.7018,-106.7281 53.7149,-106.7231 53.7847,-106.7776 53.818,-106.7708 53.8227,-106.7509 53.8994,-106.7504 54.1489,-106.7514 54.3252,-106.752 54.5863,-106.753 54.5867,-106.753 56.12,-106.753 56.12,-105.3781 56.12,-105.3779 56.12,-104.866 56.12,-104.2 54.8217,-104.2 54.8172,-104.2 54.4054,-104.2</polygon>
+      <geocode>
+        <valueName>layer:EC-MSC-SMC:1.0:CLC</valueName>
+        <value>067200</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4716053</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718012</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718015</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718041</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718042</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718062</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718065</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718090</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718802</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718803</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718808</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718809</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718810</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718811</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718812</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718813</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718831</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718844</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718849</value>
+      </geocode>
+    </area>
+    <area>
+      <areaDesc>Île à la Crosse - Buffalo Narrows - Beauval</areaDesc>
+      <polygon>56.12,-106.753 54.5867,-106.753 54.5863,-107.9683 54.5863,-107.9686 54.5871,-108.0516 54.5871,-108.0518 54.5871,-108.4234 54.6744,-108.4241 54.6745,-108.5995 54.5872,-108.5997 54.5871,-108.6503 54.5142,-108.6501 54.5147,-108.8012 54.4855,-108.8007 54.4856,-108.8765 54.4856,-108.8768 54.5,-109.5322 54.5147,-109.5325 54.5146,-109.6075 54.5291,-109.6081 54.5291,-109.6326 54.5581,-109.6331 54.558,-109.784 54.5871,-109.7841 54.5873,-109.8598 54.6453,-109.9106 54.65,-110.0 54.7624,-110.0 55.3201,-110.0 55.3294,-110.0 55.7227,-110.0 55.9843,-110.0 56.12,-110.0 56.12,-108.0518 56.12,-108.0516 56.12,-108.05 56.12,-106.753</polygon>
+      <geocode>
+        <valueName>layer:EC-MSC-SMC:1.0:CLC</valueName>
+        <value>067100</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718023</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718028</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718030</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718033</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718067</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718069</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718070</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718071</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718072</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718090</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718807</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718814</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718817</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718818</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718829</value>
+      </geocode>
+    </area>
+  </info>
+  <info>
+    <language>fr-CA</language>
+    <category>Met</category>
+    <event>neige</event>
+    <responseType>Monitor</responseType>
+    <urgency>Future</urgency>
+    <severity>Moderate</severity>
+    <certainty>Likely</certainty>
+    <audience>General Public</audience>
+    <eventCode>
+      <valueName>profile:CAP-CP:Event:0.4</valueName>
+      <value>snowfall</value>
+    </eventCode>
+    <eventCode>
+      <valueName>SAME</valueName>
+      <value>WSW</value>
+    </eventCode>
+    <effective>2013-01-24T21:26:00-00:00</effective>
+    <expires>2013-01-25T13:26:00-00:00</expires>
+    <senderName>Environnement Canada</senderName>
+    <headline>avertissement de neige</headline>
+    <description>On ne prévoit plus d'importantes accumulations.
+
+La dépression qui a donné près de 10 centimètres de neige sur le centre de la Saskatchewan quitte maintenant la province. On ne
+prévoit plus d'accumulation supplémentaire importante, toutefois de
+la faible neige continuera de tomber tôt ce soir.</description>
+    <instruction />
+    <web>http://www.weatheroffice.gc.ca/warnings/warnings_f.html</web>
+    <contact />
+    <parameter>
+      <valueName>layer:EC-MSC-SMC:1.0:Alert_Type</valueName>
+      <value>warning</value>
+    </parameter>
+    <parameter>
+      <valueName>layer:EC-MSC-SMC:1.0:Broadcast_Intrusive</valueName>
+      <value>no</value>
+    </parameter>
+    <parameter>
+      <valueName>layer:SOREM:1.0:Broadcast_Immediately</valueName>
+      <value>No</value>
+    </parameter>
+    <parameter>
+      <valueName>layer:EC-MSC-SMC:1.0:Parent_URI</valueName>
+      <value>msc/alert/environment/hazard/mfile-1.0-ascii/decoded_consolidated-xml-2.0/20130124212600000/ww_14_74_cwwg/sfw/ww_14_74_cwwg_201301232131_sfw/public/2013_14262/non-bi/en_proper_complete/fr_proper_complete</value>
+    </parameter>
+    <parameter>
+      <valueName>layer:EC-MSC-SMC:1.0:CAP_count</valueName>
+      <value>5952</value>
+    </parameter>
+    <parameter>
+      <valueName>profile:CAP-CP:0.4:MinorChange</valueName>
+      <value>text</value>
+    </parameter>
+    <area>
+      <areaDesc>La Ronge - parc nat. de Prince Albert - Narrow Hills Prov. Park</areaDesc>
+      <polygon>54.4054,-104.2 53.8013,-104.2 53.8021,-105.1299 53.9765,-105.1293 53.9767,-105.3779 53.9767,-105.378 53.9766,-105.874 53.9766,-105.8741 53.9754,-106.0012 53.9754,-106.0013 53.5976,-106.0037 53.5685,-106.0037 53.5835,-106.1017 53.5835,-106.1019 53.5835,-106.446 53.5835,-106.4462 53.5832,-106.5412 53.6033,-106.5446 53.636,-106.5929 53.6415,-106.6557 53.7018,-106.7281 53.7149,-106.7231 53.7847,-106.7776 53.818,-106.7708 53.8227,-106.7509 53.8994,-106.7504 54.1489,-106.7514 54.3252,-106.752 54.5863,-106.753 54.5867,-106.753 56.12,-106.753 56.12,-105.3781 56.12,-105.3779 56.12,-104.866 56.12,-104.2 54.8217,-104.2 54.8172,-104.2 54.4054,-104.2</polygon>
+      <geocode>
+        <valueName>layer:EC-MSC-SMC:1.0:CLC</valueName>
+        <value>067200</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4716053</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718012</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718015</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718041</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718042</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718062</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718065</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718090</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718802</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718803</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718808</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718809</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718810</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718811</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718812</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718813</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718831</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718844</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718849</value>
+      </geocode>
+    </area>
+    <area>
+      <areaDesc>Île à la Crosse - Buffalo Narrows - Beauval</areaDesc>
+      <polygon>56.12,-106.753 54.5867,-106.753 54.5863,-107.9683 54.5863,-107.9686 54.5871,-108.0516 54.5871,-108.0518 54.5871,-108.4234 54.6744,-108.4241 54.6745,-108.5995 54.5872,-108.5997 54.5871,-108.6503 54.5142,-108.6501 54.5147,-108.8012 54.4855,-108.8007 54.4856,-108.8765 54.4856,-108.8768 54.5,-109.5322 54.5147,-109.5325 54.5146,-109.6075 54.5291,-109.6081 54.5291,-109.6326 54.5581,-109.6331 54.558,-109.784 54.5871,-109.7841 54.5873,-109.8598 54.6453,-109.9106 54.65,-110.0 54.7624,-110.0 55.3201,-110.0 55.3294,-110.0 55.7227,-110.0 55.9843,-110.0 56.12,-110.0 56.12,-108.0518 56.12,-108.0516 56.12,-108.05 56.12,-106.753</polygon>
+      <geocode>
+        <valueName>layer:EC-MSC-SMC:1.0:CLC</valueName>
+        <value>067100</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718023</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718028</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718030</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718033</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718067</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718069</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718070</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718071</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718072</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718090</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718807</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718814</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718817</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718818</value>
+      </geocode>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>4718829</value>
+      </geocode>
+    </area>
+  </info>
+<Signature Id="NAADS Signature" xmlns="http://www.w3.org/2000/09/xmldsig#"><SignedInfo><CanonicalizationMethod Algorithm="http://www.w3.org/TR/2001/REC-xml-c14n-20010315" /><SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" /><Reference URI=""><Transforms><Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" /></Transforms><DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" /><DigestValue>kG9MnWLvKwl108kYoBAhFmlZh7k=</DigestValue></Reference></SignedInfo><SignatureValue>hPuiJLBRmTDHbDAUep+et49az5MzbS3tX9NYu9/eCVZxMqUW2Q7rCbJYoIihWFUWiGSJ6ilDmBZVIYC22O46zdNxRGfwvkCDWeNKY5gtnRrxTj0A1UF8St4eQRdxUONcfit9x7UCC+jdup8WWUNWzNC0//L6HAAnzf4VJn4Vm7crj7r3pf51g9bGdCqR6oVERKiTxdq1OQEk1QcCtz6SlZmYbVU4AZ5ApLPXEaQtGnG8EUmgvSu7P+rmRmHZP1WBHzgtM+N1ISJKoRU5O4et2rgLFySeRP4aYizn8qaqT/kuxAHDNiN8vp3Nh97V7ClIMnghEmO4a8j1nZouwj/c4A==</SignatureValue><KeyInfo><X509Data><X509Certificate>MIIF0jCCBLqgAwIBAgIQQ4q3qW4WAZEmJ2Y55X+ovjANBgkqhkiG9w0BAQUFADCBtTELMAkGA1UEBhMCVVMxFzAVBgNVBAoTDlZlcmlTaWduLCBJbmMuMR8wHQYDVQQLExZWZXJpU2lnbiBUcnVzdCBOZXR3b3JrMTswOQYDVQQLEzJUZXJtcyBvZiB1c2UgYXQgaHR0cHM6Ly93d3cudmVyaXNpZ24uY29tL3JwYSAoYykxMDEvMC0GA1UEAxMmVmVyaVNpZ24gQ2xhc3MgMyBTZWN1cmUgU2VydmVyIENBIC0gRzMwHhcNMTIwNTI5MDAwMDAwWhcNMTgwNTMwMjM1OTU5WjCBvjELMAkGA1UEBhMCQ0ExEDAOBgNVBAgTB09udGFyaW8xETAPBgNVBAcUCE9ha3ZpbGxlMRwwGgYDVQQKFBNQZWxtb3JleCBNZWRpYSBJbmMuMRswGQYDVQQLFBJOZXR3b3JrIE9wZXJhdGlvbnMxMzAxBgNVBAsUKlRlcm1zIG9mIHVzZSBhdCB3d3cudmVyaXNpZ24uY29tL3JwYSAoYykwNTEaMBgGA1UEAxQRZHNzMS5wZWxtb3JleC5jb20wggEiMA0GCSqGSIb3DQEBAQUAA4IBDwAwggEKAoIBAQDhBfGX2hawqJR+ZJqLOgHYJw+/dy3VBeAEkGMvC8Gk0sOsPLzc+4mPLSpy9ufOM7EHrZAGh10ZQPWQTUhC6hzJgEhEA5SXTGVM4cDJjyqtKZcPcvFr0rA9Meq1nX7yfquBF0jcjWISa1H5w48MeTjppcpEYYrLXXKrP76+kuStFy9KyvTXiDAYW+zSLKqSWp83diM3BlDYUUeB9VZPBRqgmZbmudJmAfMhN676/uNbEDcLOmTpp68nh68U6HkjFUJD1Mm8ko3pmcpBOBuxsaTbYWJX7cTG6MUU/y45zS6NJ+7+zTv+crojy3mMeQswKdtKqNxgjWMC2asEpSJLbTARAgMBAAGjggHRMIIBzTAJBgNVHRMEAjAAMAsGA1UdDwQEAwIFoDBFBgNVHR8EPjA8MDqgOKA2hjRodHRwOi8vU1ZSU2VjdXJlLUczLWNybC52ZXJpc2lnbi5jb20vU1ZSU2VjdXJlRzMuY3JsMEQGA1UdIAQ9MDswOQYLYIZIAYb4RQEHFwMwKjAoBggrBgEFBQcCARYcaHR0cHM6Ly93d3cudmVyaXNpZ24uY29tL3JwYTAdBgNVHSUEFjAUBggrBgEFBQcDAQYIKwYBBQUHAwIwHwYDVR0jBBgwFoAUDURcFlNEwYJ+HSCrJfQBY9i+eaUwdgYIKwYBBQUHAQEEajBoMCQGCCsGAQUFBzABhhhodHRwOi8vb2NzcC52ZXJpc2lnbi5jb20wQAYIKwYBBQUHMAKGNGh0dHA6Ly9TVlJTZWN1cmUtRzMtYWlhLnZlcmlzaWduLmNvbS9TVlJTZWN1cmVHMy5jZXIwbgYIKwYBBQUHAQwEYjBgoV6gXDBaMFgwVhYJaW1hZ2UvZ2lmMCEwHzAHBgUrDgMCGgQUS2u5KJYGDLvQUjibKaxLB4shBRgwJhYkaHR0cDovL2xvZ28udmVyaXNpZ24uY29tL3ZzbG9nbzEuZ2lmMA0GCSqGSIb3DQEBBQUAA4IBAQA1+UEbk18WrNlP635nBmjjpZOrgwVRwOFUd/29bm9UkCmwS6R2N5OBflKLFSY6wCy8LBg5wZWAJbI/mQ8LQyzDUe+oIpLcMnuoji05NKgSkmEvJ01NTQKki/hlueUN6FTciiVCkMXJ8XdStH9RflKBqZX9IEZzE/b16Cp3MgnxjdFyW1o3l41T0+FucdLE/zvj5CZ6siefw813nTtMGzMu2/jEx6vUJDGBvx2m5Af4CA5924Mfh2xsCLYulSKaHkNV8P+gKdV0+zjrajosbOSDiVWY34Qmvj24JEKLETZFI+AVOSWN559PKKEvT7SirDdFqP0OaD1HV05bes65M+LJ</X509Certificate></X509Data></KeyInfo><Object xmlns=""><SignatureProperties><SignatureProperty Id="NAADS-DSS1" Target="https://dss1.naad-adna.pelmorex.com"><xc:value xmlns:xc="http://docs.oasis-open.org/emergency/cap/v1.2/CAP-v1.2.xsd" /></SignatureProperty><SignatureProperty Id="NAADS-DSS2" Target="https://dss2.naad-adna.pelmorex.com"><xc:value xmlns:xc="http://docs.oasis-open.org/emergency/cap/v1.2/CAP-v1.2.xsd" /></SignatureProperty></SignatureProperties></Object></Signature><Signature xmlns="http://www.w3.org/2000/09/xmldsig#" Id="Environment Canada">
+<SignedInfo>
+<CanonicalizationMethod Algorithm="http://www.w3.org/2001/10/xml-exc-c14n#" />
+<SignatureMethod Algorithm="http://www.w3.org/2000/09/xmldsig#rsa-sha1" />
+<Reference URI="">
+<Transforms>
+<Transform Algorithm="http://www.w3.org/2000/09/xmldsig#enveloped-signature" />
+</Transforms>
+<DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha1" />
+<DigestValue>kG9MnWLvKwl108kYoBAhFmlZh7k=</DigestValue>
+</Reference>
+</SignedInfo>
+<SignatureValue>qZ0VDDxk3aZw6ijqXTgqSpupGUCpIwpPri19hOAj/h64D3PqKV3Vk2tBBnmvTs3M
+gHSWFuUNoSSY3qUOJfpJ7iWHFJJ8Vz0U3ryV3nHpM04Kl0fg6wjz+tbXnMOVR2KQ
+0j8q4GWQHe9yA5X8G4X51Xt0NHV6iF8BSafhiF39coV+aRU2OBDg4ErIvTO+fgb8
+O6pwXLlcKt/+8TKAOg9Zwo0X3Auf0W1799suTXx2Lpb50PIRJjRTHG+UBl1QZhuw
+OX5Y0ciqm3mWeGbkRG8enGxJ52ynEdHTNM1PdJ8AR8YcZmvh62Npsyg80h44mNZu
+S68odXSI/PSc315B83duRA==</SignatureValue>
+<KeyInfo>
+<X509Data>
+<X509Certificate>MIIE1DCCA7ygAwIBAgIETBpRgDANBgkqhkiG9w0BAQUFADCBsTELMAkGA1UEBhMC
+VVMxFjAUBgNVBAoTDUVudHJ1c3QsIEluYy4xOTA3BgNVBAsTMHd3dy5lbnRydXN0
+Lm5ldC9ycGEgaXMgaW5jb3Jwb3JhdGVkIGJ5IHJlZmVyZW5jZTEfMB0GA1UECxMW
+KGMpIDIwMDkgRW50cnVzdCwgSW5jLjEuMCwGA1UEAxMlRW50cnVzdCBDZXJ0aWZp
+Y2F0aW9uIEF1dGhvcml0eSAtIEwxQzAeFw0xMTA1MDkxNTIxMzVaFw0xNTA3MTAw
+MzMxMzZaMIGEMQswCQYDVQQGEwJDQTEPMA0GA1UECBMGUXVlYmVjMREwDwYDVQQH
+EwhHYXRpbmVhdTEbMBkGA1UEChMSRW52aXJvbm1lbnQgQ2FuYWRhMR4wHAYDVQQL
+ExVXZWIgU2VydmljZXMgRGl2aXNpb24xFDASBgNVBAMTC21ldGVvLmdjLmNhMIIB
+IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAxXixYfdK4rRIlF1Q0M+Obyi5
+ap5WBq4SZRqE7Zw1qpL0HbnV2eMUyXDvppz6JiraZ8MeVU9Tx940wsAEBIsqjyAb
+t8vqJvALoMw5iWEAAsFNlTiGaOSXuPi+09wORbwtKC4fcX3zF6l93nXUifmZ9wYD
+kj0t/B7EzWkUCGN4Dp2NpT9GhEgvsTNDlJdHcyFMP3QUKbxy/WZZIqkMUrW10RL1
+Eun9l4vl1enzoVdbI77kLmVGcbBVZoxZmGrDYApoHpa7iRq+OOE4deFpsNf43W1m
+1pk/x4Pp43QN3J3r7ycvh4ham6fG5eHhmnGPfV5uXlD9Nfgf33N7uN0sd3axkwID
+AQABo4IBHTCCARkwCwYDVR0PBAQDAgWgMBMGA1UdJQQMMAoGCCsGAQUFBwMBMDMG
+A1UdHwQsMCowKKAmoCSGImh0dHA6Ly9jcmwuZW50cnVzdC5uZXQvbGV2ZWwxYy5j
+cmwwMwYIKwYBBQUHAQEEJzAlMCMGCCsGAQUFBzABhhdodHRwOi8vb2NzcC5lbnRy
+dXN0Lm5ldDBABgNVHSAEOTA3MDUGCSqGSIb2fQdLAjAoMCYGCCsGAQUFBwIBFhpo
+dHRwOi8vd3d3LmVudHJ1c3QubmV0L3JwYTAfBgNVHSMEGDAWgBQe8auJBvhJDwEz
+d+4Ueu4ZfJMoTTAdBgNVHQ4EFgQUTHmm/VlTDV53VDZo8pALBLzk2WAwCQYDVR0T
+BAIwADANBgkqhkiG9w0BAQUFAAOCAQEAPztLnoE9+YHmmz2W3/83lxj/mH3eDHsd
+pl6G/PBJ6iZbLnGDuHpHUuB5TQOMLeg72VVcdnXPq1AZRbLwD8FOSNg3Clz8oice
+aqiT4d35VlJwW2BjaOCDFsxUdReC1z8+Z9IWHIEvyRw7RrdYhguaxCg2+NNUdfah
+7stAt1QO0QadON8mWJaGZ305heA8Y5/ZaRyzy3Uc3VCaAqjvfa4u1sPQQbpc6R68
+LjuvsUyJMMRAzbHY+d17u0Vsf3cgYAcs51F1SfNDFhe/iBBvkbycGCoK1yk90PK5
+4e2+3iVoJpS/6PNwliAxxImrnhdZ1iE77PQhpfyrchhYSD4VJs2vjA==</X509Certificate>
+</X509Data>
+</KeyInfo>
+</Signature></alert>

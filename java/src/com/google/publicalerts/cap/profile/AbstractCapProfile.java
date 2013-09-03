@@ -18,9 +18,9 @@ package com.google.publicalerts.cap.profile;
 
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.CachedSaxInputSource;
+import com.google.publicalerts.cap.CapDateUtil;
 import com.google.publicalerts.cap.CapException.Reason;
 import com.google.publicalerts.cap.CapException.ReasonType;
-import com.google.publicalerts.cap.CapUtil;
 import com.google.publicalerts.cap.CapXmlParser;
 import com.google.publicalerts.cap.NotCapException;
 
@@ -68,10 +68,10 @@ public abstract class AbstractCapProfile extends CapXmlParser implements CapProf
    */
   protected void checkZeroTimezone(List<Reason> reasons,
       String dateStr, String xpath, ReasonType type) {
-    if (!CapUtil.isValidDate(dateStr)) {
+    if (!CapDateUtil.isValidDate(dateStr)) {
       return;
     }
-    if (CapUtil.getTimezoneOffset(dateStr) == 0) {
+    if (CapDateUtil.getTimezoneOffset(dateStr) == 0) {
       reasons.add(new Reason(xpath, type));
     }
   }

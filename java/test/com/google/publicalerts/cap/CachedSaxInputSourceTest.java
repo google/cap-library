@@ -1,4 +1,18 @@
-// Copyright 2012 Google Inc. All Rights Reserved.
+/*
+ * Copyright (C) 2011 Google Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not
+ * use this file except in compliance with the License. You may obtain a copy of
+ * the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+ * WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+ * License for the specific language governing permissions and limitations under
+ * the License.
+ */
 
 package com.google.publicalerts.cap;
 
@@ -32,7 +46,7 @@ public class CachedSaxInputSourceTest extends TestCase {
 
   public void testByteSource() throws Exception {
     int inputLength = (int)(CHUNK_SIZE * 2.5);
-    byte[] bytes = generateString(inputLength).getBytes("UTF-8");
+    byte[] bytes = repeat("z", inputLength).getBytes("UTF-8");
     InputStream is = new ByteArrayInputStream(bytes);
 
     CachedSaxInputSource source = new CachedSaxInputSource(new InputSource(is));
@@ -57,13 +71,13 @@ public class CachedSaxInputSourceTest extends TestCase {
 
   public void testReaderSource() throws Exception {
     int inputLength = (int)(CHUNK_SIZE * 2.5);
-    StringReader input = new StringReader(generateString(inputLength));
+    StringReader input = new StringReader(repeat("z", inputLength));
     doTestCharacterSource(new CachedSaxInputSource(input), inputLength);
   }
 
   public void testStringSource() throws Exception {
     int inputLength = (int)(CHUNK_SIZE * 2.5);
-    String input = generateString(inputLength);
+    String input = repeat("z", inputLength);
     doTestCharacterSource(new CachedSaxInputSource(input), inputLength);
   }
 
@@ -101,16 +115,14 @@ public class CachedSaxInputSourceTest extends TestCase {
       bytesRead++;
     }
     assertEquals("Expected sink size == input size", expectedLength, bytesRead);
+    assertEquals("Expected end of stream", -1, byteStream.read());
   }
 
-  /**
-   * Returns a string of given {@code length} containing only the letter 'z'
-   */
-  private String generateString(int length) {
-    char s[] = new char[length];
-    for (int i = 0; i < length; i++) {
-      s[i] = 'z';
+  private static String repeat(String string, int count) {
+    StringBuilder sb = new StringBuilder();
+    for (int i = 0; i < count; i++) {
+      sb.append(string);
     }
-    return new String(s);
+    return sb.toString();
   }
 }

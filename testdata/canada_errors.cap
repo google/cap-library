@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+  <identifier>2.49.0.1.124.6bddbc91.2012</identifier>
+  <sender>cap@ec.gc.ca</sender>
+  <sent>2012-05-02T23:21:04-00:00</sent>
+  <status>Actual</status>
+  <msgType>Update</msgType>
+  <source>Environment Canada - Environnement Canada - Toronto (CWTO)</source>
+  <scope>Public</scope>
+  <restriction/>
+  <addresses/>
+  <references/> <!-- Zero references is invalid -->
+  <info>
+    <language>en-CA</language>
+    <category>Met</category>
+    <event>thunderstorm</event>
+    <responseType>AllClear</responseType>
+    <urgency>Past</urgency>
+    <severity>Minor</severity>
+    <certainty>Observed</certainty>
+    <effective>2012-05-02T23:20:00-00:00</effective>
+    <expires>2012-05-03T00:20:00-00:00</expires>
+    <senderName>Environment Canada</senderName>
+    <area>
+      <areaDesc>Windsor - Leamington - Essex County</areaDesc>
+      <polygon>42.3481,-82.9314 42.3363,-82.6937 42.3476,-82.4889 42.3219,-82.4422 42.1947,-82.4341 42.1948,-82.4537 42.0663,-82.4614 41.9568,-82.3198 41.7166,-82.4593 41.7134,-82.6942 41.8173,-82.9003 42.0409,-83.1224 42.1671,-83.1158 42.2803,-83.097 42.3159,-83.0598 42.3333,-82.9691 42.3481,-82.9314</polygon>
+      <geocode>
+        <valueName>profile:CAP-CP:Location:0.3</valueName>
+        <value>3537064</value>
+      </geocode>
+    </area>
+  </info>
+</alert>

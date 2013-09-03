@@ -46,8 +46,22 @@ import java.util.Set;
  */
 public class CanadianProfile extends AbstractCapProfile {
 
-  static final String CAPCP_LOCATION = "profile:CAP-CP:Location";
-  static final String CAPCP_EVENT = "profile:CAP-CP:Event:";
+  /**
+   * Alerts following CAP-CP prefix geocode.valueName with this string literal
+   * for officially-supported geocodes.
+   */
+  public static final String CAPCP_LOCATION = "profile:CAP-CP:Location";
+
+  /**
+   * Alerts following CAP-CP prefix eventCode.valueName with this string
+   * literal for officially-supported event codes.
+   */
+  public static final String CAPCP_EVENT = "profile:CAP-CP:Event:";
+
+  /**
+   * Parameter value name for the "Parent URI" parameter.
+   */
+  public static final String EC_MSC_SMC_PARENT_URI = "layer:EC-MSC-SMC:1.0:Parent_URI";
 
   public CanadianProfile() {
     super();
@@ -209,8 +223,7 @@ public class CanadianProfile extends AbstractCapProfile {
             RecommendationType.RESPONSE_TYPE_STRONGLY_RECOMMENDED));
       }
       if (CapUtil.isEmptyOrWhitespace(info.getInstruction())) {
-        reasons.add(new Reason(CapUtil.getXPath(
-                xpath, "instruction", info.hasInstruction()),
+        reasons.add(new Reason(xpath,
             RecommendationType.INSTRUCTION_STRONGLY_RECOMMENDED));
       }
 

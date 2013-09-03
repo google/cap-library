@@ -56,31 +56,6 @@ public class CapUtilTest extends TestCase {
     assertEquals("FOO_BAR", CapUtil.underscoreCase("FOO_BAR"));
   }
 
-  public void testIsDateParseable() {
-    assertTrue(CapUtil.isValidDate("2003-04-02T14:39:01-05:00"));
-    assertTrue(CapUtil.isValidDate("2008-02-29T24:00:00-00:00"));
-    assertTrue(CapUtil.isValidDate("2003-12-31T07:00:00+00:00"));
-
-    assertFalse(CapUtil.isValidDate("2003/04/02T14:39:01-05:00"));
-    assertFalse(CapUtil.isValidDate("2003-04-02T14:61:01-05:00"));
-    assertFalse(CapUtil.isValidDate("2003-04-02T14:39:61-05:00"));
-    assertFalse(CapUtil.isValidDate("2003-04-02 14:39:01-05:00"));
-    assertFalse(CapUtil.isValidDate("2003-04-02T14:39:01-24:00"));
-    assertFalse(CapUtil.isValidDate("2003-04-02T14:39:01-05:61"));
-    assertFalse(CapUtil.isValidDate("2003-04-02T14:39:01-24:000"));
-  }
-
-  public void testGetTimezoneOffset() {
-    assertEquals(0, CapUtil.getTimezoneOffset("invalid"));
-
-    assertEquals(-300, CapUtil.getTimezoneOffset("2003-04-02T14:39:01-05:00"));
-    assertEquals(300, CapUtil.getTimezoneOffset("2003-04-02T14:39:01+05:00"));
-    assertEquals(89, CapUtil.getTimezoneOffset("2003-04-02T14:39:01+01:29"));
-    assertEquals(-89, CapUtil.getTimezoneOffset("2003-04-02T14:39:01-01:29"));
-    assertEquals(0, CapUtil.getTimezoneOffset("2003-04-02T14:39:01+00:00"));
-    assertEquals(0, CapUtil.getTimezoneOffset("2003-04-02T14:39:01-00:00"));
-  }
-
   public void testFormatCapReference() {
     GregorianCalendar cal = new GregorianCalendar(
         SimpleTimeZone.getTimeZone("UTC"));
@@ -89,23 +64,6 @@ public class CapUtilTest extends TestCase {
     assertEquals(
         "sender,past:event:id,2012-10-28T12:00:01+00:00",
         CapUtil.formatCapReference("sender", "past:event:id", cal));
-  }
-
-  public void testFormatCapDate() {
-    GregorianCalendar cal = new GregorianCalendar(
-        SimpleTimeZone.getTimeZone("UTC"));
-    cal.set(2012, 9, 28, 12, 0, 1);  // remember month is zero-based
-    assertEquals("2012-10-28T12:00:01+00:00", CapUtil.formatCapDate(cal));
-
-    cal = new GregorianCalendar(
-        SimpleTimeZone.getTimeZone("America/New_York"));
-    cal.set(2012, 9, 28, 17, 0, 1); // remember month is zero-based
-    assertEquals("2012-10-28T17:00:01-04:00", CapUtil.formatCapDate(cal));
-
-    cal = new GregorianCalendar(
-        SimpleTimeZone.getTimeZone("Australia/North"));
-    cal.set(2012, 9, 28, 17, 0, 1);  // remember month is zero-based
-    assertEquals("2012-10-28T17:00:01+09:30", CapUtil.formatCapDate(cal));
   }
 
   public void testStripXmlPreamble() {

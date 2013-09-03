@@ -24,8 +24,8 @@ import com.google.publicalerts.cap.CapUtil;
 import com.google.publicalerts.cap.CapXmlParser;
 import com.google.publicalerts.cap.NotCapException;
 import com.google.publicalerts.cap.XmlSignatureValidator;
-import com.google.publicalerts.cap.feed.CapFeedException.FeedErrorType;
 import com.google.publicalerts.cap.edxl.DistributionFeed;
+import com.google.publicalerts.cap.feed.CapFeedException.FeedErrorType;
 
 import com.sun.syndication.feed.atom.Feed;
 import com.sun.syndication.feed.rss.Channel;
@@ -48,10 +48,13 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -83,6 +86,8 @@ public class CapFeedParser {
       loadXsd("rss-2_0.xsd");
   private static final Schema EDXLDE_SCHEMA =
       loadXsd("edxlde-1_0.xsd");
+
+  private static final Charset UTF_8 = Charset.forName("UTF-8");
 
   private static Schema loadRelaxNgSchema(String schemaFile) {
     try {
@@ -219,7 +224,7 @@ public class CapFeedParser {
    * parses feeds twice in order to preserve line numbers when
    * validating.
    *
-   * @param feed the feed to parse
+   * @param feed the feed to parse, as a UTF-8 XML string
    * @return the parsed Rome SyndFeed
    * @throws FeedException if the feed could not be parsed
    * @throws IllegalArgumentException if XML could be parsed, but is not a
@@ -358,13 +363,33 @@ public class CapFeedParser {
   /**
    * Parses the given CAP alert.
    *
-   * @param entryPayload the alert, as an XML string
+   * @param entryPayload the alert, as a UTF-8 XML string
    * @return the parsed alert
    * @throws CapException if the alert is invalid
    * @throws com.google.publicalerts.cap.NotCapException if the string is not
    * a CAP alert
    */
   public Alert parseAlert(String entryPayload)
+      throws CapException, NotCapException {
+    parseAlert(entryPayload.getBytes(UTF_8));
+    List<Reason> parseErrors = new ArrayList<Reason>();
+    Alert alert = parseAlert(entryPayload, parseErrors);
+    if (validate && !parseErrors.isEmpty()) {
+      throw new CapException(parseErrors);
+    }
+    return alert;
+  }
+
+  /**
+   * Parses the given CAP alert.
+   *
+   * @param entryPayload the alert, as bytes
+   * @return the parsed alert
+   * @throws CapException if the alert is invalid
+   * @throws com.google.publicalerts.cap.NotCapException if the string is not
+   * a CAP alert
+   */
+  public Alert parseAlert(byte[] entryPayload)
       throws CapException, NotCapException {
     List<Reason> parseErrors = new ArrayList<Reason>();
     Alert alert = parseAlert(entryPayload, parseErrors);
@@ -377,7 +402,7 @@ public class CapFeedParser {
   /**
    * Parses the given CAP alert.
    *
-   * @param entryPayload the alert, as an XML string
+   * @param entryPayload the alert, as a UTF-8 XML string
    * @param parseErrors a list to which to add any non-fatal errors during parsing
    * @return the parsed alert
    * @throws CapException if the alert is unparseable as XML
@@ -389,22 +414,42 @@ public class CapFeedParser {
     if (CapUtil.isEmptyOrWhitespace(entryPayload)) {
       throw new NotCapException();
     }
+    return parseAlert(entryPayload.getBytes(UTF_8), parseErrors);
+  }
 
+  /**
+   * Parses the given CAP alert.
+   *
+   * @param entryPayload the alert, as bytes
+   * @param parseErrors a list to which to add any non-fatal errors during parsing
+   * @return the parsed alert
+   * @throws CapException if the alert is unparseable as XML
+   * @throws com.google.publicalerts.cap.NotCapException if the string is not
+   * a CAP alert
+   */
+  public Alert parseAlert(byte[] entryPayload, List<Reason> parseErrors)
+      throws CapException, NotCapException {
+    if (entryPayload.length == 0) {
+      throw new NotCapException();
+    }
     CapXmlParser parser = new CapXmlParser(validate);
     Alert alert;
     try {
-      alert = parser.parseFrom(entryPayload, parseErrors);
+      alert = parser.parseFrom(
+          new InputSource(new ByteArrayInputStream(entryPayload)), parseErrors);
 
       if (validate && xmlSignatureValidator != null) {
-        XmlSignatureValidator.Result result = xmlSignatureValidator.validate(entryPayload);
+        XmlSignatureValidator.Result result = xmlSignatureValidator.validate(
+            new InputSource(new ByteArrayInputStream(entryPayload)));
         if (!result.isSignatureValid()) {
           parseErrors.add(new Reason("/alert/Signature", Type.OTHER,
-              "Signature failed validation - " + result.details() + " - " + entryPayload));
+              "Signature failed validation - " + result.details() + " - "
+                  + Arrays.toString(entryPayload)));
         }
       }
     } catch (SAXParseException e) {
       throw new CapException(new Reason("/alert", Type.OTHER,
-          "Invalid XML: " + entryPayload));
+          "Invalid XML: " + new String(entryPayload, UTF_8)));
     }
 
     return alert;
@@ -442,7 +487,8 @@ public class CapFeedParser {
     for (SyndLink link : links) {
       if (CAP_CONTENT_TYPE.equals(link.getType())) {
         return link.getHref();
-      } else if (CapUtil.isEmptyOrWhitespace(link.getType())) {
+      } else if (CapUtil.isEmptyOrWhitespace(link.getType())
+          || link.getType().contains("xml")) {
         noTypeSyndLink = link;
       }
     }
@@ -455,7 +501,7 @@ public class CapFeedParser {
   }
 
   /** Pulled out of Rome to take advantage of their XEE prevention */
-  private static class DocBuilder extends WireFeedInput {
+  public static class DocBuilder extends WireFeedInput {
     public static Document buildDocument(InputSource reader)
         throws IllegalArgumentException, FeedException {
       SAXBuilder saxBuilder = new DocBuilder().createSAXBuilder();

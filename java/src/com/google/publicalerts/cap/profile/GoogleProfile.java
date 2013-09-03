@@ -19,6 +19,7 @@ package com.google.publicalerts.cap.profile;
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.AlertOrBuilder;
 import com.google.publicalerts.cap.Area;
+import com.google.publicalerts.cap.CapDateUtil;
 import com.google.publicalerts.cap.CapException;
 import com.google.publicalerts.cap.CapException.Reason;
 import com.google.publicalerts.cap.CapUtil;
@@ -39,7 +40,7 @@ import java.util.Set;
  * A CAP profile for alerts intended for the Google Public Alerts
  * platform.
  * <p>
- * Based on http://goo.gl/jgHTe
+ * Based on http://goo.gl/yb0tC
  * <p>
  * Most of these checks are not possible to represent with an
  * xsd schema.
@@ -74,7 +75,7 @@ public class GoogleProfile extends AbstractCapProfile {
 
   @Override
   public String getDocumentationUrl() {
-    return "http://goo.gl/jgHTe";
+    return "http://goo.gl/yb0tC";
   }
 
   @Override
@@ -103,7 +104,6 @@ public class GoogleProfile extends AbstractCapProfile {
 
     Set<Info.Category> categories = null;
     Set<ValuePair> eventCodes = null;
-    Map<String, String> eventByLanguage = new HashMap<String, String>();
     for (int i = 0; i < alert.getInfoCount(); i++) {
       Info info = alert.getInfo(i);
       String xpath = "/alert/info[" + i + "]";
@@ -127,15 +127,6 @@ public class GoogleProfile extends AbstractCapProfile {
             ErrorType.EVENT_CODES_MUST_MATCH));
       }
 
-      if (eventByLanguage.containsKey(info.getLanguage())) {
-        if (!info.getEvent().equals(eventByLanguage.get(info.getLanguage()))) {
-          reasons.add(new Reason(xpath + "/event",
-              ErrorType.EVENTS_IN_SAME_LANGUAGE_MUST_MATCH));
-        }
-      } else {
-        eventByLanguage.put(info.getLanguage(), info.getEvent());
-      }
-
       // <description> is required
       if (!info.hasDescription()
           || CapUtil.isEmptyOrWhitespace(info.getDescription())) {
@@ -146,8 +137,8 @@ public class GoogleProfile extends AbstractCapProfile {
       if (info.hasExpires()) {
         String effective = info.hasEffective()
             ? info.getEffective() : alert.getSent();
-        Date effectiveDate = CapUtil.toJavaDate(effective);
-        Date expiresDate = CapUtil.toJavaDate(info.getExpires());
+        Date effectiveDate = CapDateUtil.toJavaDate(effective);
+        Date expiresDate = CapDateUtil.toJavaDate(info.getExpires());
 
         if (effectiveDate.after(expiresDate)) {
           reasons.add(new Reason(xpath + "/effective",
@@ -204,6 +195,13 @@ public class GoogleProfile extends AbstractCapProfile {
     checkZeroTimezone(reasons, alert.getSent(), "/alert/sent",
         RecommendationType.SENT_INCLUDE_TIMEZONE_OFFSET);
 
+    // Alerts with status Test are discouraged 
+    if (alert.hasStatus() && alert.getStatus() == Alert.Status.TEST) {
+      reasons.add(new Reason("/alert/status",
+          RecommendationType.TEST_ALERT_DISCOURAGED));
+    }
+
+    Map<String, String> eventByLanguage = new HashMap<String, String>();
     for (int i = 0; i < alert.getInfoCount(); i++) {
       Info info = alert.getInfo(i);
       String xpath = "/alert/info[" + i + "]";
@@ -229,8 +227,7 @@ public class GoogleProfile extends AbstractCapProfile {
             RecommendationType.RESPONSE_TYPE_STRONGLY_RECOMMENDED));
       }
       if (CapUtil.isEmptyOrWhitespace(info.getInstruction())) {
-        reasons.add(new Reason(CapUtil.getXPath(
-                xpath, "instruction", info.hasInstruction()),
+        reasons.add(new Reason(xpath,
             RecommendationType.INSTRUCTION_STRONGLY_RECOMMENDED));
       }
 
@@ -291,6 +288,28 @@ public class GoogleProfile extends AbstractCapProfile {
         reasons.add(new Reason(xpath + "/area[0]",
             RecommendationType.CIRCLE_POLYGON_ENCOURAGED));
       }
+
+      if (eventByLanguage.containsKey(info.getLanguage())) {
+        if (!info.getEvent().equals(eventByLanguage.get(info.getLanguage()))) {
+          reasons.add(new Reason(xpath + "/event",
+              RecommendationType.EVENTS_IN_SAME_LANGUAGE_SHOULD_MATCH));
+        }
+      } else {
+        eventByLanguage.put(info.getLanguage(), info.getEvent());
+      }
+
+      // Check for empty values in geocode <valueName> or <value> field
+      for (int j = 0; j < info.getAreaCount(); j++) {
+        Area area = info.getArea(j);
+        for (int k = 0; k < area.getGeocodeCount(); k++) {
+          ValuePair geocode = area.getGeocode(k);
+          if ("".equals(geocode.getValueName()) || "".equals(geocode.getValue())) {
+            reasons.add(new Reason(
+                xpath + "/area[" + j + "]/geocode[" + k + "]",
+                RecommendationType.EMPTY_GEOCODE_FIELD));
+          }
+        }
+      }
     }
 
     return reasons;
@@ -304,8 +323,6 @@ public class GoogleProfile extends AbstractCapProfile {
         "least one non-expired alert."),
     CATEGORIES_MUST_MATCH(
         "All <info> blocks must contain the same <category>s"),
-    EVENTS_IN_SAME_LANGUAGE_MUST_MATCH("All <info> blocks with the same " +
-        "<langauge> must contain the same <event>"),
     EVENT_CODES_MUST_MATCH(
         "All <info> blocks must contain the same <eventCode>s"),
     INFO_IS_REQUIRED("At least one <info> must be present"),
@@ -344,6 +361,8 @@ public class GoogleProfile extends AbstractCapProfile {
         "encouraged as more accurate representations of <geocode> values"),
     SENT_INCLUDE_TIMEZONE_OFFSET("Time zone should be included in " +
         "<sent> whenever possible."),
+    TEST_ALERT_DISCOURAGED("<status>Test</status> alerts are excluded from " +
+        "appearing in google public alerts."),
     EFFECTIVE_INCLUDE_TIMEZONE_OFFSET("Time zone should be included in " +
         "<offset> whenever possible."),
     ONSET_INCLUDE_TIMEZONE_OFFSET("Time zone should be included in " +
@@ -364,6 +383,12 @@ public class GoogleProfile extends AbstractCapProfile {
     NONZERO_CIRCLE_RADIUS_RECOMMENDED("A CAP <area> defines the area inside " + 
         "which people should be alerted, not the area of the event causing " +
         "the alert. This area should normally have nonzero radius"),
+    EVENTS_IN_SAME_LANGUAGE_SHOULD_MATCH("All <info> blocks with the same " +
+        "<language> should contain the same <event>. An exception is made " +
+        "for variations in severity on the same event, such as tsunami " +
+        "warning and tsunami advisory"),
+    EMPTY_GEOCODE_FIELD("A <geocode> should contain non-empty <valueName> " +
+        "<value> fields."),
     ;
     private final String message;
 

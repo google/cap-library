@@ -154,13 +154,20 @@ public class CapFeedParserTest extends TestCase {
     assertEquals(
         "http://earthquake.usgs.gov/research/monitoring/anss/neic/",
         alert.getSender());
-    assertEquals(2, alert.getInfoCount());
+    assertEquals(1, alert.getInfoCount());
   }
 
   public void testParseAlert2() throws Exception {
     String alertStr = TestResources.load("canada.cap");
     Alert alert = parser.parseAlert(alertStr);
     assertEquals(2, alert.getInfoCount());
+  }
+
+  public void testParseAlertFromIso88591Bytes() throws Exception {
+    byte[] bytes = TestResources.loadBytes("earthquake-iso8859-1.cap");
+    Alert alert = parser.parseAlert(bytes);
+    assertEquals(1, alert.getInfoCount());
+    assertTrue(alert.getInfo(0).getArea(0).getAreaDesc().contains("\u00E1"));
   }
 
   public void testParseEdxldeAlert() throws Exception {
@@ -222,6 +229,9 @@ public class CapFeedParserTest extends TestCase {
     entry.setLinks(links);
     assertEquals(link1.getHref(), parser.getCapUrl(entry));
 
+    link1.setType("text/xml");
+    assertEquals(link1.getHref(), parser.getCapUrl(entry));
+
     link1.setType(CapFeedParser.CAP_CONTENT_TYPE);
     assertEquals(link1.getHref(), parser.getCapUrl(entry));
 
@@ -237,7 +247,13 @@ public class CapFeedParserTest extends TestCase {
     link2.setType("text/html");
     assertNull(parser.getCapUrl(entry));
 
+    link2.setType("application/xml");
+    assertEquals(link2.getHref(), parser.getCapUrl(entry));
+
     link2.setType(CapFeedParser.CAP_CONTENT_TYPE);
+    assertEquals(link2.getHref(), parser.getCapUrl(entry));
+
+    link1.setType("text/xml");
     assertEquals(link2.getHref(), parser.getCapUrl(entry));
 
     link1.setType(CapFeedParser.CAP_CONTENT_TYPE);
