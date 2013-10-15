@@ -29,6 +29,7 @@ import com.google.publicalerts.cap.profile.CsvFileIterator;
 import com.google.publicalerts.cap.profile.CsvFileIterator.CsvRow;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -40,9 +41,9 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
- * <a href=
- * "http://docs.oasis-open.org/emergency/edxl-cap1.2-au/v1.0/cs01/edxl-cap1.2-au-v1.0-cs01.html">
- * CAP v1.2 Australian profile, CAP-AU-STD, version 1</a>.
+ * <a href="https://govshare.gov.au/xmlui/handle/10772/6494">CAP
+ * v1.2 Australian profile, CAP-AU-STD, version 1.0, Committee
+ * Specification 02</a>.
  *
  * This class does not currently validate location codes, event codes, or
  * event names.
@@ -50,7 +51,8 @@ import java.util.regex.Pattern;
  * Most of these checks are not possible to represent with an
  * xsd schema.
  *
- * TODO(shakusa) CAP-AU-STD has an XSD, validate against that
+ * TODO(shakusa) CAP-AU-STD has an XSD (
+ * https://govshare.gov.au/xmlui/handle/10772/6498), validate against that
  *
  * @author shakusa@google.com (Steve Hakusa)
  */
@@ -62,11 +64,18 @@ public class AustralianProfile extends AbstractCapProfile {
   static final String CAP_AU_CODE =
       "urn:oasis:names:tc:emergency:cap:1.2:profile:CAP-AU:1.0";
 
-  static final String CAP_AU_EVENT_CODE_VALUE_NAME_PREFIX =
-      CAP_AU_CODE + ":AUeventLIST";
+  static final String CAP_AU_EVENT_CODE_VALUE_NAME =
+      "https://govshare.gov.au/xmlui/handle/10772/6495";
 
   private static final Map<String, EventListEntry> EVENT_BY_EVENT_CODE_MAP =
       loadEventList("AUeventLIST1.0.csv");
+
+  private static final Set<String> RECOGNIZED_GEOCODE_VALUES = Collections.unmodifiableSet(
+      new HashSet<String>(Arrays.asList(new String[] {
+          "http://www.psma.com.au/?product=g-naf",
+          "http://www.iso.org/iso/country_codes.html",
+          "http://www.ga.gov.au/place-name/",
+          "http://www.psma.com.au/?product=postcode-boundaries"})));
 
   public AustralianProfile() {
     super();
@@ -84,7 +93,7 @@ public class AustralianProfile extends AbstractCapProfile {
 
   @Override
   public String getName() {
-    return "CAP Australian Profile v1.0";
+    return "CAP Australian Profile v3.0, Committee Specification 02";
   }
 
   @Override
@@ -94,8 +103,7 @@ public class AustralianProfile extends AbstractCapProfile {
 
   @Override
   public String getDocumentationUrl() {
-    return "http://docs.oasis-open.org/emergency/edxl-cap1.2-au/v1.0/cs01/"
-        + "edxl-cap1.2-au-v1.0-cs01.html";
+    return "https://govshare.gov.au/xmlui/handle/10772/6494";
   }
 
   @Override
@@ -163,8 +171,7 @@ public class AustralianProfile extends AbstractCapProfile {
       }
 
       for (ValuePair eventCode : info.getEventCodeList()) {
-        if (eventCode.getValueName().startsWith(
-            CAP_AU_EVENT_CODE_VALUE_NAME_PREFIX)) {
+        if (CAP_AU_EVENT_CODE_VALUE_NAME.equals(eventCode.getValueName())) {
           if (authorizedEventCode == null) {
             authorizedEventCode = eventCode;
           } else if (!authorizedEventCode.equals(eventCode)) {
@@ -217,13 +224,9 @@ public class AustralianProfile extends AbstractCapProfile {
       for (int j = 0; j < info.getAreaCount(); j++) {
         Area area = info.getArea(j);
         boolean hasValidGeocode = false;
-        // 9. A recognized <geocode> must be used
+        // 2.4. area MUST include a minimum of one recognised <geocode> value.
         for (ValuePair geocode : area.getGeocodeList()) {
-          if (geocode.getValueName().startsWith(CAP_AU_CODE)) {
-            // TODO(shakusa) Validate one of the following four
-            // acceptable suffixes:
-            // ":G-NAF:x.x", ":ISO-3166-2", ":Gazetteer:YYYY",
-            // "Postcode-Boundaries:x.x"
+          if (RECOGNIZED_GEOCODE_VALUES.contains(geocode.getValueName())) {
             hasValidGeocode = true;
             break;
           }
@@ -270,8 +273,7 @@ public class AustralianProfile extends AbstractCapProfile {
       // Note when a recognized <eventCode> is not used
       boolean hasRecognizedEventCode = false;
       for (ValuePair eventCode : info.getEventCodeList()) {
-        if (eventCode.getValueName().startsWith(
-            CAP_AU_EVENT_CODE_VALUE_NAME_PREFIX)) {
+        if (CAP_AU_EVENT_CODE_VALUE_NAME.equals(eventCode.getValueName())) {
           hasRecognizedEventCode = true;
           break;
         }
@@ -343,7 +345,7 @@ public class AustralianProfile extends AbstractCapProfile {
       CsvRow row = itr.next();
 
       String serialNumberStr = row.getAt(0, "-1");
-      if ("Srl #".equals(serialNumberStr)) {
+      if ("CAP-AU #".equals(serialNumberStr)) {
         // Header
         continue;
       }
@@ -357,7 +359,7 @@ public class AustralianProfile extends AbstractCapProfile {
 
       Set<Info.Category> categories = new HashSet<Info.Category>();
       for (String cat : categoriesStr.split(",")) {
-        categories.add(Info.Category.valueOf(cat.toUpperCase()));
+        categories.add(Info.Category.valueOf(cat.trim().toUpperCase()));
       }
 
       Set<Integer> authoritiesToModify = new HashSet<Integer>();
@@ -408,7 +410,8 @@ public class AustralianProfile extends AbstractCapProfile {
         "Each alert message shall contain one single value from an "
             + "authorised <eventCode> list in order to avoid any potential "
             + "confusion or difficulty having a single alert message "
-            + "containing multiple events"),
+            + "containing multiple events. Each such <eventCode> should have "
+            + "<valueName> " + CAP_AU_EVENT_CODE_VALUE_NAME),
     EVENTS_IN_SAME_LANGUAGE_MUST_MATCH("All <info> blocks with the same " +
         "<langauge> must contain the same <event>"),
     UNRECOGNIZED_EVENT_CODE("<eventCode> {0} does not appear in " +
@@ -417,11 +420,11 @@ public class AustralianProfile extends AbstractCapProfile {
         "<event> {1}. Expected {2}"),
     INFO_IS_REQUIRED("At least one <info> must be present"),
     DO_NOT_USE_EFFECTIVE_WITH_MSGTYPE_CANCEL("Do not use <effective> " +
-	"when <msgType> is 'Cancel'"),
+        "when <msgType> is 'Cancel'"),
     AREA_IS_REQUIRED("At least one <area> must be present"),
     AREA_GEOCODE_IS_REQUIRED("At least one <geocode> value is required, " +
-        "with valueName prefixed by " + CAP_AU_CODE +
-        ", either G-NAF (recommended), ISO3166-2, Gazeetteer, or postcode."),
+        "either G-NAF (recommended), ISO3166-2, Gazeetteer, or postcode, " +
+        "with one of the following <valueName>s: " + RECOGNIZED_GEOCODE_VALUES),
     ;
     private final String message;
 
@@ -441,9 +444,9 @@ public class AustralianProfile extends AbstractCapProfile {
         "format example@domain"),
     TEST_ALERT_WILL_NOT_BE_BROADCAST("Alerts with Test <status> are treated " +
         "as log-only event and not be broadcast as a valid alert"),
-    RECOGNIZED_EVENT_CODE_NOT_USED("Note AUeventLIST codes not being used." +
-        "No <event> code with <valueName> starting with " +
-        CAP_AU_EVENT_CODE_VALUE_NAME_PREFIX),
+    RECOGNIZED_EVENT_CODE_NOT_USED("Note AUeventLIST codes not being used. " +
+        "No <eventCode> with <valueName> " +
+        CAP_AU_EVENT_CODE_VALUE_NAME),
     EXPIRES_STRONGLY_RECOMMENDED("<expires> is strongly recommended."),
     SENDER_NAME_STRONGLY_RECOMMENDED(
         "<senderName> is strongly recommended."),
