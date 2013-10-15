@@ -18,8 +18,12 @@
     <cap:severity>Minor</cap:severity>
     <cap:certainty>Observed</cap:certainty>
     <cap:eventCode>
-      <cap:valueName>urn:oasis:names:tc:emergency:cap:1.2:profile:CAP-AU:1.0:AUeventLIST:1.0</cap:valueName>
+      <cap:valueName>https://govshare.gov.au/xmlui/handle/10772/6495</cap:valueName>
       <cap:value>fire</cap:value>
+    </cap:eventCode>
+    <cap:eventCode>
+      <cap:valueName>non-standard secondary event code</cap:valueName>
+      <cap:value>structure_fire</cap:value>
     </cap:eventCode>
     <cap:effective>2011-10-05T23:04:00+10:00</cap:effective>
     <cap:expires>2011-10-06T23:04:00+10:00</cap:expires>
@@ -71,7 +75,7 @@
       <cap:areaDesc>Yerong Creek Structure Fire</cap:areaDesc>
       <cap:circle>-35.3888,147.0598 25.0</cap:circle>
       <cap:geocode>
-        <cap:valueName>urn:oasis:names:tc:emergency:cap:1.2:profile:CAP-AU:1.0:ISO 3166-2</cap:valueName>
+        <cap:valueName>http://www.iso.org/iso/country_codes.html</cap:valueName>
         <cap:value>AU-NSW</cap:value>
       </cap:geocode>
     </cap:area>
@@ -87,8 +91,12 @@
     <cap:severity>Minor</cap:severity>
     <cap:certainty>Observed</cap:certainty>
     <cap:eventCode>
-      <cap:valueName>urn:oasis:names:tc:emergency:cap:1.2:profile:CAP-AU:1.0:AUeventLIST:1.0</cap:valueName>
+      <cap:valueName>https://govshare.gov.au/xmlui/handle/10772/6495</cap:valueName>
       <cap:value>fire</cap:value>
+    </cap:eventCode>
+    <cap:eventCode>
+      <cap:valueName>non-standard secondary event code</cap:valueName>
+      <cap:value>structure_fire</cap:value>
     </cap:eventCode>
     <cap:effective>2011-10-05T23:04:00+10:00</cap:effective>
     <cap:expires>2011-10-06T23:04:00+10:00</cap:expires>
@@ -140,8 +148,8 @@
       <cap:areaDesc>Yerong Creek Structure Fire</cap:areaDesc>
       <cap:circle>-35.3888,147.0598 25.0</cap:circle>
       <cap:geocode>
-        <cap:valueName>urn:oasis:names:tc:emergency:cap:1.2:profile:CAP-AU:1.0:ISO 3166-2</cap:valueName>
-        <cap:value>AU-NSW</cap:value>
+        <cap:valueName>http://www.psma.com.au/?product=postcode-boundaries</cap:valueName>
+        <cap:value>2642</cap:value>
       </cap:geocode>
     </cap:area>
 

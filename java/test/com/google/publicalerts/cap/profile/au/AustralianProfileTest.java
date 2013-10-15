@@ -92,13 +92,18 @@ public class AustralianProfileTest extends CapProfileTestCase {
     
     alert = loadAlert("australia.cap").toBuilder();
     ValuePair secondEventCode = ValuePair.newBuilder().setValueName(
-        AustralianProfile.CAP_AU_EVENT_CODE_VALUE_NAME_PREFIX + ":1.0")
+        AustralianProfile.CAP_AU_EVENT_CODE_VALUE_NAME)
         .setValue("foo")
         .build();
     alert.getInfoBuilder(0).addEventCode(secondEventCode);
     alert.getInfoBuilder(1).addEventCode(secondEventCode);
     assertErrors(alert, ErrorType.ONE_AUTHORIZED_EVENT_CODE_PER_ALERT,
         ErrorType.ONE_AUTHORIZED_EVENT_CODE_PER_ALERT);
+
+    alert = loadAlert("australia.cap").toBuilder();
+    alert.getInfoBuilder(1).getAreaBuilder(0).getGeocodeBuilder(0)
+        .setValueName("foo");
+    assertErrors(alert, ErrorType.AREA_GEOCODE_IS_REQUIRED);
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).getAreaBuilder(0).clearGeocode();
