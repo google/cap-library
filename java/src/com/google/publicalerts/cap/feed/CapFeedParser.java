@@ -78,7 +78,18 @@ public class CapFeedParser {
   private static final Logger log = Logger.getLogger(
       CapFeedParser.class.getName());
 
-  public static final String CAP_CONTENT_TYPE = "application/cap+xml";
+  /**
+   * Both of the following constants have been requested as MIME types
+   * for CAP. See
+   * <a href="http://tools.ietf.org/html/draft-barnes-atoca-cap-mime-01"
+   *     >http://tools.ietf.org/html/draft-barnes-atoca-cap-mime-01</a>.
+   * <p>However, official status of the type is unclear. Neither are currently
+   * listed at <a href="http://www.iana.org/assignments/media-types/"
+   *     >http://www.iana.org/assignments/media-types/</a>
+   */
+  public static final String CAP_MIME_TYPE = "application/cap+xml";
+  public static final String ALTERNATE_CAP_MIME_TYPE =
+      "application/common-alerting-protocol+xml";
 
   private static final Schema ATOM_RELAX_NG_SCHEMA =
       loadRelaxNgSchema("atom_rfc4287.rng");
@@ -485,7 +496,8 @@ public class CapFeedParser {
     SyndLink noTypeSyndLink = null;
 
     for (SyndLink link : links) {
-      if (CAP_CONTENT_TYPE.equals(link.getType())) {
+      if (CAP_MIME_TYPE.equalsIgnoreCase(link.getType()) ||
+          ALTERNATE_CAP_MIME_TYPE.equalsIgnoreCase(link.getType())) {
         return link.getHref();
       } else if (CapUtil.isEmptyOrWhitespace(link.getType())
           || link.getType().contains("xml")) {

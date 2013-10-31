@@ -232,7 +232,10 @@ public class CapFeedParserTest extends TestCase {
     link1.setType("text/xml");
     assertEquals(link1.getHref(), parser.getCapUrl(entry));
 
-    link1.setType(CapFeedParser.CAP_CONTENT_TYPE);
+    link1.setType(CapFeedParser.CAP_MIME_TYPE);
+    assertEquals(link1.getHref(), parser.getCapUrl(entry));
+
+    link1.setType(CapFeedParser.ALTERNATE_CAP_MIME_TYPE);
     assertEquals(link1.getHref(), parser.getCapUrl(entry));
 
     link1.setType("text/html");
@@ -250,13 +253,13 @@ public class CapFeedParserTest extends TestCase {
     link2.setType("application/xml");
     assertEquals(link2.getHref(), parser.getCapUrl(entry));
 
-    link2.setType(CapFeedParser.CAP_CONTENT_TYPE);
+    link2.setType(CapFeedParser.CAP_MIME_TYPE);
     assertEquals(link2.getHref(), parser.getCapUrl(entry));
 
     link1.setType("text/xml");
     assertEquals(link2.getHref(), parser.getCapUrl(entry));
 
-    link1.setType(CapFeedParser.CAP_CONTENT_TYPE);
+    link1.setType(CapFeedParser.CAP_MIME_TYPE);
     assertEquals(link1.getHref(), parser.getCapUrl(entry));
   }
 

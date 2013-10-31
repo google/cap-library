@@ -92,7 +92,8 @@ public class CapFeedValidator {
     int possibleLinkCount = 0;
     for (Link link : links) {
       String type = link.getType();
-      if (CapFeedParser.CAP_CONTENT_TYPE.equals(type)) {
+      if (CapFeedParser.CAP_MIME_TYPE.equalsIgnoreCase(type) ||
+          CapFeedParser.ALTERNATE_CAP_MIME_TYPE.equalsIgnoreCase(type)) {
         return true;
       } else if (type == null || (type != null && !type.startsWith("image") &&
           !type.startsWith("audio") && !type.startsWith("video"))) {
@@ -182,8 +183,9 @@ public class CapFeedValidator {
       }
 
       if (content.getNonXmlContent() != null) {
-        if (content.getNonXmlContent().getMimeType().equalsIgnoreCase(
-            CapFeedParser.CAP_CONTENT_TYPE)
+        String mimeType = content.getNonXmlContent().getMimeType();
+        if ((mimeType.equalsIgnoreCase(CapFeedParser.CAP_MIME_TYPE) ||
+            mimeType.equalsIgnoreCase(CapFeedParser.ALTERNATE_CAP_MIME_TYPE))
             && content.getNonXmlContent().getUri() != null) {
           foundcap = true;
         } else {

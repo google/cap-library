@@ -154,10 +154,18 @@ public class CapFeedValidatorTest extends TestCase {
   }
 
   public void testEdxldeErrors_validNonXml() throws Exception {
+    runTestEdxldeErrors(CapFeedParser.CAP_MIME_TYPE);
+  }
+
+  public void testEdxldeErrors_validNonXmlAlternateMimeType() throws Exception {
+    runTestEdxldeErrors(CapFeedParser.ALTERNATE_CAP_MIME_TYPE);
+  }
+
+  private void runTestEdxldeErrors(String contentType) {
     DistributionFeed feed = new DistributionFeed("edxlde_1.0");
     feed.setDateTimeSent("2011-10-17T11:18:00-00:00");
     ContentObject content = new ContentObject();
-    NonXmlContent nonXml = new NonXmlContent(CapFeedParser.CAP_CONTENT_TYPE);
+    NonXmlContent nonXml = new NonXmlContent(contentType);
     nonXml.setUri("capUri");
     content.setNonXmlContent(nonXml);
     feed.addContentObject(content);
@@ -169,7 +177,7 @@ public class CapFeedValidatorTest extends TestCase {
     DistributionFeed feed = new DistributionFeed("edxlde_1.0");
     feed.setDateTimeSent("2011-10-17T11:18:00-00:00");
     ContentObject content = new ContentObject();
-    NonXmlContent nonXml = new NonXmlContent(CapFeedParser.CAP_CONTENT_TYPE);
+    NonXmlContent nonXml = new NonXmlContent(CapFeedParser.CAP_MIME_TYPE);
     content.setNonXmlContent(nonXml);
     feed.addContentObject(content);
     SyndFeed syndFeed = new SyndFeedImpl(feed, true);
