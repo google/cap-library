@@ -53,7 +53,8 @@ public class CapFeedException extends CapException {
     ATOM_ENTRY_MISSING_CAP_LINK(
         "Entries that do not embed CAP must contain a link to a CAP " +
         "document, normally found with type='" +
-        CapFeedParser.CAP_CONTENT_TYPE + "'"),
+        CapFeedParser.CAP_MIME_TYPE + "' or type='" +
+        CapFeedParser.ALTERNATE_CAP_MIME_TYPE + "'"),
     RSS_ITEM_TITLE_OR_DESCRIPTION_IS_REQUIRED(
         "Items must have a non-empty <title> or <description>"),
     RSS_ITEM_MISSING_CAP_LINK("Item ust contain a link to a CAP document"),
