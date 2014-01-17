@@ -89,7 +89,7 @@ public class AustralianProfileTest extends CapProfileTestCase {
     alert.getInfoBuilder(1).getEventCodeBuilder(0).setValue("foo");
     assertErrors(alert, ErrorType.UNRECOGNIZED_EVENT_CODE,
         ErrorType.UNRECOGNIZED_EVENT_CODE);
-    
+
     alert = loadAlert("australia.cap").toBuilder();
     ValuePair secondEventCode = ValuePair.newBuilder().setValueName(
         AustralianProfile.CAP_AU_EVENT_CODE_VALUE_NAME)
@@ -101,14 +101,6 @@ public class AustralianProfileTest extends CapProfileTestCase {
         ErrorType.ONE_AUTHORIZED_EVENT_CODE_PER_ALERT);
 
     alert = loadAlert("australia.cap").toBuilder();
-    alert.getInfoBuilder(1).getAreaBuilder(0).getGeocodeBuilder(0)
-        .setValueName("foo");
-    assertErrors(alert, ErrorType.AREA_GEOCODE_IS_REQUIRED);
-
-    alert = loadAlert("australia.cap").toBuilder();
-    alert.getInfoBuilder(1).getAreaBuilder(0).clearGeocode();
-    assertErrors(alert, ErrorType.AREA_GEOCODE_IS_REQUIRED);
-
     alert.getInfoBuilder(1).clearArea();
     assertErrors(alert, ErrorType.AREA_IS_REQUIRED);
 
@@ -148,5 +140,16 @@ public class AustralianProfileTest extends CapProfileTestCase {
     }
     assertRecommendations(alert,
         RecommendationType.CIRCLE_POLYGON_ENCOURAGED);
+
+    alert = loadAlert("australia.cap").toBuilder();
+    alert.getInfoBuilder(1).getAreaBuilder(0).getGeocodeBuilder(0)
+        .setValueName("foo");
+    assertRecommendations(alert,
+        RecommendationType.AREA_GEOCODE_IS_RECOMMENDED);
+
+    alert = loadAlert("australia.cap").toBuilder();
+    alert.getInfoBuilder(1).getAreaBuilder(0).clearGeocode();
+    assertRecommendations(alert,
+        RecommendationType.AREA_GEOCODE_IS_RECOMMENDED);
   }
 }

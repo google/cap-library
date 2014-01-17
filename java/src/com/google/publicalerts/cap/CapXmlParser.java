@@ -596,7 +596,7 @@ public class CapXmlParser {
     }
 
     Polygon toPolygon(String str) {
-      String[] pointStrs = str.split("\\s+");
+      String[] pointStrs = str.trim().split("\\s+");
       if (CapUtil.isEmptyOrWhitespace(str) || pointStrs.length == 0) {
         return null;
       }
@@ -626,7 +626,7 @@ public class CapXmlParser {
     }
 
     Circle toCircle(String str) {
-      String[] pointRadius = str.split("\\s+");
+      String[] pointRadius = str.trim().split("\\s+");
       if (pointRadius.length == 0) {
         return null;
       }
