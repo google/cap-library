@@ -220,22 +220,6 @@ public class AustralianProfile extends AbstractCapProfile {
       if (info.getAreaCount() == 0) {
         reasons.add(new Reason(xpath, ErrorType.AREA_IS_REQUIRED));
       }
-
-      for (int j = 0; j < info.getAreaCount(); j++) {
-        Area area = info.getArea(j);
-        boolean hasValidGeocode = false;
-        // 2.4. area MUST include a minimum of one recognised <geocode> value.
-        for (ValuePair geocode : area.getGeocodeList()) {
-          if (RECOGNIZED_GEOCODE_VALUES.contains(geocode.getValueName())) {
-            hasValidGeocode = true;
-            break;
-          }
-        }
-        if (!hasValidGeocode) {
-          reasons.add(new Reason(xpath + "/area[" + j + "]",
-              ErrorType.AREA_GEOCODE_IS_REQUIRED));
-        }
-      }
     }
 
     return reasons;
@@ -326,7 +310,20 @@ public class AustralianProfile extends AbstractCapProfile {
             polygonCircleGeocodeAreaIndex = j;
           }
         }
+        boolean hasValidGeocode = false;
+        // 2.4. area should include a recognised <geocode> value.
+        for (ValuePair geocode : area.getGeocodeList()) {
+          if (RECOGNIZED_GEOCODE_VALUES.contains(geocode.getValueName())) {
+            hasValidGeocode = true;
+            break;
+          }
+        }
+        if (!hasValidGeocode) {
+          reasons.add(new Reason(xpath + "/area[" + j + "]",
+              RecommendationType.AREA_GEOCODE_IS_RECOMMENDED));
+        }
       }
+
       if (!hasPolygonOrCircle && info.getAreaCount() > 0) {
         reasons.add(new Reason(xpath + "/area[0]",
             RecommendationType.CIRCLE_POLYGON_ENCOURAGED));
@@ -422,9 +419,6 @@ public class AustralianProfile extends AbstractCapProfile {
     DO_NOT_USE_EFFECTIVE_WITH_MSGTYPE_CANCEL("Do not use <effective> " +
         "when <msgType> is 'Cancel'"),
     AREA_IS_REQUIRED("At least one <area> must be present"),
-    AREA_GEOCODE_IS_REQUIRED("At least one <geocode> value is required, " +
-        "either G-NAF (recommended), ISO3166-2, Gazeetteer, or postcode, " +
-        "with one of the following <valueName>s: " + RECOGNIZED_GEOCODE_VALUES),
     ;
     private final String message;
 
@@ -462,6 +456,12 @@ public class AustralianProfile extends AbstractCapProfile {
         "contrary to what is currently defined in CAP, which recognizes the " +
         "area as the combination of the <geocode>, <polygon> and <circle> " +
         "values"),
+    AREA_GEOCODE_IS_RECOMMENDED("At least one <geocode> value is " +
+        "recommended but is not mandatory, either G-NAF (recommended), " +
+        "ISO3166-2, Gazeetteer, or postcode, with one of the following " +
+        "<valueName>s: " + RECOGNIZED_GEOCODE_VALUES + ". If a value is " +
+        "used, the Producer should ensure the consumer system is able to " +
+        "interpret the value selected."),
     ;
     private final String message;
 
