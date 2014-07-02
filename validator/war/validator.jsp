@@ -59,7 +59,11 @@ Atom and RSS feeds of CAP messages.  It supports CAP v1.0, v1.1 and v1.2.
   <% for (CapValidatorServlet.CapExample capExample : CapValidatorServlet.CapExample.values()) { %>  
   <div class=example><a href="#" onclick="submitExample('<%= capExample.getLabel() %>')"><%= StringUtil.htmlEscape(capExample.getDescription()) %></a></div>
   <% } %>
-</div></td></tr></table>
+  </div>
+  <div class="subscriptions">
+    <div class="subscription"><a href="/subscribe">Subscribe to feed validation results</a></div>
+  </div>
+</td></tr></table>
 </form>
 
 <jsp:include page="validation_result.jsp"/>
