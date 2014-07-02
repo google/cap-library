@@ -19,7 +19,6 @@ package com.google.publicalerts.cap.validator;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -34,12 +33,11 @@ import org.apache.commons.fileupload.FileUploadException;
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
 import org.json.JSONArray;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.google.publicalerts.cap.CapUtil;
 import com.google.publicalerts.cap.profile.CapProfile;
-import com.google.publicalerts.cap.profile.CapProfiles;
 
 /**
  * Main servlet for the CAP validator.
@@ -51,8 +49,6 @@ public class CapValidatorServlet extends HttpServlet {
 
   private static final Logger log =
       Logger.getLogger(CapValidatorServlet.class.getName());
-
-  private static final String GOOGLE_ANALYTICS_ID = "google_analytics_id";
 
   private final CapValidator capValidator;
   private final ServletFileUpload upload;
@@ -134,13 +130,6 @@ public class CapValidatorServlet extends HttpServlet {
     render(req, resp);
   }
 
-
-  String loadExample(String filename) throws IOException {
-    InputStream stream = CapValidatorServlet.class.getResourceAsStream(
-        "examples/" + filename);
-    return stream == null ? "" : ValidatorUtil.readFully(stream);
-  }
-
   private void render(HttpServletRequest req, HttpServletResponse resp)
       throws ServletException, IOException {
     req.setAttribute("analyticsId",
@@ -151,5 +140,63 @@ public class CapValidatorServlet extends HttpServlet {
 
     resp.setStatus(HttpServletResponse.SC_OK);
     req.getRequestDispatcher("/validator.jsp").include(req, resp);
+  }
+  
+  @VisibleForTesting
+  String loadExample(String label) throws IOException {
+    CapExample capExample = null;
+    
+    try {
+      capExample = CapExample.fromLabel(label);
+    } catch (IllegalArgumentException e) {
+      log.severe(
+          "Label: " + label + " does not match an existing CAP example.");
+      return "";
+    }
+    
+    InputStream stream = CapValidatorServlet.class
+        .getResourceAsStream(capExample.getRelativePath());
+    return stream == null ? "" : ValidatorUtil.readFully(stream);
+  }
+  
+  /**
+   * An example of a CAP message.
+   * 
+   * <p>The list should be kept in sync with the content of the package
+   * {@code com.google.com.publicalerts.cap.validator.examples}.
+   */
+  public enum CapExample {
+    SEVERE_THUNDERSTORM_WARNING(
+        "CAP 1.2 Severe Thunderstorm Warning", "thunderstorm.cap"), 
+    HOMELAND_SECURITY_ADVISORY(
+        "CAP 1.2 Homeland Security Advisory", "homeland_security.url"),
+    EARTHQUAKE_ATOM_FEED("CAP 1.1 Earthquake Atom feed", "earthquake.atom"),
+    AMBER_ALERT_RSS_FEED("CAP 1.1 Amber Alert RSS feed", "amber.rss");
+    
+    private final String description;
+    private final String fileName;
+    
+    private CapExample(String description, String fileName) {
+      this.description = description;
+      this.fileName = fileName;
+    }
+
+    public String getDescription() {
+      return description;
+    }
+    
+    private String getRelativePath() {
+      return "examples/" + fileName;
+    }
+
+    public String getLabel() {
+      return this.name().toLowerCase().replace('_', '-');
+    }
+    
+    @VisibleForTesting
+    static CapExample fromLabel(String label)
+        throws IllegalArgumentException {
+      return CapExample.valueOf(label.toUpperCase().replace('-', '_'));
+    }
   }
 }

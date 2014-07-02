@@ -18,6 +18,8 @@ package com.google.publicalerts.cap.validator;
 
 import static org.mockito.Mockito.mock;
 
+import com.google.publicalerts.cap.validator.CapValidatorServlet.CapExample;
+
 import junit.framework.TestCase;
 
 import org.apache.commons.fileupload.servlet.ServletFileUpload;
@@ -45,9 +47,28 @@ public class CapValidatorServletTest extends TestCase {
   }
 
   public void testLoadExample() throws Exception {
-    String earthquake = servlet.loadExample("earthquake.cap");
+    String earthquake = servlet.loadExample("earthquake-atom-feed");
     assertNotNull(earthquake);
   }
+  
+  public void testCapExampleGetLabel() {
+    assertEquals(
+        "earthquake-atom-feed", CapExample.EARTHQUAKE_ATOM_FEED.getLabel());
+  }
 
+  public void testCapExampleFromLabel() {
+    assertEquals(CapExample.EARTHQUAKE_ATOM_FEED,
+        CapExample.fromLabel("earthquake-atom-feed"));
+  }
+  
+  public void testCapExampleFromLabel_unknownLabel() {
+    try {
+      CapExample.fromLabel("foo-bar");
+      fail();
+    } catch (IllegalArgumentException e) {
+      // expected
+    }
+  }
+  
   // TODO(shakusa) Test loading from file
 }

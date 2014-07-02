@@ -1,7 +1,8 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java"
-%><%@ page import="com.google.publicalerts.cap.validator.StringUtil"
-%><%@ page import="java.util.List"
-%><!DOCTYPE html>
+<%@ page contentType="text/html;charset=UTF-8" language="java"%>
+<%@ page import="com.google.publicalerts.cap.validator.StringUtil"%>
+<%@ page import="com.google.publicalerts.cap.validator.CapValidatorServlet"%>
+<%@ page import="java.util.List"%>
+<!DOCTYPE html>
 <html>
 <head>
 <meta name="keywords" content="CAP,common alerting protocol,CAP validator,common alerting protocol validator">
@@ -55,10 +56,9 @@ Atom and RSS feeds of CAP messages.  It supports CAP v1.0, v1.1 and v1.2.
   <div class=examples>
   <h4>Try these examples:</h4>
   <input type=hidden name=example id=example />
-  <div class=example><a href="#" onclick="submitExample('thunderstorm.cap')">CAP 1.2 Severe Thunderstorm Warning</a></div>
-  <div class=example><a href="#" onclick="submitExample('homeland_security.url')">CAP 1.2 Homeland Security Advisory</a></div>
-  <div class=example><a href="#" onclick="submitExample('earthquake.atom')">CAP 1.1 Earthquake Atom feed</a></div>
-  <div class=example><a href="#" onclick="submitExample('amber.rss')">CAP 1.1 Amber Alert RSS feed</a></div>
+  <% for (CapValidatorServlet.CapExample capExample : CapValidatorServlet.CapExample.values()) { %>  
+  <div class=example><a href="#" onclick="submitExample('<%= capExample.getLabel() %>')"><%= StringUtil.htmlEscape(capExample.getDescription()) %></a></div>
+  <% } %>
 </div></td></tr></table>
 </form>
 
