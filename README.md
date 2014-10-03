@@ -30,9 +30,9 @@ serializing structured data - think XML, but smaller, faster, and simpler.
 The generated classes offer a clean API for creating and manipulating
 alert objects. The alert data structures are immutable; they provide only
 getters.  New alerts are constructed via Builder classes. See 
-,javatests/com/google/publicalerts/cap/TestUtil.java, for an example.
+`javatests/com/google/publicalerts/cap/TestUtil.java`, for an example.
 
-/javatests/com/google/publicalerts/cap/EndToEndTest.java/ provides a good
+`/javatests/com/google/publicalerts/cap/EndToEndTest.java` provides a good
 overview of how to get started using the library.
 
 To learn more about Google protocol buffers, see
@@ -45,7 +45,9 @@ http://code.google.com/apis/protocolbuffers/ and http://code.google.com/apis/pro
 You can download and install Apache Ant from http://ant.apache.org/.
 
 ###Run all tests
-`» APPENGINE_JAVA_SDK=/path/to/appengine-sdk ant test`
+```
+» APPENGINE_JAVA_SDK=/path/to/appengine-sdk ant test
+```
 
 ###Compile the library into a jar
 ```
