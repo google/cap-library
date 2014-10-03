@@ -3,8 +3,6 @@ Copyright 2014 Google Inc.
 
 http://github.com/google/cap-library/
 
-===========
-
 ## Usage
 The Common Alerting Protocol validator is a simple web application that uses
 the CAP library to check the syntax of CAP XML messages and Atom and RSS feeds
