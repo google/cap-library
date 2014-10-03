@@ -1,0 +1,14 @@
+language: java
+
+jdk:
+  - oraclejdk8
+  - oraclejdk7
+  - openjdk7
+  - openjdk6
+  
+install:
+  - wget https://storage.googleapis.com/appengine-sdks/featured/appengine-java-sdk-1.9.12.zip -nv
+  - unzip -q appengine-java-sdk-1.9.12.zip
+  
+script:
+  - APPENGINE_JAVA_SDK=../appengine-java-sdk-1.9.12 ant test
