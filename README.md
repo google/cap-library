@@ -32,7 +32,7 @@ alert objects. The alert data structures are immutable; they provide only
 getters.  New alerts are constructed via Builder classes. See 
 `javatests/com/google/publicalerts/cap/TestUtil.java`, for an example.
 
-`/javatests/com/google/publicalerts/cap/EndToEndTest.java` provides a good
+`javatests/com/google/publicalerts/cap/EndToEndTest.java` provides a good
 overview of how to get started using the library.
 
 To learn more about Google protocol buffers, see
