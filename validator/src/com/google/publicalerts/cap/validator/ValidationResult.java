@@ -90,7 +90,7 @@ public class ValidationResult {
     for (Reason reason : new XercesCapExceptionMapper().map(reasons)) {
       int lineOffset = getLineOffsets().getXPathLineNumber(reason.getXPath());
       addValidationMessage(
-          lineOffset, reason.getLevel(), messagePrefix + reason.getMessage());
+          lineOffset, reason.getLevel(), messagePrefix[0] + reason.getMessage());
     }
   }
   
