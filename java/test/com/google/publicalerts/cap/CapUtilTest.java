@@ -71,4 +71,44 @@ public class CapUtilTest extends TestCase {
         "foobar",
         CapUtil.stripXmlPreamble("<?xml encoding='UTF-8'>foobar"));
   }
+  
+  public void testIsBased64() {
+    assertTrue(CapUtil.isBased64(""));
+    assertTrue(CapUtil.isBased64("cGxlYXN1cmUu"));
+    assertTrue(CapUtil.isBased64("ZWFzdXJlLg=="));
+    assertTrue(CapUtil.isBased64("ZW\nFzdXJlLg=="));
+    
+    assertFalse(CapUtil.isBased64("a"));
+    assertFalse(CapUtil.isBased64("cGxlYXN1%mUu"));
+    assertFalse(CapUtil.isBased64("ZWFzdXJlLg="));
+    assertFalse(CapUtil.isBased64("ZW\nFzdXJlLg =="));
+  }
+  
+  public void testParseReferenceIdentifier() {
+    assertEquals("2.49.0.1.124.76bd23f1.2014",
+        CapUtil.parseReferenceIdentifier(
+            "2.49.0.1.124.76bd23f1.2014/2014-05-18T12:26:00-00:00", 10));
+    assertEquals("TRI13970876.1",
+        CapUtil.parseReferenceIdentifier(
+            "trinet@caltech.edu,TRI13970876.1,2003-06-11T20:30:00-07:00", 12));
+    assertNull(CapUtil.parseReferenceIdentifier("foobar", 10));
+    assertNull(CapUtil.parseReferenceIdentifier("foobar", 12));
+  }
+  
+  public void testParseReferenceSent() {
+    GregorianCalendar expectedCalendar = new GregorianCalendar(
+        SimpleTimeZone.getTimeZone("UTC"));
+    expectedCalendar.set(2012, 9, 28, 12, 0, 1); // remember month is zero-based
+    GregorianCalendar actualCalendar = new GregorianCalendar();
+    actualCalendar.setTime(CapUtil.parseReferenceSent(
+        "hsas@dhs.gov,123,2012-10-28T12:00:01+00:00"));
+    assertEquals(CapDateUtil.formatCapDate(expectedCalendar),
+        CapDateUtil.formatCapDate(expectedCalendar));
+    
+    assertNotNull(
+        CapUtil.parseReferenceSent("hsas@dhs.gov,123,2012-10-28T12:00:01+00:00"));
+    assertNull(CapUtil.parseReferenceSent("foobar"));
+    assertNull(
+        CapUtil.parseReferenceSent("hsas@dhs.gov,123,2003-99-02T14:39:01-05:00"));
+  }
 }

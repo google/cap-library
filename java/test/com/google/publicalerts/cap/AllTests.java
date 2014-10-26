@@ -66,6 +66,9 @@ public class AllTests {
     suite.addTestSuite(CapValidatorTest.class);
     suite.addTestSuite(XmlSignAndValidateTest.class);
     suite.addTestSuite(EndToEndTest.class);
+    suite.addTestSuite(ReasonTest.class);
+    suite.addTestSuite(ReasonsTest.class);
+    suite.addTestSuite(XPathTest.class);
 
     suite.addTestSuite(CapFeedParserTest.class);
     suite.addTestSuite(CapFeedValidatorTest.class);

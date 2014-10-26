@@ -16,11 +16,11 @@
 
 package com.google.publicalerts.cap.profile;
 
+import com.google.common.collect.ImmutableList;
 import com.google.publicalerts.cap.profile.au.AustralianProfile;
 import com.google.publicalerts.cap.profile.ca.CanadianProfile;
 import com.google.publicalerts.cap.profile.us.Ipaws1Profile;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -30,16 +30,13 @@ import java.util.List;
  */
 public class CapProfiles {
 
-  private static final List<CapProfile> PROFILES = initProfiles();
-
-  private static List<CapProfile> initProfiles() {
-    List<CapProfile> profiles = new ArrayList<CapProfile>();
-    profiles.add(new Ipaws1Profile());
-    profiles.add(new CanadianProfile());
-    profiles.add(new AustralianProfile());
-    profiles.add(new GoogleProfile());
-    return profiles;
-  }
+  private static final List<CapProfile> PROFILES =
+      ImmutableList.<CapProfile>builder()
+          .add(new Ipaws1Profile())
+          .add(new CanadianProfile())
+          .add(new AustralianProfile())
+          .add(new GoogleProfile())
+          .build();
 
   public static List<CapProfile> getProfiles() {
     return PROFILES;

@@ -170,7 +170,7 @@ CAP-AU #,TIER I EVENTS,TIER II EVENTS,EVENT CODE,CAP CATEGORY VALUE,AUTHORITY TO
 169,Utility,Telephone Service,telephone,Infra
 170,Utility,Triple Zero,tripleZero,Infra
 171,Utility,Waste Management,waste,Infra
-172,Utility,Water Supply,water,Infra
+172,Utility,Water Supply,waterSupply,Infra
 173,Wind,,wind,Met
 174,Wind,Wind Change,windChange,Met
 175,Water quality,,water,Env

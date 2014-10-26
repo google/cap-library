@@ -16,17 +16,16 @@
 
 package com.google.publicalerts.cap;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Descriptors;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Message.Builder;
 import com.google.protobuf.MessageOrBuilder;
-import com.google.publicalerts.cap.CapException.Reason;
-import com.google.publicalerts.cap.CapException.Type;
+import com.google.publicalerts.cap.CapException.ReasonType;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.SAXParseException;
 import org.xml.sax.XMLReader;
@@ -34,10 +33,6 @@ import org.xml.sax.helpers.DefaultHandler;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 
@@ -76,7 +71,7 @@ public class CapXmlParser {
     String[] xmlns = new String[] {CapValidator.CAP10_XMLNS,
         CapValidator.CAP11_XMLNS, CapValidator.CAP12_XMLNS};
 
-    Map<String, Schema> schemas = new HashMap<String, Schema>();
+    ImmutableMap.Builder<String, Schema> schemas = ImmutableMap.builder();
     for (int i = 0; i < xsds.length; i++) {
       StreamSource cap = new StreamSource(CapXmlParser.class
           .getResourceAsStream("schema/" + xsds[i]));
@@ -86,7 +81,7 @@ public class CapXmlParser {
         throw new RuntimeException(e);
       }
     }
-    return schemas;
+    return schemas.build();
   }
 
   private final boolean validate;
@@ -127,12 +122,116 @@ public class CapXmlParser {
   }
 
   /**
+   * Parses a CAP circle area from a string.
+   *
+   * @param str A string encoding a circle, as described in the CAP schema.
+   * It should be a coordinate pair, followed by a radius.
+   * @return A CAP Circle with the same center and radius, or null if the
+   * string failed to parse.
+   */
+  public static Circle toCircle(String str) {
+    if (str == null) {
+      return null;
+    }
+    String[] pointRadius = str.trim().split("\\s+");
+    if (pointRadius.length == 0) {
+      return null;
+    }
+    if (pointRadius.length != 2) {
+      return null;
+    }
+    Point point = toPoint(pointRadius[0]);
+    if (point == null) {
+      return null;
+    }
+
+    float radius;
+    try {
+      radius = Float.parseFloat(pointRadius[1]);
+    } catch (NumberFormatException e) {
+      return null;
+    }
+
+    return Circle.newBuilder().setPoint(point).setRadius(radius)
+        .buildPartial();
+  }
+
+  /**
+   * Parses the given string, which should be a comma-separated pair
+   * of doubles, as a Point. Returns null if it could not be parsed.
+   */
+  static Point toPoint(String point) {
+    String[] latlng = point.split(",");
+    if (latlng.length != 2) {
+      return null;
+    }
+    double latitude;
+    double longitude;
+    try {
+      latitude = Double.parseDouble(latlng[0]);
+      longitude = Double.parseDouble(latlng[1]);
+    } catch (NumberFormatException e) {
+      return null;
+    }
+    return Point.newBuilder().setLatitude(latitude).setLongitude(longitude)
+        .buildPartial();
+  }
+
+  /**
+   * Parses a CAP circle area from a string.
+   *
+   * @param str A string encoding a polygon, as described in the CAP schema.
+   * It should be a space-separated list of points, each of which is a
+   * comma-separated list of doubles.
+   * @return A CAP Polygon with the same points, or null if the
+   * string failed to parse.
+   */
+  public static Polygon toPolygon(String str) {
+    if (str == null) {
+      return null;
+    }
+    String[] pointStrs = str.trim().split("\\s+");
+    if (CapUtil.isEmptyOrWhitespace(str) || pointStrs.length == 0) {
+      return null;
+    }
+    Polygon.Builder polygon = Polygon.newBuilder();
+    for (String pointStr : pointStrs) {
+      Point point = toPoint(pointStr);
+      if (point == null) {
+        return null;
+      } else {
+        polygon.addPoint(point);
+      }
+    }
+    return polygon.buildPartial();
+  }
+
+  /**
+   * Parses a CAP Polygon, returning null if it has fewer than 4 points.
+   *
+   * Like CapXmlParser.toPolygon, but additionally returns null if
+   * the polygon has too few (less than four) points.
+   * @param str A string encoding a polygon, as described in the CAP schema.
+   * It should be a space-separated list of points, each of which is a
+   * comma-separated list of doubles.
+   * @return A CAP Polygon with the same points, or null if the
+   * string failed to parse, or contains fewer than 4 points.
+   */
+  public static Polygon toPolygonNullIfTooFew(String str) {
+    Polygon polygon = toPolygon(str);
+    if (polygon != null && polygon.getPointCount() < 4) {
+      return null;
+    }
+    return polygon;
+  }
+
+  /**
    * Parse the given alert.
    *
    * @param str the CAP XML to parse, as a UTF-8 string
    * @return the parsed alert
    * @throws CapException if validate is true and there are parse-related
-   * errors (e.g. couldn't parse an integer field to an int).
+   * or validation errors
    * @throws NotCapException if the XML is not CAP XML
    * @throws SAXParseException on XML parsing error
    */
@@ -145,14 +244,15 @@ public class CapXmlParser {
    * Parse the given alert.
    *
    * @param str the CAP XML to parse, as a UTF-8 string
-   * @param parseErrors a list to which to add any non-fatal errors during parsing
+   * @param reasons a collection to which to add any non-fatal errors,
+   * warnings or recommendations during parsing
    * @return the parsed alert
    * @throws NotCapException if the XML is not CAP XML
    * @throws SAXParseException on XML parsing error
    */
-  public final Alert parseFrom(String str, List<Reason> parseErrors)
+  public final Alert parseFrom(String str, Reasons.Builder reasons)
       throws NotCapException, SAXParseException {
-    return parseFromInternal(new CachedSaxInputSource(str), parseErrors);
+    return parseFromInternal(new CachedSaxInputSource(str), reasons);
   }
 
   /**
@@ -161,7 +261,7 @@ public class CapXmlParser {
    * @param reader the reader to read the CAP XML to parse
    * @return the parsed alert
    * @throws CapException if validate is true and there are parse-related
-   * errors (e.g. couldn't parse an integer field to an int).
+   * or validation errors
    * @throws NotCapException if the XML is not CAP XML
    * @throws SAXParseException on XML parsing error
    */
@@ -174,14 +274,14 @@ public class CapXmlParser {
    * Parse the given alert.
    *
    * @param reader the reader to read the CAP XML to parse
-   * @param parseErrors a list to which to add any non-fatal errors during parsing
-   * @return the parsed alert
+   * @param reasons a collection to which to add any non-fatal errors,
+   * warnings or recommendations during parsing
    * @throws NotCapException if the XML is not CAP XML
    * @throws SAXParseException on XML parsing error
    */
-  public final Alert parseFrom(Reader reader, List<Reason> parseErrors)
+  public final Alert parseFrom(Reader reader, Reasons.Builder reasons)
       throws NotCapException, SAXParseException {
-    return parseFromInternal(new CachedSaxInputSource(reader), parseErrors);
+    return parseFromInternal(new CachedSaxInputSource(reader), reasons);
   }
 
   /**
@@ -190,7 +290,7 @@ public class CapXmlParser {
    * @param is the input source to read the CAP XML to parse
    * @return the parsed alert
    * @throws CapException if validate is true and there are parse-related
-   * errors (e.g. couldn't parse an integer field to an int).
+   * or validation errors
    * @throws NotCapException if the XML is not CAP XML
    * @throws SAXParseException on XML parsing error
    */
@@ -203,28 +303,32 @@ public class CapXmlParser {
    * Parse the given alert.
    *
    * @param is the input source to read the CAP XML to parse
-   * @param parseErrors a list to which to add any non-fatal errors during parsing
+   * @param reasons a collection to which to add any non-fatal errors,
+   * warnings or recommendations during parsing
    * @return the parsed alert
    * @throws NotCapException if the XML is not CAP XML
    * @throws SAXParseException on XML parsing error
    */
-  public final Alert parseFrom(InputSource is, List<Reason> parseErrors)
+  public final Alert parseFrom(InputSource is, Reasons.Builder reasons)
       throws NotCapException, SAXParseException {
-    return parseFromInternal(new CachedSaxInputSource(is), parseErrors);
+    return parseFromInternal(new CachedSaxInputSource(is), reasons);
   }
 
   private Alert parseFromInternal(CachedSaxInputSource is)
       throws CapException, NotCapException, SAXParseException {
-    List<Reason> parseErrors = new ArrayList<Reason>();
-    Alert alert = parseFromInternal(is, parseErrors);
-    if (validate && !parseErrors.isEmpty()) {
-      throw new CapException(parseErrors);
+    Reasons.Builder reasonsBuilder = Reasons.newBuilder();
+    Alert alert = parseFromInternal(is, reasonsBuilder);
+    Reasons reasons = reasonsBuilder.build();
+    
+    if (validate && reasons.containsWithLevelOrHigher(Reason.Level.ERROR)) {
+      throw new CapException(reasons);
     }
+    
     return alert;
   }
 
-  protected Alert parseFromInternal(CachedSaxInputSource is, List<Reason> parseErrors)
-       throws NotCapException, SAXParseException {
+  protected Alert parseFromInternal(CachedSaxInputSource is,
+      Reasons.Builder reasons) throws NotCapException, SAXParseException {
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setNamespaceAware(true);
 
@@ -250,7 +354,7 @@ public class CapXmlParser {
     } catch (ParserConfigurationException e) {
       throw new RuntimeException(e);
     }
-    parseErrors.addAll(handler.getParseErrors());
+    reasons.addAll(handler.getReasons());
     return handler.getAlert();
   }
 
@@ -306,14 +410,12 @@ public class CapXmlParser {
     private final StringBuilder characters;
     private final Stack<Builder> builderStack;
     private final Stack<String> builderNameStack;
-    private final Stack<Integer> builderLineStack;
-    private final List<Reason> parseErrors;
+    private final Reasons.Builder reasons;
     private boolean inSignature;
     private Alert.Builder alertBuilder;
     private Alert alert;
-    private Xpath xpath;
+    private XPath xPath;
 
-    private Locator locator;
     private String localName;
 
     public CapXmlHandler(boolean useCapValidator) {
@@ -321,24 +423,26 @@ public class CapXmlParser {
       this.characters = new StringBuilder();
       this.builderStack = new Stack<Builder>();
       this.builderNameStack = new Stack<String>();
-      this.builderLineStack = new Stack<Integer>();
-      this.parseErrors = new ArrayList<Reason>();
-      this.xpath = new Xpath();
+      this.reasons = Reasons.newBuilder();
+      this.xPath = new XPath(CapUtil.getRepeatedFieldNamesFlatSet());
     }
 
     public Alert getAlert() {
       return alert;
     }
 
-    public List<Reason> getParseErrors() {
-      return Collections.unmodifiableList(parseErrors);
+    public Reasons getReasons() {
+      return reasons.build();
     }
 
     @Override
     public void error(SAXParseException e) throws SAXException {
-      parseErrors.add(
-          new Reason(e.getLineNumber(), e.getColumnNumber(), xpath.toString(),
-              Type.OTHER, e.getMessage(), localName, characters.toString()));
+      reasons.add(new Reason(
+          xPath.toString(),
+          ReasonType.OTHER,
+          e.getMessage(),
+          localName,
+          characters.toString()));
     }
 
     @Override
@@ -349,11 +453,6 @@ public class CapXmlParser {
     @Override
     public void warning(SAXParseException e) throws SAXException {
       error(e);
-    }
-
-    @Override
-    public void setDocumentLocator (Locator locator) {
-      this.locator = locator;
     }
 
     @Override
@@ -378,8 +477,7 @@ public class CapXmlParser {
         alertBuilder.setXmlns(uri);
         builderStack.push(alertBuilder);
         builderNameStack.push(localName);
-        builderLineStack.push(locator.getLineNumber());
-        xpath.push("alert", false);
+        xPath.push("alert");
       } else if ("Signature".equals(localName)) {
         inSignature = true;
       } else if (fd != null) {
@@ -387,9 +485,8 @@ public class CapXmlParser {
           // Start a new complex child element
           builderStack.push(builderStack.peek().newBuilderForField(fd));
           builderNameStack.push(localName);
-          builderLineStack.push(locator.getLineNumber());
         }
-        xpath.push(localName, fd.isRepeated());
+        xPath.push(localName);
       }
     }
 
@@ -417,28 +514,21 @@ public class CapXmlParser {
             if (builder != null) {
               alert = (Alert) builder.buildPartial();
               if (validator != null) {
-                List<Reason> reasons = validator.validate(
-                    alert, alert.getXmlns(), xpath.toString(), false);
-                for (Reason reason : reasons) {
-                  parseErrors.add(Reason.withNewLineNumber(
-                      reason, builderLineStack.peek()));
-                }
+                Reasons validationReasons = validator.validate(
+                    alert, alert.getXmlns(), xPath.toString(), false);
+                reasons.addAll(validationReasons);
               }
             }
-            builderLineStack.pop();
           } else {
             // Must be the end of a complex child element
             builderNameStack.pop();
             Builder finishedBuilder = builderStack.pop();
             fd = getField(localName);
             if (fd != null) {
-              setOrAdd(fd, getComplexValue(finishedBuilder,
-                  fd.getName(), characters.toString()));
+              setOrAdd(fd,
+                  getComplexValue(finishedBuilder, characters.toString()));
               characters.setLength(0);
-              builderLineStack.pop();
-              xpath.pop();
-            } else {
-              builderLineStack.pop();
+              xPath.pop();
             }
           }
         }
@@ -448,7 +538,7 @@ public class CapXmlParser {
       setOrAdd(fd, getPrimitiveValue(fd, characters.toString()));
       characters.setLength(0);
       if (fd != null) {
-        xpath.pop();
+        xPath.pop();
       }
     }
 
@@ -567,103 +657,51 @@ public class CapXmlParser {
       return null;
     }
 
-    MessageOrBuilder getComplexValue(Builder builder, String name, String str) {
+    MessageOrBuilder getComplexValue(Builder builder, String str) {
       MessageOrBuilder message;
       if (builder instanceof Polygon.Builder) {
-        message = toPolygon(str);
+        message = toPolygonWithErrors(str);
       } else if (builder instanceof Circle.Builder) {
         message = toCircle(str);
       } else if (builder instanceof Group.Builder) {
         message = toGroup(str);
       } else if (builder instanceof ValuePair.Builder
           && CapValidator.CAP10_XMLNS.equals(alertBuilder.getXmlns())) {
-        message = toCap10ValuePair(name, str);
+        message = toCap10ValuePair(str);
       } else {
         message = builder.buildPartial();
       }
       if (message != null && validator != null) {
-        List<Reason> reasons = validator.validate(
-            message, alertBuilder == null ? null : alertBuilder.getXmlns(),
-            xpath.toString(), false);
-        if (!builderLineStack.isEmpty()) {
-          for (Reason reason : reasons) {
-            parseErrors.add(Reason.withNewLineNumber(
-                reason, builderLineStack.peek()));
-          }
-        }
+        Reasons validationReasons = validator.validate(
+            message,
+            (alertBuilder == null) ? null : alertBuilder.getXmlns(),
+            xPath.toString(),
+            false /* Do not visit children */);
+        reasons.addAll(validationReasons);        
       }
       return message;
     }
 
-    Polygon toPolygon(String str) {
-      String[] pointStrs = str.trim().split("\\s+");
-      if (CapUtil.isEmptyOrWhitespace(str) || pointStrs.length == 0) {
+    Polygon toPolygonWithErrors(String str) {
+      Polygon polygon = toPolygon(str);
+      if (polygon == null) {
+        // Would like to handle this in the xsd, but the pattern can
+        // cause stack overflow if the number of points is large
+        reasons.add(new Reason(
+            xPath.toString(),
+            ReasonType.INVALID_POLYGON,
+            (str.length() > 50) ? str.substring(0, 47) + "..." : str));
         return null;
-      }
-      Polygon.Builder polygon = Polygon.newBuilder();
-      for (String pointStr : pointStrs) {
-        Point point = toPoint(pointStr);
-        if (point == null) {
-          // Would like to handle this in the xsd, but the pattern can
-          // cause stack overflow if the number of points is large
-          parseErrors.add(new Reason(locator.getLineNumber(),
-              locator.getColumnNumber(), xpath.toString(),
-              Type.INVALID_POLYGON,
-              str.length() > 50 ? str.substring(0, 47) + "..." : str));
-          return null;
-        } else {
-          polygon.addPoint(point);
-        }
       }
       if (polygon.getPointCount() < 4) {
         // Would like to handle this in the xsd, but the pattern can
         // cause stack overflow if the number of points is large
-        parseErrors.add(new Reason(locator.getLineNumber(),
-            locator.getColumnNumber(), xpath.toString(), Type.INVALID_POLYGON,
-            str.length() > 50 ? str.substring(0, 47) + "..." : str));
+        reasons.add(new Reason(
+            xPath.toString(),
+            ReasonType.INVALID_POLYGON,
+            (str.length() > 50) ? str.substring(0, 47) + "..." : str));
       }
-      return polygon.buildPartial();
-    }
-
-    Circle toCircle(String str) {
-      String[] pointRadius = str.trim().split("\\s+");
-      if (pointRadius.length == 0) {
-        return null;
-      }
-      if (pointRadius.length != 2) {
-        return null;
-      }
-      Point point = toPoint(pointRadius[0]);
-      if (point == null) {
-        return null;
-      }
-
-      float radius;
-      try {
-        radius = Float.parseFloat(pointRadius[1]);
-      } catch (NumberFormatException e) {
-        return null;
-      }
-
-      return Circle.newBuilder().setPoint(point).setRadius(radius)
-          .buildPartial();
-    }
-
-    Point toPoint(String point) {
-      String[] latlng = point.split(",");
-      if (latlng.length != 2) {
-        return null;
-      }
-      double latitude;
-      double longitude;
-      try {
-        latitude = Double.parseDouble(latlng[0]);
-        longitude = Double.parseDouble(latlng[1]);
-      } catch (NumberFormatException e) {
-        return null;
-      }
-      return Point.newBuilder().setLatitude(latitude).setLongitude(longitude)
-          .buildPartial();
+      return polygon;
     }
 
     /**
@@ -705,50 +743,13 @@ public class CapXmlParser {
       return group.buildPartial();
     }
 
-    ValuePair toCap10ValuePair(String name, String str) {
+    ValuePair toCap10ValuePair(String str) {
       String[] nameValue = str.split("=");
       if (nameValue.length != 2) {
         return null;
       }
       return ValuePair.newBuilder().setValueName(nameValue[0].trim())
           .setValue(nameValue[1].trim()).build();
-    }
-
-    private static class Xpath {
-      Stack<String> elements;
-      Stack<Integer> indexes;
-      Map<String, Integer> indexCounts;
-      String lastElement;
-
-      public Xpath() {
-        this.elements = new Stack<String>();
-        this.indexes = new Stack<Integer>();
-        this.indexCounts = new HashMap<String, Integer>();
-      }
-
-      public void push(String element, boolean repeated) {
-        elements.push(element);
-        indexes.push(repeated ?
-            (element.equals(lastElement) ? indexCounts.get(lastElement) + 1 : 0)
-            : null);
-      }
-
-      public void pop() {
-        lastElement = elements.pop();
-        indexCounts.put(lastElement, indexes.pop());
-      }
-
-      @Override
-      public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < elements.size(); i++) {
-          sb.append("/").append(elements.get(i));
-          if (indexes.get(i) != null) {
-            sb.append("[").append(indexes.get(i)).append("]");
-          }
-        }
-        return sb.toString();
-      }
     }
   }
 }

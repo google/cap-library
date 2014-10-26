@@ -179,8 +179,8 @@ public class MapVisualizer {
    *
    * @param heading the direction of the arc, in radians
    * @param arcLength the length of the arc, in kilometers
-   * @param latitudeInDegrees latitude of the starting point of the arc
-   * @param longitudeInDegrees longitude of the starting point of the arc
+   * @param latitude latitude of the starting point of the arc
+   * @param longitude longitude of the starting point of the arc
    * @return the end point
    */
   private JSONArray getRadialEndpoint(

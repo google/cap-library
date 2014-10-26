@@ -16,6 +16,8 @@
 
 package com.google.publicalerts.cap;
 
+import com.google.common.collect.Lists;
+
 import org.w3c.dom.Document;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXParseException;
@@ -41,7 +43,6 @@ import java.security.PublicKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.Certificate;
 import java.security.cert.CertificateException;
-import java.util.Collections;
 
 import javax.xml.crypto.MarshalException;
 import javax.xml.crypto.dsig.CanonicalizationMethod;
@@ -198,7 +199,7 @@ public class XmlSigner {
       String root = "";
       reference = fac.newReference(root,
           fac.newDigestMethod(DigestMethod.SHA1, null),
-          Collections.singletonList(fac.newTransform(Transform.ENVELOPED,
+          Lists.newArrayList(fac.newTransform(Transform.ENVELOPED,
               (TransformParameterSpec) null)), null, null);
 
       // Now create the SignedInfo object
@@ -206,7 +207,7 @@ public class XmlSigner {
           CanonicalizationMethod.INCLUSIVE_WITH_COMMENTS,
           (C14NMethodParameterSpec) null),
           fac.newSignatureMethod(SignatureMethod.DSA_SHA1, null),
-          Collections.singletonList(reference));
+          Lists.newArrayList(reference));
     } catch (NoSuchAlgorithmException e) {
       throw new RuntimeException(e);
     } catch (InvalidAlgorithmParameterException e) {
@@ -222,8 +223,7 @@ public class XmlSigner {
     } catch (KeyException e) {
       throw new RuntimeException(e);
     }
-    KeyInfo keyInfo = keyInfoFactory.newKeyInfo(
-        Collections.singletonList(keyValue));
+    KeyInfo keyInfo = keyInfoFactory.newKeyInfo(Lists.newArrayList(keyValue));
 
     // Now the XML Signature object
     XMLSignature signature = fac.newXMLSignature(signedInfo, keyInfo);

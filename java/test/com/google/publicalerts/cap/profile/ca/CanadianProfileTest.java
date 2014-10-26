@@ -20,9 +20,9 @@ import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.Alert.MsgType;
 import com.google.publicalerts.cap.Area;
 import com.google.publicalerts.cap.Info;
+import com.google.publicalerts.cap.Reason;
 import com.google.publicalerts.cap.profile.CapProfileTestCase;
-import com.google.publicalerts.cap.profile.ca.CanadianProfile.ErrorType;
-import com.google.publicalerts.cap.profile.ca.CanadianProfile.RecommendationType;
+import com.google.publicalerts.cap.profile.ca.CanadianProfile.ReasonType;
 
 /**
  * Tests for {@link CanadianProfile}.
@@ -44,40 +44,49 @@ public class CanadianProfileTest extends CapProfileTestCase {
     runTestParseFrom("earthquake.cap");
   }
 
-  public void testCheckForErrors() throws Exception {
+  public void testValidate_errors() throws Exception {
     Alert.Builder alert = loadAlert("canada.cap").toBuilder();
-    assertNoErrors(alert);
+    assertNoReasons(alert, Reason.Level.ERROR);
 
     alert.clearCode();
-    assertErrors(alert, ErrorType.VERSION_CODE_REQUIRED);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert", ReasonType.VERSION_CODE_REQUIRED));
 
     alert.setMsgType(MsgType.UPDATE)
         .clearReferences();
-    assertErrors(alert, ErrorType.VERSION_CODE_REQUIRED,
-        ErrorType.UPDATE_OR_CANCEL_MUST_REFERENCE);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert", ReasonType.VERSION_CODE_REQUIRED),
+        new Reason("/alert/msgType",
+            ReasonType.UPDATE_OR_CANCEL_MUST_REFERENCE));
 
     alert = loadAlert("canada.cap").toBuilder();
     alert.getInfoBuilder(0).clearEventCode();
-    assertErrors(alert, ErrorType.EVENT_CODES_MUST_MATCH,
-        ErrorType.RECOGNIZED_EVENT_CODE_REQUIRED);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert/info[1]", ReasonType.EVENT_CODES_MUST_MATCH),
+        new Reason("/alert/info[0]",
+            ReasonType.RECOGNIZED_EVENT_CODE_REQUIRED));
 
     alert = loadAlert("canada.cap").toBuilder();
     alert.getInfoBuilder(1).getAreaBuilder(0).clearGeocode();
-    assertErrors(alert, ErrorType.AREA_GEOCODE_IS_REQUIRED);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert/info[1]/area[0]",
+            ReasonType.AREA_GEOCODE_IS_REQUIRED));
 
     alert.getInfoBuilder(1).clearArea();
-    assertErrors(alert, ErrorType.AREA_IS_REQUIRED);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert/info[1]", ReasonType.AREA_IS_REQUIRED));
 
     alert = loadAlert("canada.cap").toBuilder();
     alert.clearInfo();
-    assertErrors(alert, ErrorType.IS_REQUIRED);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert", ReasonType.IS_REQUIRED));
     alert.setMsgType(MsgType.ACK);
-    assertNoErrors(alert);
+    assertReasons(alert, Reason.Level.ERROR);
   }
 
-  public void testCheckForRecommendations() throws Exception {
+  public void testValidate_recommendations() throws Exception {
     Alert.Builder alert = loadAlert("canada.cap").toBuilder();
-    assertNoRecommendations(alert);
+    assertNoReasons(alert, Reason.Level.RECOMMENDATION);
 
     alert = loadAlert("canada.cap").toBuilder();
     alert.getInfoBuilder(0)
@@ -86,19 +95,24 @@ public class CanadianProfileTest extends CapProfileTestCase {
         .clearSenderName()
         .clearResponseType()
         .clearInstruction();
-    assertRecommendations(alert,
-        RecommendationType.ENGLISH_AND_FRENCH,
-        RecommendationType.EXPIRES_STRONGLY_RECOMMENDED,
-        RecommendationType.SENDER_NAME_STRONGLY_RECOMMENDED,
-        RecommendationType.RESPONSE_TYPE_STRONGLY_RECOMMENDED,
-        RecommendationType.INSTRUCTION_STRONGLY_RECOMMENDED);
+    assertReasons(alert, Reason.Level.RECOMMENDATION,
+        new Reason("/alert", ReasonType.ENGLISH_AND_FRENCH),
+        new Reason("/alert/info[0]",
+            ReasonType.EXPIRES_STRONGLY_RECOMMENDED),
+        new Reason("/alert/info[0]",
+            ReasonType.SENDER_NAME_STRONGLY_RECOMMENDED),
+        new Reason("/alert/info[0]",
+            ReasonType.RESPONSE_TYPE_STRONGLY_RECOMMENDED),
+        new Reason("/alert/info[0]",
+            ReasonType.INSTRUCTION_STRONGLY_RECOMMENDED));
 
     alert = loadAlert("canada.cap").toBuilder();
     Info.Builder info = alert.getInfoBuilder(0);
     for (Area.Builder area : info.getAreaBuilderList()) {
       area.clearPolygon().clearCircle();
     }
-    assertRecommendations(alert,
-        RecommendationType.CIRCLE_POLYGON_ENCOURAGED);
+    assertReasons(alert, Reason.Level.RECOMMENDATION,
+        new Reason("/alert/info[0]/area[0]",
+            ReasonType.CIRCLE_POLYGON_ENCOURAGED));
   }
 }

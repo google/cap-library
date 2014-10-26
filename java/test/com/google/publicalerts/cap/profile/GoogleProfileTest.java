@@ -22,8 +22,8 @@ import com.google.publicalerts.cap.Area;
 import com.google.publicalerts.cap.Circle;
 import com.google.publicalerts.cap.Info;
 import com.google.publicalerts.cap.Point;
-import com.google.publicalerts.cap.profile.GoogleProfile.ErrorType;
-import com.google.publicalerts.cap.profile.GoogleProfile.RecommendationType;
+import com.google.publicalerts.cap.Reason;
+import com.google.publicalerts.cap.profile.GoogleProfile.ReasonType;
 
 /**
  * Tests for {@link GoogleProfile}.
@@ -45,34 +45,39 @@ public class GoogleProfileTest extends CapProfileTestCase {
     runTestParseFrom("no_optional_fields.cap");
   }
 
-  public void testCheckForErrors() throws Exception {
+  public void testValidate_errors() throws Exception {
     Alert.Builder alert = loadAlert("australia.cap").toBuilder();
-    assertNoErrors(alert);
+    assertNoReasons(alert, Reason.Level.ERROR);
 
     alert.setMsgType(MsgType.UPDATE)
         .clearReferences();
-    assertErrors(alert, ErrorType.UPDATE_OR_CANCEL_MUST_REFERENCE);
+    assertReasons(alert, Reason.Level.ERROR, new Reason("/alert/msgType",
+        ReasonType.UPDATE_OR_CANCEL_MUST_REFERENCE));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.clearInfo();
-    assertErrors(alert, ErrorType.INFO_IS_REQUIRED);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert", ReasonType.INFO_IS_REQUIRED));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).clearCategory();
-    assertErrors(alert, ErrorType.CATEGORIES_MUST_MATCH);
+    assertReasons(alert, Reason.Level.ERROR, new Reason(
+        "/alert/info[1]/category", ReasonType.CATEGORIES_MUST_MATCH));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1)
         .setEffective("2012-05-08T12:34:56-04:00")
         .setExpires("2012-05-08T12:34:56-04:00");
     alert.getInfoBuilder(1).getEventCodeBuilder(0).setValueName("foo");
-    assertErrors(alert, ErrorType.EVENT_CODES_MUST_MATCH);
+    assertReasons(alert, Reason.Level.ERROR, new Reason(
+        "/alert/info[1]/eventCode", ReasonType.EVENT_CODES_MUST_MATCH));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1)
         .setEffective("2012-05-08T12:34:57-04:00")
         .setExpires("2012-05-08T12:34:56-04:00");
-    assertErrors(alert, ErrorType.EFFECTIVE_NOT_AFTER_EXPIRES);
+    assertReasons(alert, Reason.Level.ERROR, new Reason(
+        "/alert/info[1]/effective", ReasonType.EFFECTIVE_NOT_AFTER_EXPIRES));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).clearDescription()
@@ -81,28 +86,32 @@ public class GoogleProfileTest extends CapProfileTestCase {
         .clearUrgency()
         .clearSeverity()
         .clearCertainty();
-    assertErrors(alert, ErrorType.DESCRIPTION_IS_REQUIRED,
-        ErrorType.WEB_IS_REQUIRED,
-        ErrorType.EXPIRES_IS_REQUIRED,
-        ErrorType.URGENCY_IS_REQUIRED,
-        ErrorType.SEVERITY_IS_REQUIRED,
-        ErrorType.CERTAINTY_IS_REQUIRED);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert/info[1]", ReasonType.DESCRIPTION_IS_REQUIRED),
+        new Reason("/alert/info[1]", ReasonType.WEB_IS_REQUIRED),
+        new Reason("/alert/info[1]", ReasonType.EXPIRES_IS_REQUIRED),
+        new Reason("/alert/info[1]", ReasonType.URGENCY_IS_REQUIRED),
+        new Reason("/alert/info[1]", ReasonType.SEVERITY_IS_REQUIRED),
+        new Reason("/alert/info[1]", ReasonType.CERTAINTY_IS_REQUIRED));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).clearArea();
-    assertErrors(alert, ErrorType.AREA_IS_REQUIRED);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert/info[1]", ReasonType.AREA_IS_REQUIRED));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).getAreaBuilder(0)
         .clearGeocode()
         .clearPolygon()
         .clearCircle();
-    assertErrors(alert, ErrorType.CIRCLE_POLYGON_OR_GEOCODE_IS_REQUIRED);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert/info[1]/area[0]",
+            ReasonType.CIRCLE_POLYGON_OR_GEOCODE_IS_REQUIRED));
   }
 
-  public void testCheckForRecommendations() throws Exception {
+  public void testValidate_recommendations() throws Exception {
     Alert.Builder alert = loadValidAustraliaCap();
-    assertNoRecommendations(alert);
+    assertNoReasons(alert, Reason.Level.RECOMMENDATION);
 
     alert.setSent("2002-01-01T00:00:00+00:00")
         .getInfoBuilder(0)
@@ -110,11 +119,14 @@ public class GoogleProfileTest extends CapProfileTestCase {
         .setEffective("2003-01-01T00:00:00+00:00")
         .setOnset("2004-01-01T00:00:00+00:00")
         .setExpires("2005-01-01T00:00:00+00:00");
-    assertRecommendations(alert,
-        RecommendationType.SENT_INCLUDE_TIMEZONE_OFFSET,
-        RecommendationType.EFFECTIVE_INCLUDE_TIMEZONE_OFFSET,
-        RecommendationType.ONSET_INCLUDE_TIMEZONE_OFFSET,
-        RecommendationType.EXPIRES_INCLUDE_TIMEZONE_OFFSET);
+    assertReasons(alert, Reason.Level.INFO,
+        new Reason("/alert/sent", ReasonType.SENT_INCLUDES_UTC_TIMEZONE),
+        new Reason("/alert/info[0]/effective",
+            ReasonType.EFFECTIVE_INCLUDES_UTC_TIMEZONE),
+        new Reason("/alert/info[0]/onset",
+            ReasonType.ONSET_INCLUDES_UTC_TIMEZONE),
+        new Reason("/alert/info[0]/expires",
+            ReasonType.EXPIRES_INCLUDES_UTC_TIMEZONE));
 
     alert = loadAlert("australia.cap").toBuilder();
     String longHeadline = "This is a headline that is longer than 140 " +
@@ -134,17 +146,26 @@ public class GoogleProfileTest extends CapProfileTestCase {
             .setPoint(Point.newBuilder().setLatitude(0).setLongitude(0))
             .setRadius(0));
     alert.getInfoBuilder(1).setContact("Call 911");
-    assertRecommendations(alert,
-        RecommendationType.SENDER_NAME_STRONGLY_RECOMMENDED,
-        RecommendationType.RESPONSE_TYPE_STRONGLY_RECOMMENDED,
-        RecommendationType.INSTRUCTION_STRONGLY_RECOMMENDED,
-        RecommendationType.HEADLINE_TOO_LONG,
-        RecommendationType.HEADLINE_AND_DESCRIPTION_SHOULD_DIFFER,
-        RecommendationType.UNKNOWN_URGENCY_DISCOURAGED,
-        RecommendationType.UNKNOWN_SEVERITY_DISCOURAGED,
-        RecommendationType.UNKNOWN_CERTAINTY_DISCOURAGED,
-        RecommendationType.CONTACT_IS_RECOMMENDED,
-        RecommendationType.NONZERO_CIRCLE_RADIUS_RECOMMENDED);
+    assertReasons(alert, Reason.Level.RECOMMENDATION,
+        new Reason("/alert/info[0]",
+            ReasonType.SENDER_NAME_STRONGLY_RECOMMENDED),
+        new Reason("/alert/info[0]",
+            ReasonType.RESPONSE_TYPE_STRONGLY_RECOMMENDED),
+        new Reason("/alert/info[0]",
+            ReasonType.INSTRUCTION_STRONGLY_RECOMMENDED),
+        new Reason("/alert/info[0]/headline",
+            ReasonType.HEADLINE_TOO_LONG),
+        new Reason("/alert/info[0]/headline",
+            ReasonType.HEADLINE_AND_DESCRIPTION_SHOULD_DIFFER),
+        new Reason("/alert/info[0]/urgency",
+            ReasonType.UNKNOWN_URGENCY_DISCOURAGED),
+        new Reason("/alert/info[0]/severity",
+            ReasonType.UNKNOWN_SEVERITY_DISCOURAGED),
+        new Reason("/alert/info[0]/certainty",
+            ReasonType.UNKNOWN_CERTAINTY_DISCOURAGED),
+        new Reason("/alert/info[0]", ReasonType.CONTACT_IS_RECOMMENDED),
+        new Reason("/alert/info[0]/area[0]/circle[1]",
+            ReasonType.NONZERO_CIRCLE_RADIUS_RECOMMENDED));
 
     alert = loadValidAustraliaCap();
     Info.Builder info = alert.getInfoBuilder(0);
@@ -153,28 +174,37 @@ public class GoogleProfileTest extends CapProfileTestCase {
     for (Area.Builder area : info.getAreaBuilderList()) {
       area.clearPolygon().clearCircle();
     }
-    assertRecommendations(alert,
-        RecommendationType.DESCRIPTION_AND_INSTRUCTION_SHOULD_DIFFER,
-        RecommendationType.CIRCLE_POLYGON_ENCOURAGED);
+    assertReasons(alert, Reason.Level.RECOMMENDATION,
+        new Reason("/alert/info[0]/description",
+            ReasonType.DESCRIPTION_AND_INSTRUCTION_SHOULD_DIFFER),
+        new Reason("/alert/info[0]/area[0]",
+            ReasonType.CIRCLE_POLYGON_ENCOURAGED));
     
     alert = loadValidAustraliaCap();
     alert.setStatus(Alert.Status.TEST);
-    assertRecommendations(alert, RecommendationType.TEST_ALERT_DISCOURAGED);
+    assertReasons(alert, Reason.Level.RECOMMENDATION,
+        new Reason("/alert/status", ReasonType.TEST_ALERT_DISCOURAGED));
 
     // Empty <valueName> field
     alert = loadValidAustraliaCap();
     alert.getInfoBuilder(1).getAreaBuilder(0).getGeocodeBuilder(0).setValueName("");
-    assertRecommendations(alert, RecommendationType.EMPTY_GEOCODE_FIELD);
+    assertReasons(alert, Reason.Level.RECOMMENDATION,
+        new Reason("/alert/info[1]/area[0]/geocode[0]",
+            ReasonType.EMPTY_GEOCODE_FIELD));
 
     // Empty <value> field
     alert = loadValidAustraliaCap();
     alert.getInfoBuilder(0).getAreaBuilder(0).getGeocodeBuilder(0).setValue("");
-    assertRecommendations(alert, RecommendationType.EMPTY_GEOCODE_FIELD);
+    assertReasons(alert, Reason.Level.RECOMMENDATION,
+        new Reason("/alert/info[0]/area[0]/geocode[0]",
+            ReasonType.EMPTY_GEOCODE_FIELD));
 
     // Different <event> with same <language> in separate <info> blocks
     alert = loadValidAustraliaCap();
     alert.getInfoBuilder(1).setEvent("foo");
-    assertRecommendations(alert, RecommendationType.EVENTS_IN_SAME_LANGUAGE_SHOULD_MATCH);
+    assertReasons(alert, Reason.Level.RECOMMENDATION,
+        new Reason("/alert/info[1]/event",
+            ReasonType.EVENTS_IN_SAME_LANGUAGE_SHOULD_MATCH));
   }
 
  /**

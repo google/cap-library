@@ -16,25 +16,23 @@
 
 package com.google.publicalerts.cap.profile.au;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.AlertOrBuilder;
 import com.google.publicalerts.cap.Area;
-import com.google.publicalerts.cap.CapException;
-import com.google.publicalerts.cap.CapException.Reason;
 import com.google.publicalerts.cap.CapUtil;
 import com.google.publicalerts.cap.Info;
+import com.google.publicalerts.cap.Reason;
+import com.google.publicalerts.cap.Reasons;
 import com.google.publicalerts.cap.ValuePair;
 import com.google.publicalerts.cap.profile.AbstractCapProfile;
 import com.google.publicalerts.cap.profile.CsvFileIterator;
 import com.google.publicalerts.cap.profile.CsvFileIterator.CsvRow;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
@@ -70,12 +68,11 @@ public class AustralianProfile extends AbstractCapProfile {
   private static final Map<String, EventListEntry> EVENT_BY_EVENT_CODE_MAP =
       loadEventList("AUeventLIST1.0.csv");
 
-  private static final Set<String> RECOGNIZED_GEOCODE_VALUES = Collections.unmodifiableSet(
-      new HashSet<String>(Arrays.asList(new String[] {
-          "http://www.psma.com.au/?product=g-naf",
-          "http://www.iso.org/iso/country_codes.html",
-          "http://www.ga.gov.au/place-name/",
-          "http://www.psma.com.au/?product=postcode-boundaries"})));
+  private static final Set<String> RECOGNIZED_GEOCODE_VALUES = ImmutableSet.of(
+      "http://www.psma.com.au/?product=g-naf",
+      "http://www.iso.org/iso/country_codes.html",
+      "http://www.ga.gov.au/place-name/",
+      "http://www.psma.com.au/?product=postcode-boundaries");
 
   public AustralianProfile() {
     super();
@@ -112,9 +109,19 @@ public class AustralianProfile extends AbstractCapProfile {
   }
 
   @Override
-  public List<Reason> checkForErrors(AlertOrBuilder alert) {
-    List<Reason> reasons = new ArrayList<Reason>();
-
+  public Reasons validate(AlertOrBuilder alert) {
+    Reasons.Builder reasons = Reasons.newBuilder();
+    
+    checkForErrors(alert, reasons);
+    checkForRecommendations(alert, reasons);
+    
+    return reasons.build();
+  }
+  
+  /**
+   * Checks the Alert for errors and populates the collection provided as input.
+   */
+  private void checkForErrors(AlertOrBuilder alert, Reasons.Builder reasons) {
     // The CAP-AU version code is required
     boolean hasVersionCode = false;
     for (String code : alert.getCodeList()) {
@@ -123,8 +130,8 @@ public class AustralianProfile extends AbstractCapProfile {
       }
     }
     if (!hasVersionCode) {
-      reasons.add(new Reason("/alert",
-          ErrorType.VERSION_CODE_REQUIRED, getCode()));
+      reasons.add(
+          new Reason("/alert", ReasonType.VERSION_CODE_REQUIRED, getCode()));
     }
 
     // For alert messages intended for public distribution, a <msgType> of
@@ -133,7 +140,7 @@ public class AustralianProfile extends AbstractCapProfile {
     if (alert.getMsgType() != Alert.MsgType.ACK
         && alert.getMsgType() != Alert.MsgType.ERROR
         && alert.getInfoCount() == 0) {
-      reasons.add(new Reason("/alert", ErrorType.INFO_IS_REQUIRED));
+      reasons.add(new Reason("/alert", ReasonType.INFO_IS_REQUIRED));
     }
 
     // An Update or Cancel message should minimally include
@@ -142,32 +149,32 @@ public class AustralianProfile extends AbstractCapProfile {
         || alert.getMsgType() == Alert.MsgType.CANCEL)
         && alert.getReferences().getValueCount() == 0) {
       reasons.add(new Reason("/alert/msgType",
-          ErrorType.UPDATE_OR_CANCEL_MUST_REFERENCE));
+          ReasonType.UPDATE_OR_CANCEL_MUST_REFERENCE));
     }
 
     Set<Info.Category> categories = null;
     Set<ValuePair> eventCodes = null;
     ValuePair authorizedEventCode = null;
-    Map<String, String> eventByLanguage = new HashMap<String, String>();
+    Map<String, String> eventByLanguage = Maps.newHashMap();
     for (int i = 0; i < alert.getInfoCount(); i++) {
       Info info = alert.getInfo(i);
       String xpath = "/alert/info[" + i + "]";
 
       // All infos must have same <category> and <eventCode> values
-      Set<Info.Category> cats = new HashSet<Info.Category>();
+      Set<Info.Category> cats = Sets.newHashSet();
       cats.addAll(info.getCategoryList());
       if (categories == null) {
         categories = cats;
       } else if (!categories.equals(cats)) {
-        reasons.add(new Reason(xpath, ErrorType.CATEGORIES_MUST_MATCH));
+        reasons.add(new Reason(xpath, ReasonType.CATEGORIES_MUST_MATCH));
       }
 
-      Set<ValuePair> ecs = new HashSet<ValuePair>();
+      Set<ValuePair> ecs = Sets.newHashSet();
       ecs.addAll(info.getEventCodeList());
       if (eventCodes == null) {
         eventCodes = ecs;
       } else if (!eventCodes.equals(ecs)) {
-        reasons.add(new Reason(xpath, ErrorType.EVENT_CODES_MUST_MATCH));
+        reasons.add(new Reason(xpath, ReasonType.EVENT_CODES_MUST_MATCH));
       }
 
       for (ValuePair eventCode : info.getEventCodeList()) {
@@ -176,25 +183,25 @@ public class AustralianProfile extends AbstractCapProfile {
             authorizedEventCode = eventCode;
           } else if (!authorizedEventCode.equals(eventCode)) {
             reasons.add(new Reason(xpath,
-                ErrorType.ONE_AUTHORIZED_EVENT_CODE_PER_ALERT));
+                ReasonType.ONE_AUTHORIZED_EVENT_CODE_PER_ALERT));
           }
         }
       }
 
       if (authorizedEventCode == null) {
-        reasons.add(new Reason(xpath,
-            ErrorType.ONE_AUTHORIZED_EVENT_CODE_PER_ALERT));
+        reasons.add(
+            new Reason(xpath, ReasonType.ONE_AUTHORIZED_EVENT_CODE_PER_ALERT));
       } else {
         EventListEntry eventListEntry =
             EVENT_BY_EVENT_CODE_MAP.get(authorizedEventCode.getValue());
         if (eventListEntry == null) {
           reasons.add(new Reason(xpath,
-              ErrorType.UNRECOGNIZED_EVENT_CODE,
+              ReasonType.UNRECOGNIZED_EVENT_CODE,
               authorizedEventCode.getValue()));
         } else if (!info.getEvent().equals(eventListEntry.tierIEvent)
             && !info.getEvent().equals(eventListEntry.tierIIEvent)) {
           reasons.add(new Reason(xpath,
-              ErrorType.EVENT_AND_EVENT_CODE_MUST_MATCH,
+              ReasonType.EVENT_AND_EVENT_CODE_MUST_MATCH,
               authorizedEventCode.getValue(), info.getEvent(),
               eventListEntry.tierIEvent + ("".equals(eventListEntry.tierIIEvent)
                   ? "" : " or " + eventListEntry.tierIIEvent)));
@@ -203,8 +210,8 @@ public class AustralianProfile extends AbstractCapProfile {
 
       if (eventByLanguage.containsKey(info.getLanguage())) {
         if (!info.getEvent().equals(eventByLanguage.get(info.getLanguage()))) {
-          reasons.add(new Reason(xpath,
-              ErrorType.EVENTS_IN_SAME_LANGUAGE_MUST_MATCH));
+          reasons.add(
+              new Reason(xpath, ReasonType.EVENTS_IN_SAME_LANGUAGE_MUST_MATCH));
         }
       } else {
         eventByLanguage.put(info.getLanguage(), info.getEvent());
@@ -213,37 +220,38 @@ public class AustralianProfile extends AbstractCapProfile {
       // Do not use <effective> when <msgType> is Cancel
       if (alert.getMsgType() == Alert.MsgType.CANCEL && info.hasEffective()) {
         reasons.add(new Reason(xpath,
-            ErrorType.DO_NOT_USE_EFFECTIVE_WITH_MSGTYPE_CANCEL));
+            ReasonType.DO_NOT_USE_EFFECTIVE_WITH_MSGTYPE_CANCEL));
       }
 
       // <area> blocks are required
       if (info.getAreaCount() == 0) {
-        reasons.add(new Reason(xpath, ErrorType.AREA_IS_REQUIRED));
+        reasons.add(new Reason(xpath, ReasonType.AREA_IS_REQUIRED));
       }
     }
-
-    return reasons;
   }
 
-  @Override
-  public List<Reason> checkForRecommendations(AlertOrBuilder alert) {
-    List<Reason> reasons = new ArrayList<Reason>();
-
+  /**
+   * Checks the Alert for recommendations and populates the collection provided
+   * as input.
+   */
+  private void checkForRecommendations(
+      AlertOrBuilder alert, Reasons.Builder reasons) {
+    
     // <sender> RECOMMENDED that a valid address in the format
     // example@domain that identifies the agency that assembled the message,
     // or another agency that originated the message be used.
     // Use of Third Level Domain (example@bom.gov.au) or Fourth Level Domain
     // (example.ses.sa.gov.au) acceptable.
     if (!EMAIL_PATTERN.matcher(alert.getSender()).matches()) {
-      reasons.add(new Reason("/alert/sender",
-          RecommendationType.SENDER_SHOULD_BE_EMAIL));
+      reasons.add(
+          new Reason("/alert/sender", ReasonType.SENDER_SHOULD_BE_EMAIL));
     }
 
     // <status> "Test" treated as log-only event and not be broadcast as a
     // valid alert
     if (alert.getStatus() == Alert.Status.TEST) {
       reasons.add(new Reason("/alert/status",
-          RecommendationType.TEST_ALERT_WILL_NOT_BE_BROADCAST));
+          ReasonType.TEST_ALERT_WILL_NOT_BE_BROADCAST));
     }
 
     // TODO(shakusa) Timezones should be local to the area of the alert
@@ -263,36 +271,36 @@ public class AustralianProfile extends AbstractCapProfile {
         }
       }
       if (!hasRecognizedEventCode) {
-        reasons.add(new Reason(xpath,
-            RecommendationType.RECOGNIZED_EVENT_CODE_NOT_USED));
+        reasons.add(
+            new Reason(xpath, ReasonType.RECOGNIZED_EVENT_CODE_NOT_USED));
       }
 
       // An <expires> value is strongly recommended
       if (!info.hasExpires()
           || CapUtil.isEmptyOrWhitespace(info.getExpires())) {
-        reasons.add(new Reason(xpath,
-            RecommendationType.EXPIRES_STRONGLY_RECOMMENDED));
+        reasons.add(
+            new Reason(xpath, ReasonType.EXPIRES_STRONGLY_RECOMMENDED));
       }
 
       // <senderName> is strongly recommended to be populated as
       // publicly-recognisable name of the agency issuing the alert. It is
       // expected to be used for presentation purposes.
       if (CapUtil.isEmptyOrWhitespace(info.getSenderName())) {
-        reasons.add(new Reason(xpath,
-            RecommendationType.SENDER_NAME_STRONGLY_RECOMMENDED));
+        reasons.add(
+            new Reason(xpath, ReasonType.SENDER_NAME_STRONGLY_RECOMMENDED));
       }
 
       // <responseType> is recommended along with corresponding <instruction>
       // Allows actions to be available when instructions are not available or
       // not available in all languages.
       if (info.getResponseTypeCount() == 0) {
-        reasons.add(new Reason(xpath,
-            RecommendationType.RESPONSE_TYPE_STRONGLY_RECOMMENDED));
+        reasons.add(
+            new Reason(xpath, ReasonType.RESPONSE_TYPE_STRONGLY_RECOMMENDED));
       }
 
       if (CapUtil.isEmptyOrWhitespace(info.getInstruction())) {
-        reasons.add(new Reason(xpath,
-            RecommendationType.INSTRUCTION_STRONGLY_RECOMMENDED));
+        reasons.add(
+            new Reason(xpath, ReasonType.INSTRUCTION_STRONGLY_RECOMMENDED));
       }
 
       // Indicate when an update message contains non-substantive
@@ -301,14 +309,10 @@ public class AustralianProfile extends AbstractCapProfile {
 
       // Preferential treatment of <polygon> and <circle>
       boolean hasPolygonOrCircle = false;
-      int polygonCircleGeocodeAreaIndex = -1;
       for (int j = 0; j < info.getAreaCount(); j++) {
         Area area = info.getArea(j);
         if (area.getCircleCount() != 0 || area.getPolygonCount() != 0) {
           hasPolygonOrCircle = true;
-          if (area.getGeocodeCount() != 0) {
-            polygonCircleGeocodeAreaIndex = j;
-          }
         }
         boolean hasValidGeocode = false;
         // 2.4. area should include a recognised <geocode> value.
@@ -320,24 +324,23 @@ public class AustralianProfile extends AbstractCapProfile {
         }
         if (!hasValidGeocode) {
           reasons.add(new Reason(xpath + "/area[" + j + "]",
-              RecommendationType.AREA_GEOCODE_IS_RECOMMENDED));
+              ReasonType.AREA_GEOCODE_IS_RECOMMENDED));
         }
       }
 
       if (!hasPolygonOrCircle && info.getAreaCount() > 0) {
         reasons.add(new Reason(xpath + "/area[0]",
-            RecommendationType.CIRCLE_POLYGON_ENCOURAGED));
+            ReasonType.CIRCLE_POLYGON_ENCOURAGED));
       }
     }
-
-    return reasons;
   }
 
   private static Map<String, EventListEntry> loadEventList(String fileName) {
     Iterator<CsvRow> itr = new CsvFileIterator(
         AustralianProfile.class.getResourceAsStream(fileName));
 
-    Map<String, EventListEntry> map = new HashMap<String, EventListEntry>();
+    ImmutableMap.Builder<String, EventListEntry> mapBuilder =
+        ImmutableMap.builder();
     while (itr.hasNext()) {
       CsvRow row = itr.next();
 
@@ -354,12 +357,12 @@ public class AustralianProfile extends AbstractCapProfile {
       String categoriesStr = row.getAt(4, "");
       String authoritiesToModifyStr = row.getAt(5, "");
 
-      Set<Info.Category> categories = new HashSet<Info.Category>();
+      Set<Info.Category> categories = Sets.newHashSet();
       for (String cat : categoriesStr.split(",")) {
         categories.add(Info.Category.valueOf(cat.trim().toUpperCase()));
       }
 
-      Set<Integer> authoritiesToModify = new HashSet<Integer>();
+      Set<Integer> authoritiesToModify = Sets.newHashSet();
       for (String auth : authoritiesToModifyStr.split(",")) {
         if (!"".equals(auth)) {
           authoritiesToModify.add(Integer.parseInt(auth));
@@ -367,11 +370,11 @@ public class AustralianProfile extends AbstractCapProfile {
       }
 
       if (!"".equals(eventCode.trim())) {
-        map.put(eventCode, new EventListEntry(serialNumber, tierIEvent,
+        mapBuilder.put(eventCode, new EventListEntry(serialNumber, tierIEvent,
             tierIIEvent, eventCode, categories, authoritiesToModify));
       }
     }
-    return Collections.unmodifiableMap(map);
+    return mapBuilder.build();
   }
 
   static class EventListEntry {
@@ -395,83 +398,110 @@ public class AustralianProfile extends AbstractCapProfile {
   }
 
   // TODO(shakusa) Localize messages
-  public enum ErrorType implements CapException.ReasonType {
-    VERSION_CODE_REQUIRED("<code>{0}</code> required"),
-    UPDATE_OR_CANCEL_MUST_REFERENCE("All related messages that have not yet " +
-    "expired MUST be referenced for \"Update\" and \"Cancel\" messages."),
+  enum ReasonType implements Reason.Type {
+    // Errors
+    VERSION_CODE_REQUIRED(
+        Reason.Level.ERROR,
+        "<code>{0}</code> required."),
+    UPDATE_OR_CANCEL_MUST_REFERENCE(
+        Reason.Level.ERROR,
+        "All related messages that have not yet expired MUST be referenced for "
+            + "\"Update\" and \"Cancel\" messages."),
     CATEGORIES_MUST_MATCH(
-        "All <info> blocks must contain the same <category>s"),
+        Reason.Level.ERROR,
+        "All <info> blocks must contain the same <category>s."),
     EVENT_CODES_MUST_MATCH(
-        "All <info> blocks must contain the same <eventCode>s"),
+        Reason.Level.ERROR,
+        "All <info> blocks must contain the same <eventCode>s."),
     ONE_AUTHORIZED_EVENT_CODE_PER_ALERT(
-        "Each alert message shall contain one single value from an "
-            + "authorised <eventCode> list in order to avoid any potential "
-            + "confusion or difficulty having a single alert message "
-            + "containing multiple events. Each such <eventCode> should have "
-            + "<valueName> " + CAP_AU_EVENT_CODE_VALUE_NAME),
-    EVENTS_IN_SAME_LANGUAGE_MUST_MATCH("All <info> blocks with the same " +
-        "<langauge> must contain the same <event>"),
-    UNRECOGNIZED_EVENT_CODE("<eventCode> {0} does not appear in " +
-        "AUeventLIST1.0"),
-    EVENT_AND_EVENT_CODE_MUST_MATCH("<eventCode> {0} does not match " +
-        "<event> {1}. Expected {2}"),
-    INFO_IS_REQUIRED("At least one <info> must be present"),
-    DO_NOT_USE_EFFECTIVE_WITH_MSGTYPE_CANCEL("Do not use <effective> " +
-        "when <msgType> is 'Cancel'"),
-    AREA_IS_REQUIRED("At least one <area> must be present"),
-    ;
-    private final String message;
+        Reason.Level.ERROR,
+        "Each alert message shall contain one single value from an authorised "
+            + "<eventCode> list in order to avoid any potential confusion or "
+            + "difficulty having a single alert message containing multiple "
+            + "events. Each such <eventCode> should have <valueName> "
+            + CAP_AU_EVENT_CODE_VALUE_NAME + "."),
+    EVENTS_IN_SAME_LANGUAGE_MUST_MATCH(
+        Reason.Level.ERROR,
+        "All <info> blocks with the same <langauge> must contain the same "
+            + "<event>"),
+    UNRECOGNIZED_EVENT_CODE(
+        Reason.Level.ERROR,
+        "<eventCode> {0} does not appear in AUeventLIST1.0."),
+    EVENT_AND_EVENT_CODE_MUST_MATCH(
+        Reason.Level.ERROR,
+        "<eventCode> {0} does not match <event> {1}. Expected {2}."),
+    INFO_IS_REQUIRED(
+        Reason.Level.ERROR,
+        "At least one <info> must be present."),
+    DO_NOT_USE_EFFECTIVE_WITH_MSGTYPE_CANCEL(
+        Reason.Level.ERROR,
+        "Do not use <effective> when <msgType> is 'Cancel'."),
+    AREA_IS_REQUIRED(
+        Reason.Level.ERROR,
+        "At least one <area> must be present."),
 
-    private ErrorType(String message) {
-      this.message = message;
-    }
-
-    @Override
-    public String getMessage(Locale locale) {
-      return message;
-    }
-  }
-
-  // TODO(shakusa) Localize messages
-  public enum RecommendationType implements CapException.ReasonType {
-    SENDER_SHOULD_BE_EMAIL("<sender> should be a valid address in the " +
-        "format example@domain"),
-    TEST_ALERT_WILL_NOT_BE_BROADCAST("Alerts with Test <status> are treated " +
-        "as log-only event and not be broadcast as a valid alert"),
-    RECOGNIZED_EVENT_CODE_NOT_USED("Note AUeventLIST codes not being used. " +
-        "No <eventCode> with <valueName> " +
-        CAP_AU_EVENT_CODE_VALUE_NAME),
-    EXPIRES_STRONGLY_RECOMMENDED("<expires> is strongly recommended."),
+    // Recommendations
+    SENDER_SHOULD_BE_EMAIL(
+        Reason.Level.RECOMMENDATION,
+        "<sender> should be a valid address in the format example@domain."),
+    TEST_ALERT_WILL_NOT_BE_BROADCAST(
+        Reason.Level.RECOMMENDATION,
+        "Alerts with Test <status> are treated as log-only event and not be "
+            + "broadcast as a valid alert"),
+    RECOGNIZED_EVENT_CODE_NOT_USED(
+        Reason.Level.RECOMMENDATION,
+        "Note AUeventLIST codes not being used. No <eventCode> with "
+            + "<valueName> " + CAP_AU_EVENT_CODE_VALUE_NAME + "."),
+    EXPIRES_STRONGLY_RECOMMENDED(
+        Reason.Level.RECOMMENDATION,
+        "<expires> is strongly recommended."),
     SENDER_NAME_STRONGLY_RECOMMENDED(
+        Reason.Level.RECOMMENDATION,
         "<senderName> is strongly recommended."),
     RESPONSE_TYPE_STRONGLY_RECOMMENDED(
+        Reason.Level.RECOMMENDATION,
         "<responseType> is strongly recommended."),
     INSTRUCTION_STRONGLY_RECOMMENDED(
+        Reason.Level.RECOMMENDATION,
         "<instruction> is strongly recommended."),
-    CIRCLE_POLYGON_ENCOURAGED("<polygon> and <circle>, while optional, are " +
-        "encouraged as more accurate representations of <geocode> values"),
-    CIRCLE_POLYGON_PREFERRED("When <polygon> or <circle> values are present " +
-        "in an area block, the combination of <polygon> and <circle> values " +
-        "is the more accurate representation of the alert area. This is " +
-        "contrary to what is currently defined in CAP, which recognizes the " +
-        "area as the combination of the <geocode>, <polygon> and <circle> " +
-        "values"),
-    AREA_GEOCODE_IS_RECOMMENDED("At least one <geocode> value is " +
-        "recommended but is not mandatory, either G-NAF (recommended), " +
-        "ISO3166-2, Gazeetteer, or postcode, with one of the following " +
-        "<valueName>s: " + RECOGNIZED_GEOCODE_VALUES + ". If a value is " +
-        "used, the Producer should ensure the consumer system is able to " +
-        "interpret the value selected."),
+    CIRCLE_POLYGON_ENCOURAGED(
+        Reason.Level.RECOMMENDATION,
+        "<polygon> and <circle>, while optional, are encouraged as more "
+            + "accurate representations of <geocode> values."),
+    CIRCLE_POLYGON_PREFERRED(
+        Reason.Level.RECOMMENDATION,
+        "When <polygon> or <circle> values are present in an area block, the "
+            + "combination of <polygon> and <circle> values is the more "
+            + "accurate representation of the alert area. This is contrary to "
+            + "what is currently defined in CAP, which recognizes the area as "
+            + "the combination of the <geocode>, <polygon> and <circle> "
+            + "values"),
+    AREA_GEOCODE_IS_RECOMMENDED(
+        Reason.Level.RECOMMENDATION,
+        "At least one <geocode> value is recommended but is not mandatory, "
+            + "either G-NAF (recommended), ISO3166-2, Gazeetteer, or postcode, "
+            + "with one of the following <valueName>s: "
+            + RECOGNIZED_GEOCODE_VALUES + ". If a value is used, the Producer "
+            + "should ensure the consumer system is able to interpret the "
+            + "value selected."),
     ;
+
+    private final Reason.Level defaultLevel;
     private final String message;
 
-    private RecommendationType(String message) {
+    private ReasonType(Reason.Level defaultLevel, String message) {
+      this.defaultLevel = defaultLevel;
       this.message = message;
     }
 
     @Override
     public String getMessage(Locale locale) {
       return message;
+    }
+
+    @Override
+    public Reason.Level getDefaultLevel() {
+      return defaultLevel;
     }
   }
 }

@@ -7,3 +7,6 @@ validator/build/
 validator/war/WEB-INF/classes/*
 validator/war/WEB-INF/lib/cap-library*
 validator/war/WEB-INF/lib/appengine-api.jar
+
+.classpath
+.project

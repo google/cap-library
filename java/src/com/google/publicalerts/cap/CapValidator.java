@@ -16,14 +16,11 @@
 
 package com.google.publicalerts.cap;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.protobuf.MessageOrBuilder;
-import com.google.publicalerts.cap.CapException.Reason;
-import com.google.publicalerts.cap.CapException.Type;
+import com.google.publicalerts.cap.CapException.ReasonType;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.List;
+import java.util.Date;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -43,26 +40,36 @@ public class CapValidator {
       "urn:oasis:names:tc:emergency:cap:1.2";
   public static final String CAP_LATEST_XMLNS = CAP12_XMLNS;
 
-  public static final Set<String> CAP_XML_NAMESPACES = new HashSet<String>();
-  static {
-    CAP_XML_NAMESPACES.add(CAP10_XMLNS);
-    CAP_XML_NAMESPACES.add(CAP11_XMLNS);
-    CAP_XML_NAMESPACES.add(CAP12_XMLNS);
-  }
+  public static final Set<String> CAP_XML_NAMESPACES = 
+      ImmutableSet.of(CAP10_XMLNS, CAP11_XMLNS, CAP12_XMLNS);
 
   /** See http://www.ietf.org/rfc/rfc3066.txt */
   private static final Pattern RFC_3066_LANGUAGE =
       Pattern.compile("^[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*$");
 
+  /** See http://www.iana.org/assignments/media-types/media-types.xhtml */
+  private static final Set<String> VALID_CONTENT_TYPES =
+      ImmutableSet.<String>builder()
+          .add("application")
+          .add("audio")
+          .add("image")
+          .add("message")
+          .add("model")
+          .add("multipart")
+          .add("text")
+          .add("video")
+          .build();
+      
   /**
    * Validates the given message.
    *
    * @param message the message to validate
    * @param xmlns xmlns of the version whose validation rules are to be applied
    * @param visitChildren true to also validate child messages
-   * @return a list of reasons the message is invalid, empty if valid
+   * @return a collection of reasons storing errors, warnings or
+   * recommendations
    */
-  public List<Reason> validate(MessageOrBuilder message, String xmlns,
+  public Reasons validate(MessageOrBuilder message, String xmlns,
       String xpath, boolean visitChildren) {
     int version = getValidateVersion(xmlns);
 
@@ -83,7 +90,7 @@ public class CapValidator {
         || message instanceof GroupOrBuilder
         || message instanceof CircleOrBuilder
         || message instanceof PointOrBuilder) {
-      return Collections.emptyList();
+      return Reasons.EMPTY;
     }
 
     throw new IllegalArgumentException("Unsupported message: " + message);
@@ -96,23 +103,25 @@ public class CapValidator {
    * @throws CapException if there are validation errors
    */
   public void validateAlert(AlertOrBuilder alert) throws CapException {
-    List<Reason> reasons = validateAlert(alert, true);
-    if (!reasons.isEmpty()) {
+    Reasons reasons = validateAlert(alert, true);
+    
+    if (reasons.containsWithLevelOrHigher(Reason.Level.ERROR)) {
       throw new CapException(reasons);
     }
   }
 
-  @SuppressWarnings("deprecation")
-  private List<Reason> validateAlert(
-      AlertOrBuilder alert, boolean visitChildren) {
-    List<Reason> reasons = new ArrayList<Reason>();
-
+  Reasons validateAlert(AlertOrBuilder alert, boolean visitChildren) {
+    Reasons.Builder reasons = Reasons.newBuilder();
+    
     if (alert.hasRestriction()
         && !CapUtil.isEmptyOrWhitespace(alert.getRestriction())
         && alert.getScope() != Alert.Scope.RESTRICTED) {
-      reasons.add(new Reason("/alert", Type.RESTRICTION_SCOPE_MISMATCH));
+      reasons.add(new Reason("/alert/restriction",
+          ReasonType.RESTRICTION_SCOPE_MISMATCH));
     }
 
+    reasons.addAll(validateReferences(alert));
+    
     if (visitChildren) {
       int version = getValidateVersion(alert.getXmlns());
       for (int i = 0; i < alert.getInfoOrBuilderList().size(); ++i) {
@@ -121,12 +130,49 @@ public class CapValidator {
       }
     }
 
-    return reasons;
+    return reasons.build();
   }
 
-  List<Reason> validateInfo(InfoOrBuilder info, String xpath,
+  private Reasons validateReferences(AlertOrBuilder alert) {
+    Reasons.Builder reasons = Reasons.newBuilder();
+
+    int version = getValidateVersion(alert.getXmlns());
+    
+    if (alert.hasReferences()) {
+      String alertIdentifier = alert.getIdentifier();
+      Date alertSent = CapDateUtil.toJavaDate(alert.getSent());
+      
+      for (String reference : alert.getReferences().getValueList()) {
+        String referenceIdentifier =
+            CapUtil.parseReferenceIdentifier(reference, version);
+        
+        if (referenceIdentifier == null) {
+          continue;
+        }
+        
+        if (alertIdentifier.equals(referenceIdentifier)) {
+          reasons.add(new Reason("/alert/references",
+              ReasonType.CIRCULAR_REFERENCE, reference));
+        }
+        
+        if (version > 10) {
+          Date referenceSent = CapUtil.parseReferenceSent(reference);
+          
+          if (alertSent != null && referenceSent != null
+              && referenceSent.after(alertSent)) {
+            reasons.add(new Reason("/alert/references",
+                ReasonType.POSTDATED_REFERENCE, reference));
+          }
+        }
+      }
+    }
+    
+    return reasons.build();
+  }
+  
+  Reasons validateInfo(InfoOrBuilder info, String xpath,
       int version, boolean visitChildren) {
-    List<Reason> reasons = new ArrayList<Reason>();
+    Reasons.Builder reasons = Reasons.newBuilder();
 
     if (info.hasLanguage()) {
       reasons.addAll(validateLanguage(info.getLanguage(), xpath, version));
@@ -143,27 +189,30 @@ public class CapValidator {
             xpath + "/resource[" + i + "]", version));
       }
     }
-    return reasons;
+    
+    return reasons.build();
   }
 
-  List<Reason> validateLanguage(String language, String xpath, int version) {
+  @SuppressWarnings("unused")
+  Reasons validateLanguage(String language, String xpath, int version) {
     if (CapUtil.isEmptyOrWhitespace(language)) {
-      return Collections.emptyList();
+      return Reasons.EMPTY;
     }
 
     language = language.trim();
 
     if (RFC_3066_LANGUAGE.matcher(language).matches()) {
-      return Collections.emptyList();
+      return Reasons.EMPTY;
     }
 
-    return Collections.singletonList(
-        new Reason(xpath + "/language", Type.INVALID_LANGUAGE, language));
+    return Reasons.of(
+        new Reason(xpath + "/language", ReasonType.INVALID_LANGUAGE, language));
   }
 
-  List<Reason> validateArea(AreaOrBuilder area, String xpath,
-      int version, boolean visitChildren) {
-    List<Reason> reasons = new ArrayList<Reason>();
+  @SuppressWarnings("unused")
+  Reasons validateArea(
+      AreaOrBuilder area, String xpath, int version, boolean visitChildren) {
+    Reasons.Builder reasons = Reasons.newBuilder();
 
     if (visitChildren) {
       for (int i = 0; i < area.getPolygonOrBuilderList().size(); i++) {
@@ -173,35 +222,51 @@ public class CapValidator {
     }
 
     if (area.hasCeiling() && !area.hasAltitude()) {
-      reasons.add(new Reason(xpath + "/ceiling", Type.INVALID_AREA));
+      reasons.add(new Reason(xpath, ReasonType.INVALID_AREA));
     }
 
     if (area.hasAltitude() && area.hasCeiling()) {
       if (area.getAltitude() > area.getCeiling()) {
         reasons.add(new Reason(xpath + "/ceiling",
-            Type.INVALID_ALTITUDE_CEILING_RANGE));
+            ReasonType.INVALID_ALTITUDE_CEILING_RANGE));
       }
     }
 
-    return reasons;
+    return reasons.build();
   }
 
-  List<Reason> validatePolygon(PolygonOrBuilder polygon, String xpath) {
-    List<Reason> reasons = new ArrayList<Reason>();
+  Reasons validatePolygon(PolygonOrBuilder polygon, String xpath) {
+    Reasons.Builder reasons = Reasons.newBuilder();
+    
     if (!polygon.getPoint(0).equals(
         polygon.getPoint(polygon.getPointCount() - 1))) {
-      reasons.add(new Reason(xpath, Type.INVALID_POLYGON));
+      reasons.add(new Reason(xpath, ReasonType.INVALID_POLYGON));
     }
-    return reasons;
+    
+    return reasons.build();
   }
 
-  List<Reason> validateResource(
+  @SuppressWarnings("unused")
+  Reasons validateResource(
       ResourceOrBuilder resource, String xpath, int version) {
+    Reasons.Builder reasons = Reasons.newBuilder();
+    
+    if (resource.hasMimeType()) {
+      String mimeType = resource.getMimeType(); // formatted as: type/subtype
+      
+      if (!mimeType.contains("/") || !VALID_CONTENT_TYPES.contains(
+          mimeType.substring(0, mimeType.indexOf('/')))) {
+        reasons.add(new Reason(
+            xpath + "/mimeType", ReasonType.INVALID_MIME_TYPE, mimeType));
+      }    
+    }
+    
+    if (resource.hasDerefUri() && !CapUtil.isBased64(resource.getDerefUri())) {
+      reasons.add(new Reason(xpath + "/derefUri",
+          ReasonType.INVALID_DEREF_URI, resource.getDerefUri()));
+    }
 
-    // TODO(shakusa) Check if mime type is valid RFC 2046?
-    // TODO(shakusa) Check if derefUri is base-64 encoded?
-
-    return Collections.<Reason>emptyList();
+    return reasons.build();
   }
 
   int getValidateVersion(String xmlns) {

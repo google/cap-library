@@ -16,10 +16,14 @@
 
 package com.google.publicalerts.cap.feed;
 
+import com.google.common.collect.Lists;
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.CapException;
 import com.google.publicalerts.cap.NotCapException;
-import com.google.publicalerts.cap.feed.CapFeedException.FeedErrorType;
+import com.google.publicalerts.cap.Reason;
+import com.google.publicalerts.cap.Reason.Level;
+import com.google.publicalerts.cap.Reasons;
+import com.google.publicalerts.cap.feed.CapFeedException.ReasonType;
 import com.google.publicalerts.cap.testing.CapTestUtil;
 import com.google.publicalerts.cap.testing.TestResources;
 
@@ -33,7 +37,6 @@ import com.sun.syndication.io.FeedException;
 
 import junit.framework.TestCase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -98,30 +101,54 @@ public class CapFeedParserTest extends TestCase {
   }
 
   public void testParseInvalidFeed1() throws Exception {
-    assertCapException("no_id.atom",
-        FeedErrorType.ATOM_ID_IS_REQUIRED,
-        FeedErrorType.ATOM_ENTRY_ID_IS_REQUIRED);
+    assertReasons("no_id.atom",
+        new Reason("/feed", ReasonType.ATOM_ID_IS_REQUIRED),
+        new Reason("/feed/entry[0]", ReasonType.ATOM_ENTRY_ID_IS_REQUIRED));
   }
 
   public void testParseInvalidFeed2() throws Exception {
-    assertCapException("no_title.atom",
-        FeedErrorType.ATOM_ENTRY_TITLE_IS_REQUIRED);
+    assertReasons("no_title.atom", new Reason("/feed/entry[0]",
+        ReasonType.ATOM_ENTRY_TITLE_IS_REQUIRED));
   }
 
   public void testParseInvalidFeed4() throws Exception {
-    assertCapException("no_link.atom",
-        FeedErrorType.ATOM_ENTRY_MISSING_CAP_LINK);
+    assertReasons("no_link.atom", new Reason("/feed/entry[0]",
+        ReasonType.ATOM_ENTRY_MISSING_CAP_LINK));
   }
 
   public void testParseInvalidFeed5() throws Exception {
-    assertCapException("invalid_element.atom",
-        FeedErrorType.OTHER);
+    assertReasons(
+        "invalid_element.atom", new Reason("/feed", ReasonType.OTHER));
   }
 
+  /**
+   * Tests the case of a valid Atom feed not containing any &lt;entry&gt;.
+   * 
+   * <p>In {@code no_entries.atom}, a CAP alert exists, but it is misplaced and
+   * seen as foreign markup, thus ignored.
+   */
+  public void testNoAtomEntries() throws Exception {
+    String feedStr = TestResources.load("no_entries.atom");
+    SyndFeed feed = parser.parseFeed(feedStr);
+    assertEquals(0, feed.getEntries().size());
+
+    try {
+      parser.parseAlerts(feed);
+      fail("Expected NotCapException");
+    } catch (NotCapException e) {
+      // expected
+    }
+  }
+  
   public void testParseInvalidRssFeed() throws Exception {
-    assertCapException("invalid.rss",
-        FeedErrorType.RSS_ITEM_MISSING_CAP_LINK,
-        FeedErrorType.RSS_ITEM_TITLE_OR_DESCRIPTION_IS_REQUIRED);
+    assertReasons("invalid.rss",
+        new Reason("/rss/channel/item[0]",
+            ReasonType.RSS_ITEM_MISSING_CAP_LINK),
+        new Reason("/rss/channel/item[0]",
+            ReasonType.RSS_ITEM_TITLE_OR_DESCRIPTION_IS_REQUIRED),
+        new Reason("/rss/channel/item[0]",
+            ReasonType.RSS_ITEM_GUID_IS_RECOMMENDED),
+        new Reason("/rss/channel", ReasonType.RSS_PUBDATE_IS_RECOMMENDED));
   }
 
   public void testParseIndexFeed() throws Exception {
@@ -210,10 +237,10 @@ public class CapFeedParserTest extends TestCase {
       // expected
     }
 
-    List<CapException.Reason> reasons = new ArrayList<CapException.Reason>();
+    Reasons.Builder reasons = Reasons.newBuilder();
     Alert alert = parser.parseAlert(alertStr, reasons);
     assertNotNull(alert);
-    assertFalse(reasons.isEmpty());
+    assertTrue(reasons.build().containsWithLevelOrHigher(Level.ERROR));
   }
 
   public void testGetCapUrl_atom() {
@@ -224,7 +251,7 @@ public class CapFeedParserTest extends TestCase {
 
     SyndLink link1 = new SyndLinkImpl();
     link1.setHref("http://example.org/cap?id=123");
-    List<SyndLink> links = new ArrayList<SyndLink>();
+    List<SyndLink> links = Lists.newLinkedList();
     links.add(link1);
     entry.setLinks(links);
     assertEquals(link1.getHref(), parser.getCapUrl(entry));
@@ -271,14 +298,15 @@ public class CapFeedParserTest extends TestCase {
     assertEquals(entry.getLink(), parser.getCapUrl(entry));
   }
 
-  private void assertCapException(String feedFile, FeedErrorType... types)
+  private void assertReasons(String feedFile,  Reason... expectedReasons)
       throws Exception {
     String feed = TestResources.load(feedFile);
+    
     try {
       parser.parseFeed(feed);
       fail("Expected CapException");
     } catch (CapException e) {
-      CapTestUtil.assertErrorTypes(e.getReasons(), types);
+      CapTestUtil.assertCapException(e, expectedReasons);
     }
   }
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Google Inc.
+ * Copyright (C) 2014 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -55,8 +55,11 @@ public class CapDateUtil {
   public static Date toJavaDate(String dateStr) {
     if (!DATE_PATTERN.matcher(dateStr).matches()) {
       return null;
-    } else {
+    }
+    try {
       return DatatypeConverter.parseDateTime(dateStr).getTime();
+    } catch (IllegalArgumentException e) {
+      return null;
     }
   }
 
@@ -70,7 +73,8 @@ public class CapDateUtil {
     SimpleDateFormat format = new SimpleDateFormat(DATETIME_FORMAT);
     format.setTimeZone(cal.getTimeZone());
     StringBuilder ret = new StringBuilder(format.format(cal.getTime()));
-    // SimpleDateFormat doesn't include the colon in the timezone, so add it here
+    // SimpleDateFormat doesn't include the colon in the timezone, so add it
+    // here
     ret.insert(ret.length() - 2, ':');
     return ret.toString();
   }
@@ -102,5 +106,4 @@ public class CapDateUtil {
   public static boolean isValidDate(String dateStr) {
     return toJavaDate(dateStr) != null;
   }
-
 }

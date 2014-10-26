@@ -46,3 +46,17 @@ jar: jarjar.jar
      License: Apache 2.0
      Local Modifications: None.
      Download date: 2011-02-25
+
+jar: guava.jar
+     URL: http://search.maven.org/remotecontent?filepath=com/google/guava/guava/18.0/guava-18.0.jar
+     Version: 18.0
+     License: Apache 2.0
+     Local Modifications: None.
+     Download date: 2014-10-09
+
+jar: javax.mail.jar
+     URL: http://java.net/projects/javamail/downloads/download/javax.mail.jar
+     Version 1.5.2
+     License: Common Development and Distribution License (CDDL) v1.1 and GNU General Public License (GPL) v2 with Classpath Exception
+     Local Modifications: None.
+     Download date: 2014-10-25

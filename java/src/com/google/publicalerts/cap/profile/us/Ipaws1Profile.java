@@ -16,19 +16,17 @@
 
 package com.google.publicalerts.cap.profile.us;
 
+import com.google.common.collect.Sets;
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.AlertOrBuilder;
 import com.google.publicalerts.cap.Area;
-import com.google.publicalerts.cap.CapException;
-import com.google.publicalerts.cap.CapException.Reason;
 import com.google.publicalerts.cap.CapUtil;
 import com.google.publicalerts.cap.Info;
+import com.google.publicalerts.cap.Reason;
+import com.google.publicalerts.cap.Reasons;
 import com.google.publicalerts.cap.ValuePair;
 import com.google.publicalerts.cap.profile.AbstractCapProfile;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -76,14 +74,24 @@ public class Ipaws1Profile extends AbstractCapProfile {
   public String toString() {
     return getCode();
   }
-
+  
   @Override
-  public List<Reason> checkForErrors(AlertOrBuilder alert) {
-    List<Reason> reasons = new ArrayList<Reason>();
-
+  public Reasons validate(AlertOrBuilder alert) {
+    Reasons.Builder reasons = Reasons.newBuilder();
+    
+    checkForErrors(alert, reasons);
+    checkForRecommendations(alert, reasons);
+    
+    return reasons.build();
+  }
+  
+  /**
+   * Checks the Alert for errors and populates the collection provided as input.
+   */
+  private void checkForErrors(AlertOrBuilder alert, Reasons.Builder reasons) {
     // sent SHALL include the timezone offset
     checkZeroTimezone(reasons, alert.getSent(), "/alert/sent",
-        ErrorType.SENT_INCLUDE_TIMEZONE_OFFSET);
+        ReasonType.SENT_INCLUDE_TIMEZONE_OFFSET);
 
     // code SHALL include the string "IPAWSv1.0" to indicate the profile
     // version in use.
@@ -94,8 +102,8 @@ public class Ipaws1Profile extends AbstractCapProfile {
       }
     }
     if (!hasVersionCode) {
-      reasons.add(new Reason(
-          "/alert", ErrorType.VERSION_CODE_REQUIRED, getCode()));
+      reasons.add(
+          new Reason("/alert", ReasonType.VERSION_CODE_REQUIRED, getCode()));
     }
 
     // if Update or Cancel, references should contain all
@@ -104,7 +112,7 @@ public class Ipaws1Profile extends AbstractCapProfile {
         || alert.getMsgType() == Alert.MsgType.CANCEL)
         && alert.getReferences().getValueCount() == 0) {
       reasons.add(new Reason(
-          "/alert/msgType", ErrorType.UPDATE_OR_CANCEL_MUST_REFERENCE));
+          "/alert/msgType", ReasonType.UPDATE_OR_CANCEL_MUST_REFERENCE));
     }
 
     Set<ValuePair> eventCodes = null;
@@ -114,28 +122,28 @@ public class Ipaws1Profile extends AbstractCapProfile {
       // All info blocks in a single alert MUST have the same category and
       // eventCode values.
       Info info = alert.getInfo(i);
-      Set<ValuePair> ecs = new HashSet<ValuePair>();
+      Set<ValuePair> ecs = Sets.newHashSet();
       ecs.addAll(info.getEventCodeList());
-      Set<Info.Category> cats = new HashSet<Info.Category>();
+      Set<Info.Category> cats = Sets.newHashSet();
       cats.addAll(info.getCategoryList());
       if (eventCodes == null) {
         eventCodes = ecs;
         categories = cats;
       } else {
         if (!eventCodes.equals(ecs)) {
-          reasons.add(new Reason(xpath, ErrorType.EVENT_CODES_MUST_MATCH));
+          reasons.add(new Reason(xpath, ReasonType.EVENT_CODES_MUST_MATCH));
         }
         if (!categories.equals(cats)) {
-          reasons.add(new Reason(xpath, ErrorType.CATEGORIES_MUST_MATCH));
+          reasons.add(new Reason(xpath, ReasonType.CATEGORIES_MUST_MATCH));
         }
       }
 
       // expires is required.  The value MUST include the timezone offset.
       if (CapUtil.isEmptyOrWhitespace(info.getExpires())) {
-        reasons.add(new Reason(xpath, ErrorType.EXPIRES_IS_REQUIRED));
+        reasons.add(new Reason(xpath, ReasonType.EXPIRES_IS_REQUIRED));
       } else {
         checkZeroTimezone(reasons, info.getExpires(), xpath + "/expires",
-            ErrorType.EXPIRES_INCLUDE_TIMEZONE_OFFSET);
+            ReasonType.EXPIRES_INCLUDE_TIMEZONE_OFFSET);
       }
 
       // MUST have one and only one eventCode with valueName of "SAME"
@@ -152,13 +160,13 @@ public class Ipaws1Profile extends AbstractCapProfile {
         }
       }
       if (sameCodeCount != 1) {
-        reasons.add(new Reason(
-            xpath, ErrorType.SAME_EVENT_CODE_REQUIRED));
+        reasons.add(
+            new Reason(xpath, ReasonType.SAME_EVENT_CODE_REQUIRED));
       }
 
       // At least one <area> block MUST be present.
       if (info.getAreaCount() == 0) {
-        reasons.add(new Reason(xpath, ErrorType.AREA_IS_REQUIRED));
+        reasons.add(new Reason(xpath, ReasonType.AREA_IS_REQUIRED));
       }
 
       // TODO(shakusa) Do we want to check for this? Does that mean
@@ -167,14 +175,14 @@ public class Ipaws1Profile extends AbstractCapProfile {
       // include a parameter with a valueName of "EAS-ORG" with a value of
       // SAME ORG code.
     }
-
-    return reasons;
   }
 
-
-  @Override
-  public List<Reason> checkForRecommendations(AlertOrBuilder alert) {
-    List<Reason> reasons = new ArrayList<Reason>();
+  /**
+   * Checks the Alert for recommendations and populates the collection provided
+   * as input.
+   */
+  private void checkForRecommendations(
+      AlertOrBuilder alert, Reasons.Builder reasons) {
 
     for (int i = 0; i < alert.getInfoCount(); i++) {
       Info info = alert.getInfo(i);
@@ -183,23 +191,23 @@ public class Ipaws1Profile extends AbstractCapProfile {
       // effective, onset are ignored if present.
       if (!CapUtil.isEmptyOrWhitespace(info.getEffective())) {
         reasons.add(new Reason(xpath + "/effective",
-            RecommendationType.INFO_EFFECTIVE_IS_IGNORED));
+            ReasonType.INFO_EFFECTIVE_IS_IGNORED));
       }
       if (!CapUtil.isEmptyOrWhitespace(info.getOnset())) {
-        reasons.add(new Reason(xpath + "/onset",
-            RecommendationType.INFO_ONSET_IS_IGNORED));
+        reasons.add(
+            new Reason(xpath + "/onset", ReasonType.INFO_ONSET_IS_IGNORED));
       }
 
       // description should be there
       if (CapUtil.isEmptyOrWhitespace(info.getDescription())) {
-        reasons.add(new Reason(xpath,
-            RecommendationType.INFO_DESCRIPTION_RECOMMENDED));
+        reasons.add(
+            new Reason(xpath, ReasonType.INFO_DESCRIPTION_RECOMMENDED));
       }
 
       // instruction should be there
       if (CapUtil.isEmptyOrWhitespace(info.getInstruction())) {
-        reasons.add(new Reason(xpath,
-            RecommendationType.INFO_INSTRUCTION_RECOMMENDED));
+        reasons.add(
+            new Reason(xpath, ReasonType.INFO_INSTRUCTION_RECOMMENDED));
       }
 
       for (int j = 0; j < info.getAreaCount(); j++) {
@@ -217,38 +225,77 @@ public class Ipaws1Profile extends AbstractCapProfile {
         }
         if (!hasSameGeocode) {
           reasons.add(new Reason(xpath + "/area[" + j + "]",
-              RecommendationType.AREA_SAME_GEOCODE_RECOMMENDED));
+              ReasonType.AREA_SAME_GEOCODE_RECOMMENDED));
         }
       }
     }
-
-    return reasons;
   }
 
   // TODO(shakusa) Localize messages
-  public enum ErrorType implements CapException.ReasonType {
-    SENT_INCLUDE_TIMEZONE_OFFSET("<sent> should include the timezone offset. " +
-        "An offset of 0 is unlikely for US alerts."),
-    EXPIRES_INCLUDE_TIMEZONE_OFFSET("<expires> should include the timezone" +
-        "offset. An offset of 0 is unlikely for US alerts."),
-    VERSION_CODE_REQUIRED("<code>{0}</code> required"),
-    UPDATE_OR_CANCEL_MUST_REFERENCE("All related messages that have not yet " +
-    "expired MUST be referenced for \"Update\" and \"Cancel\" messages."),
+  enum ReasonType implements Reason.Type {
+    
+    // Errors
+    SENT_INCLUDE_TIMEZONE_OFFSET(
+        Reason.Level.ERROR,
+        "<sent> should include the timezone offset. An offset of 0 is unlikely "
+            + "for US alerts."),
+    EXPIRES_INCLUDE_TIMEZONE_OFFSET(
+        Reason.Level.ERROR,
+        "<expires> should include the timezone offset. An offset of 0 is "
+            + "unlikely for US alerts."),
+    VERSION_CODE_REQUIRED(
+        Reason.Level.ERROR,
+        "<code>{0}</code> required."),
+    UPDATE_OR_CANCEL_MUST_REFERENCE(
+        Reason.Level.ERROR,
+        "All related messages that have not yet expired MUST be referenced "
+            + "for \"Update\" and \"Cancel\" messages."),
     EVENT_CODES_MUST_MATCH(
-        "All <info> blocks must contain the same <eventCode>s"),
+        Reason.Level.ERROR,
+        "All <info> blocks must contain the same <eventCode>s."),
     CATEGORIES_MUST_MATCH(
-        "All <info> blocks must contain the same <category>s"),
-    SAME_EVENT_CODE_REQUIRED("Messages intended for EAS, CMAS and " +
-        "HazCollect dissemination MUST include one and only one instance of " +
-        "<eventCode> with a <valueName> of \"SAME\" and using a " +
-        "SAME-standard three-letter value."),
-    EXPIRES_IS_REQUIRED("<expires> is required"),
-    AREA_IS_REQUIRED("At least one <area> must be present"),
+        Reason.Level.ERROR,
+        "All <info> blocks must contain the same <category>s."),
+    SAME_EVENT_CODE_REQUIRED(
+        Reason.Level.ERROR,
+        "Messages intended for EAS, CMAS and HazCollect dissemination MUST "
+            + "include one and only one instance of <eventCode> with a "
+            + "<valueName> of \"SAME\" and using a SAME-standard three-letter "
+            + "value."),
+    EXPIRES_IS_REQUIRED(
+        Reason.Level.ERROR,
+        "<expires> is required."),
+    AREA_IS_REQUIRED(
+        Reason.Level.ERROR,
+        "At least one <area> must be present."),
+
+    // Recommendations
+    INFO_EFFECTIVE_IS_IGNORED(
+        Reason.Level.RECOMMENDATION,
+        "<effective> is ignored if present. Alerts SHALL be effective upon "
+            + "issuance."),
+    INFO_ONSET_IS_IGNORED(
+        Reason.Level.RECOMMENDATION,
+        "<onset> is ignored if present. Alerts SHALL be effective upon "
+            + "issuance."),
+    INFO_DESCRIPTION_RECOMMENDED(
+        Reason.Level.RECOMMENDATION,
+        "Messages should have meaningful values for the <description>."),
+    INFO_INSTRUCTION_RECOMMENDED(
+        Reason.Level.RECOMMENDATION,
+        "Messages should have meaningful values for the <instruction>."),
+    AREA_SAME_GEOCODE_RECOMMENDED(
+        Reason.Level.RECOMMENDATION,
+        "At least one instance of <geocode> with a <valueName> of \"SAME\" and "
+            + "a value of a SAME 6-digit location (extended FIPS) SHOULD be "
+            + "used."),
     ;
 
+    private final Reason.Level defaultLevel;
     private final String message;
 
-    private ErrorType(String message) {
+    private ReasonType(Reason.Level defaultLevel, String message) {
+      this.defaultLevel = defaultLevel;
       this.message = message;
     }
 
@@ -256,32 +303,10 @@ public class Ipaws1Profile extends AbstractCapProfile {
     public String getMessage(Locale locale) {
       return message;
     }
-  }
-
-  // TODO(shakusa) Localize messages
-  public enum RecommendationType implements CapException.ReasonType {
-    INFO_EFFECTIVE_IS_IGNORED("<effective> is ignored if present.  Alerts " +
-        "SHALL be effective upon issuance."),
-    INFO_ONSET_IS_IGNORED("<onset> is ignored if present.  Alerts " +
-        "SHALL be effective upon issuance."),
-    INFO_DESCRIPTION_RECOMMENDED("Messages should have meaningful values " +
-        "for the <description>."),
-    INFO_INSTRUCTION_RECOMMENDED("Messages should have meaningful values " +
-        "for the <instruction>."),
-    AREA_SAME_GEOCODE_RECOMMENDED("At least one instance of <geocode> with " +
-        "a <valueName> of \"SAME\" and a value of a SAME 6-digit location " +
-        "(extended FIPS) SHOULD be used."),
-    ;
-
-    private final String message;
-
-    private RecommendationType(String message) {
-      this.message = message;
-    }
 
     @Override
-    public String getMessage(Locale locale) {
-      return message;
+    public Reason.Level getDefaultLevel() {
+      return defaultLevel;
     }
   }
 }

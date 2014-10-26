@@ -17,9 +17,9 @@
 package com.google.publicalerts.cap.feed;
 
 import com.google.publicalerts.cap.CapException;
+import com.google.publicalerts.cap.Reason;
+import com.google.publicalerts.cap.Reasons;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -31,76 +31,87 @@ public class CapFeedException extends CapException {
   private static final long serialVersionUID = 3488384603825778076L;
 
   public CapFeedException(Reason...reasons) {
-    this(Arrays.asList(reasons));
+    super(reasons);
   }
 
-  public CapFeedException(List<Reason> reasons) {
+  public CapFeedException(Reasons reasons) {
     super(reasons);
   }
 
   /**
-   * Types of errors that can occur when validating a feed.
+   * Errors that can occur when validating a feed, or recommendations for
+   * improving the utility of a feed.
    */
-  public enum FeedErrorType implements CapException.ReasonType {
-    ATOM_ID_IS_REQUIRED("Feeds must have a non-empty <id> element"),
-    ATOM_TITLE_IS_REQUIRED("Feeds must have a non-empty <title> element"),
-    ATOM_UPDATED_IS_REQUIRED("Feeds must have a non-empty <updated> element"),
-    ATOM_ENTRY_ID_IS_REQUIRED("Entries must have a non-empty <id> element"),
+  enum ReasonType implements Reason.Type {
+    // Errors
+    ATOM_ID_IS_REQUIRED(
+        Reason.Level.ERROR,
+        "Feeds must have a non-empty <id> element."),
+    ATOM_TITLE_IS_REQUIRED(
+        Reason.Level.ERROR,
+        "Feeds must have a non-empty <title> element."),
+    ATOM_UPDATED_IS_REQUIRED(
+        Reason.Level.ERROR,
+        "Feeds must have a non-empty <updated> element."),
+    ATOM_ENTRY_ID_IS_REQUIRED(
+        Reason.Level.ERROR,
+        "Entries must have a non-empty <id> element."),
     ATOM_ENTRY_TITLE_IS_REQUIRED(
-        "Entries must have a non-empty <title> element"),
+        Reason.Level.ERROR,
+        "Entries must have a non-empty <title> element."),
     ATOM_ENTRY_UPDATED_IS_REQUIRED(
-        "Entries must have a non-empty <updated> element"),
+        Reason.Level.ERROR,
+        "Entries must have a non-empty <updated> element."),
     ATOM_ENTRY_MISSING_CAP_LINK(
-        "Entries that do not embed CAP must contain a link to a CAP " +
-        "document, normally found with type='" +
-        CapFeedParser.CAP_MIME_TYPE + "' or type='" +
-        CapFeedParser.ALTERNATE_CAP_MIME_TYPE + "'"),
+        Reason.Level.ERROR,
+        "Entries that do not embed CAP must contain a link to a CAP document, "
+            + "normally found with type='" + CapFeedParser.CAP_MIME_TYPE
+            + "' or type='" + CapFeedParser.ALTERNATE_CAP_MIME_TYPE + "'."),
+    ATOM_ENTRY_NON_UNIQUE_IDS(
+        Reason.Level.ERROR,
+        "Entries must have unique <id> elements, '{0}' is repeated."),
     RSS_ITEM_TITLE_OR_DESCRIPTION_IS_REQUIRED(
-        "Items must have a non-empty <title> or <description>"),
-    RSS_ITEM_MISSING_CAP_LINK("Item ust contain a link to a CAP document"),
+        Reason.Level.ERROR,
+        "Items must have a non-empty <title> or <description>."),
+    RSS_ITEM_MISSING_CAP_LINK(
+        Reason.Level.ERROR,
+        "Item ust contain a link to a CAP document."),
     EDXLDE_CONTENT_OBJECT_IS_REQUIRED(
-        "Feeds must have a non-empty <contentObject> element"),
+        Reason.Level.ERROR,
+        "Feeds must have a non-empty <contentObject> element."),
     EDXLDE_NO_CAP_IN_CONTENT_OBJECT(
+        Reason.Level.ERROR,
         "Feeds must contain an xmlContent element containing a CAP alert, "
-        + "or a nonXMLContent element pointing to a CAP alert"),
-    OTHER("{0}"),
+            + "or a nonXMLContent element pointing to a CAP alert."),
+    OTHER(
+        Reason.Level.ERROR,
+        "{0}"),
+    
+    // Recommendations
+    RSS_PUBDATE_IS_RECOMMENDED(
+        Reason.Level.RECOMMENDATION,
+        "Feeds should contain a <pubDate>."),
+    RSS_ITEM_GUID_IS_RECOMMENDED(
+        Reason.Level.RECOMMENDATION,
+        "Items should contain a <guid>."),
     ;
 
+    private final Reason.Level defaultLevel;
     private final String message;
 
-    private FeedErrorType(String message) {
+    private ReasonType(Reason.Level defaultLevel, String message) {
+      this.defaultLevel = defaultLevel;
       this.message = message;
     }
 
-    /**
-     * @return the localized message for the type
-     */
     @Override
     public String getMessage(Locale locale) {
       return message;
     }
-  }
-
-  /**
-   * Recommendations for improving the utility of a feed.
-   */
-  public enum FeedRecommendationType implements CapException.ReasonType {
-    RSS_PUBDATE_IS_RECOMMENDED("Feeds should contain a <pubDate>"),
-    RSS_ITEM_GUID_IS_RECOMMENDED("Items should contain a <guid>"),
-    ;
-
-    private final String message;
-
-    private FeedRecommendationType(String message) {
-      this.message = message;
-    }
-
-    /**
-     * @return the localized message for the type
-     */
+    
     @Override
-    public String getMessage(Locale locale) {
-      return message;
+    public Reason.Level getDefaultLevel() {
+      return defaultLevel;
     }
   }
 }

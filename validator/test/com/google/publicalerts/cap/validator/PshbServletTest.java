@@ -25,6 +25,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.google.publicalerts.cap.testing.TestResources;
+import com.google.publicalerts.cap.Reason.Level;
 import com.google.publicalerts.cap.profile.CapProfile;
 
 import org.mockito.ArgumentCaptor;
@@ -33,12 +34,10 @@ import java.io.InputStream;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Set;
 
 import junit.framework.TestCase;
 
 import javax.mail.Message;
-import javax.mail.MessagingException;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 import javax.servlet.RequestDispatcher;
@@ -126,10 +125,10 @@ public class PshbServletTest extends TestCase {
     when(req.getParameter("email")).thenReturn("test@example.com");
 
     when(auth.authenticate(eq(cap), any(String.class), any(String.class)))
-	.thenReturn(PshbAuthenticator.AuthResult.OK);
+        .thenReturn(PshbAuthenticator.AuthResult.OK);
 
     ValidationResult result = new ValidationResult(cap);
-    result.addError(3, 0, "Error");
+    result.addValidationMessage(3, Level.ERROR, "Error");
     when(capValidator.validate(eq(cap), anySetOf(CapProfile.class)))
         .thenReturn(result);
 
