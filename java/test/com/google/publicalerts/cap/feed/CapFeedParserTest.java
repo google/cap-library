@@ -251,7 +251,7 @@ public class CapFeedParserTest extends TestCase {
 
     SyndLink link1 = new SyndLinkImpl();
     link1.setHref("http://example.org/cap?id=123");
-    List<SyndLink> links = Lists.newLinkedList();
+    List<SyndLink> links = Lists.newArrayList();
     links.add(link1);
     entry.setLinks(links);
     assertEquals(link1.getHref(), parser.getCapUrl(entry));

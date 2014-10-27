@@ -29,23 +29,25 @@ import com.google.publicalerts.cap.Reason.Level;
 public class ValidationMessage implements Comparable<ValidationMessage> {
   private final int lineNumber;
   private final Level level;
+  private final String source;
   private final String escapedMessage;
 
   static ValidationMessage withUnescapedMessage(
-      int lineNumber, Level level, String unescapedMessage) {
-    return new ValidationMessage(lineNumber, level,
+      int lineNumber, Level level, String source, String unescapedMessage) {
+    return new ValidationMessage(lineNumber, level, source,
         StringUtil.lineBreaksBr(StringUtil.htmlEscape(unescapedMessage)));
   }
 
   static ValidationMessage withEscapedMessage(
-      int lineNumber, Level level, String escapedMessage) {
-    return new ValidationMessage(lineNumber, level, escapedMessage);
+      int lineNumber, Level level, String source, String escapedMessage) {
+    return new ValidationMessage(lineNumber, level, source, escapedMessage);
   }
 
   private ValidationMessage(
-      int lineNumber, Level level, String escapedMessage) {
+      int lineNumber, Level level, String source, String escapedMessage) {
     this.lineNumber = lineNumber;
     this.level = checkNotNull(level);
+    this.source = checkNotNull(source);
     this.escapedMessage = checkNotNull(escapedMessage);
   }
 
@@ -61,6 +63,13 @@ public class ValidationMessage implements Comparable<ValidationMessage> {
    */
   public Level getLevel() {
     return level;
+  }
+  
+  /**
+   * @return the source of this message
+   */
+  public String getSource() {
+    return source;
   }
   
   /**

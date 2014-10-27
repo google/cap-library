@@ -140,8 +140,7 @@ public class ReasonsTest extends TestCase {
         ImmutableList.of(
             buildMockReason("/prefix3", MockReasonType.WARNING_TYPE),
             buildMockReason("/prefix4", MockReasonType.WARNING_TYPE)),
-        ImmutableList.copyOf(
-            Reasons.prefixWithXpath(reasons, "/prefix")));
+        ImmutableList.copyOf(reasons.prefixWithXpath("/prefix")));
   }
   
   private Reason buildMockReason(String uniqueString, MockReasonType type) {
@@ -170,6 +169,11 @@ public class ReasonsTest extends TestCase {
     @Override
     public Reason.Level getDefaultLevel() {
       return defaultLevel;
+    }
+    
+    @Override
+    public String getSource() {
+      return "Mock";
     }
   }
 }

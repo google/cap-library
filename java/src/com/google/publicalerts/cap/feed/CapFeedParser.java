@@ -138,8 +138,9 @@ public class CapFeedParser {
     }
   }
 
-  public static final Set<String> FEED_REPEATED_ELEMENTS = ImmutableSet.of(
-      "entry", "author", "category", "contributor", "link", "item");
+  public static final Set<String> FEED_REPEATED_ELEMENTS =
+      ImmutableSet.of(
+          "entry", "author", "category", "contributor", "link", "item");
   
   /** True to validate feeds and alerts that are parsed. */
   private boolean validate;
@@ -327,7 +328,7 @@ public class CapFeedParser {
       throw new NotCapException();
     }
 
-    List<Alert> alerts = Lists.newLinkedList();
+    List<Alert> alerts = Lists.newArrayList();
     for (SyndEntry entry : entries) {
       alerts.add(parseAlert(entry));
     }

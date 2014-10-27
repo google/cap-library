@@ -69,6 +69,12 @@ public class Reason {
      * @return the default severity for this type
      */
     Level getDefaultLevel();
+    
+    /**
+     * @return a string describing the source of this type of diagnostic
+     * information, e.g., a profile code
+     */
+    String getSource();
   }
   
   /**
@@ -85,12 +91,18 @@ public class Reason {
    * Message parameters for the reason.
    */
   private final Object[] messageParams;
-  
+
+  public Reason(String xPath, Type type, Object...messageParams) {
+    this.xPath = Preconditions.checkNotNull(xPath);
+    this.type = Preconditions.checkNotNull(type);
+    this.messageParams = messageParams;
+  }
+
   /**
-   * Builds a copy of the {@link Reason} provided as input, with the XPath
-   * prefixed with {@code xPathPrefix}.
+   * Builds a copy of this {@link Reason}, with the XPath prefixed with
+   * {@code xPathPrefix}.
    * 
-   * <p>For instance, if the input reason has XPath <code>/alert</code>, and
+   * <p>For instance, if the this reason has XPath <code>/alert</code>, and
    * {@code xPathPrefix} is <code>/feed/entry[1]</code>, the output reason will
    * have XPath <code>/feed/entry[1]/alert</code>.
    * 
@@ -98,17 +110,10 @@ public class Reason {
    * and the diagnostic information collected about an XML fragment needs to be
    * changed so that it references the fragment within the XML file.
    */
-  public static Reason prefixWithXpath(Reason reason, String xPathPrefix) {
-    return new Reason(
-        xPathPrefix + reason.xPath, reason.type, reason.messageParams);
+  public Reason prefixWithXpath(String xPathPrefix) {
+    return new Reason(xPathPrefix + xPath, type, messageParams);
   }
   
-  public Reason(String xPath, Type type, Object...messageParams) {
-    this.xPath = Preconditions.checkNotNull(xPath);
-    this.type = Preconditions.checkNotNull(type);
-    this.messageParams = messageParams;
-  }
-
   /**
    * @return the type of this reason
    */
@@ -122,14 +127,22 @@ public class Reason {
   public String getXPath() {
     return xPath;
   }
-  
+
   /**
    * @return the level of this reason
    */
   public Level getLevel() {
     return type.getDefaultLevel();
   }
-  
+
+  /**
+   * @return a string describing the source of this diagnostic information,
+   * e.g., a profile code
+   */
+  public String getSource() {
+    return type.getSource();
+  }
+
   /**
    * @return the {@code i}th message param, or null if {@code i} is out of
    * bounds
@@ -159,7 +172,7 @@ public class Reason {
     if (messageParams.length == 0) {
       return type.getMessage(locale);
     }
-    
+
     return MessageFormat.format(type.getMessage(locale), messageParams);
   }
 

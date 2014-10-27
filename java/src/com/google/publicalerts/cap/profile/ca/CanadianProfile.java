@@ -61,6 +61,8 @@ public class CanadianProfile extends AbstractCapProfile {
    */
   public static final String EC_MSC_SMC_PARENT_URI = "layer:EC-MSC-SMC:1.0:Parent_URI";
 
+  private static final String CANADIAN_PROFILE_CODE = "profile:CAP-CP:1.0";
+  
   public CanadianProfile() {
     super();
   }
@@ -82,7 +84,7 @@ public class CanadianProfile extends AbstractCapProfile {
 
   @Override
   public String getCode() {
-    return "profile:CAP-CP:1.0";
+    return CANADIAN_PROFILE_CODE;
   }
 
   @Override
@@ -343,6 +345,11 @@ public class CanadianProfile extends AbstractCapProfile {
     @Override
     public Reason.Level getDefaultLevel() {
       return defaultLevel;
+    }
+    
+    @Override
+    public String getSource() {
+      return CANADIAN_PROFILE_CODE;
     }
   }
 }

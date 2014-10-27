@@ -209,7 +209,7 @@ public class CapFeedValidator {
 
     for (int i = 0; i < feed.getContentObjects().size(); i++) {
       boolean foundcap = false;
-      List<Reason> reasonBuffer = Lists.newLinkedList();
+      List<Reason> reasonBuffer = Lists.newArrayList();
       
       ContentObject content = feed.getContentObjects().get(i);
 
@@ -259,7 +259,7 @@ public class CapFeedValidator {
           ReasonType.RSS_PUBDATE_IS_RECOMMENDED));
     }
 
-    List<Reason> itemReasons = Lists.newLinkedList();
+    List<Reason> itemReasons = Lists.newArrayList();
     @SuppressWarnings("unchecked")
     List<Item> items = channel.getItems();
     for (int i = 0; i < items.size(); i++) {

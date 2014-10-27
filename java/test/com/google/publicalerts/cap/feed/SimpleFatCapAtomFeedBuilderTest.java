@@ -48,7 +48,7 @@ public class SimpleFatCapAtomFeedBuilderTest extends TestCase {
   }
 
   private List<Alert> extractAlerts(SyndFeed feed) throws Exception {
-    List<Alert> alerts = Lists.newLinkedList();
+    List<Alert> alerts = Lists.newArrayList();
     @SuppressWarnings("unchecked")
     List<SyndEntry> entries = feed.getEntries();
     for (SyndEntry entry : entries) {

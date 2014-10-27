@@ -89,22 +89,6 @@ public final class Reasons implements Iterable<Reason> {
   }
   
   /**
-   * Builds a copy of the {@link Reasons} provided as input, with the XPath
-   * prefixed with {@code xPathPrefix}.
-   * 
-   * @see Reason#prefixWithXpath(Reason, String)
-   */
-  public static Reasons prefixWithXpath(Reasons reasons, String xPathPrefix) {
-    Reasons.Builder builder = Reasons.newBuilder();
-    
-    for (Reason reason : reasons) {
-      builder.add(Reason.prefixWithXpath(reason, xPathPrefix));
-    }
-
-    return builder.build();
-  }
-  
-  /**
    * Private constructor.
    * 
    * <p>Build {@link Reasons} objects using the static
@@ -112,6 +96,22 @@ public final class Reasons implements Iterable<Reason> {
    */  
   private Reasons(ImmutableListMultimap<Level, Reason> multimap) {
     this.multimap = multimap;
+  }
+
+  /**
+   * Builds a copy of this {@link Reasons} object, with the XPath prefixed
+   * with {@code xPathPrefix}.
+   * 
+   * @see Reason#prefixWithXpath(String)
+   */
+  public Reasons prefixWithXpath(String xPathPrefix) {
+    Reasons.Builder builder = Reasons.newBuilder();
+    
+    for (Reason reason : this) {
+      builder.add(reason.prefixWithXpath(xPathPrefix));
+    }
+
+    return builder.build();
   }
   
   @Override

@@ -51,7 +51,6 @@ public class ReasonTest extends TestCase {
     Reason expectedReason = new Reason("/feed/entry[1]/alert",
         ReasonType.INVALID_AREA, "param1", "param2");
     
-    assertEquals(
-        expectedReason, Reason.prefixWithXpath(reason, "/feed/entry[1]"));
+    assertEquals(expectedReason, reason.prefixWithXpath("/feed/entry[1]"));
   }
 }

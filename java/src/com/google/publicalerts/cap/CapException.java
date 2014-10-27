@@ -185,5 +185,10 @@ public class CapException extends Exception {
     public Reason.Level getDefaultLevel() {
       return defaultLevel;
     }
+
+    @Override
+    public String getSource() {
+      return "CAP";
+    }
   }
 }

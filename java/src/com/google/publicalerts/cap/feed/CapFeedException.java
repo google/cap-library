@@ -113,5 +113,10 @@ public class CapFeedException extends CapException {
     public Reason.Level getDefaultLevel() {
       return defaultLevel;
     }
+    
+    @Override
+    public String getSource() {
+      return "Feed";
+    }
   }
 }

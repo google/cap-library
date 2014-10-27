@@ -41,6 +41,8 @@ import java.util.Set;
  */
 public class Ipaws1Profile extends AbstractCapProfile {
 
+  private static final String IPAWS1_PROFILE_CODE = "IPAWSv1.0";
+  
   public Ipaws1Profile() {
     super();
   }
@@ -62,7 +64,7 @@ public class Ipaws1Profile extends AbstractCapProfile {
 
   @Override
   public String getCode() {
-    return "IPAWSv1.0";
+    return IPAWS1_PROFILE_CODE;
   }
 
   @Override
@@ -307,6 +309,11 @@ public class Ipaws1Profile extends AbstractCapProfile {
     @Override
     public Reason.Level getDefaultLevel() {
       return defaultLevel;
+    }
+    
+    @Override
+    public String getSource() {
+      return IPAWS1_PROFILE_CODE;
     }
   }
 }

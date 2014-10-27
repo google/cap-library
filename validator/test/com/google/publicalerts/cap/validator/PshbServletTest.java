@@ -128,7 +128,7 @@ public class PshbServletTest extends TestCase {
         .thenReturn(PshbAuthenticator.AuthResult.OK);
 
     ValidationResult result = new ValidationResult(cap);
-    result.addValidationMessage(3, Level.ERROR, "Error");
+    result.addValidationMessage(3, Level.ERROR, "Validator", "Error");
     when(capValidator.validate(eq(cap), anySetOf(CapProfile.class)))
         .thenReturn(result);
 

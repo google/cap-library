@@ -46,7 +46,8 @@ import java.util.Set;
  * @author shakusa@google.com (Steve Hakusa)
  */
 public class GoogleProfile extends AbstractCapProfile {
-
+  private static final String GOOGLE_PROFILE_CODE = "google";
+  
   public GoogleProfile() {
     super();
   }
@@ -68,7 +69,7 @@ public class GoogleProfile extends AbstractCapProfile {
 
   @Override
   public String getCode() {
-    return "google";
+    return GOOGLE_PROFILE_CODE;
   }
 
   @Override
@@ -461,6 +462,11 @@ public class GoogleProfile extends AbstractCapProfile {
     @Override
     public Reason.Level getDefaultLevel() {
       return defaultLevel;
+    }
+    
+    @Override
+    public String getSource() {
+      return GOOGLE_PROFILE_CODE;
     }
   }
 }

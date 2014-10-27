@@ -174,9 +174,9 @@ public class XmlSignatureValidator {
     // We assume that each signature was applied to the document without any
     // other signature nodes.  Thus we remove all signature nodes and add back
     // one-at-a-time each we test for validity.
-    List<Result.Detail> details = Lists.newLinkedList();
+    List<Result.Detail> details = Lists.newArrayList();
     Node parent = nl.item(0).getParentNode();
-    List<Node> signatureNodes = Lists.newLinkedList();
+    List<Node> signatureNodes = Lists.newArrayList();
     for (int i = 0; i < numSignatures; i++) {
       // Note NodeList is just a view on the DOM, it gets mutated each time you call
       // removeChild, therefore we always remove the 0th child.

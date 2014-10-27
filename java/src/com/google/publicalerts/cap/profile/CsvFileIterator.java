@@ -77,7 +77,7 @@ public class CsvFileIterator implements Iterator<CsvFileIterator.CsvRow> {
   }
 
   String[] splitRow(CharSequence line) {
-    List<String> cellBuffer = Lists.newLinkedList();
+    List<String> cellBuffer = Lists.newArrayList();
     int cellStart = 0;
     int cellEnd;
     int len = line.length();

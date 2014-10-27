@@ -29,7 +29,6 @@ import com.google.publicalerts.cap.Reason;
 import com.google.publicalerts.cap.Reasons;
 import com.google.publicalerts.cap.Reason.Level;
 import com.google.publicalerts.cap.XercesCapExceptionMapper;
-import com.google.publicalerts.cap.profile.CapProfile;
 
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.ParsingFeedException;
@@ -76,9 +75,9 @@ public class ValidationResult {
    * @param unescapedMessage the unescaped text of validation message text
    */
   public void addValidationMessage(
-      int lineNum, Level level, String unescapedMessage) {
+      int lineNum, Level level, String source, String unescapedMessage) {
     validationMessages.add(ValidationMessage.withUnescapedMessage(
-        lineNum, level, unescapedMessage));
+        lineNum, level, source, unescapedMessage));
   }
 
   /**
@@ -86,11 +85,11 @@ public class ValidationResult {
    *
    * @param reasons the reasons to add
    */
-  public void addValidationMessages(Reasons reasons, String... messagePrefix) {
+  public void addValidationMessages(Reasons reasons) {
     for (Reason reason : new XercesCapExceptionMapper().map(reasons)) {
       int lineOffset = getLineOffsets().getXPathLineNumber(reason.getXPath());
-      addValidationMessage(
-          lineOffset, reason.getLevel(), messagePrefix[0] + reason.getMessage());
+      addValidationMessage(lineOffset, reason.getLevel(),
+          reason.getSource(), reason.getMessage());
     }
   }
   
@@ -112,10 +111,11 @@ public class ValidationResult {
   public void addValidationMessage(FeedException e) {
     if (e instanceof ParsingFeedException) {
       ParsingFeedException pfe = (ParsingFeedException) e;
-      addValidationMessage(
-          pfe.getLineNumber(), Level.ERROR, pfe.getLocalizedMessage());
+      addValidationMessage(pfe.getLineNumber(), Level.ERROR, "XML parser",
+          pfe.getLocalizedMessage());
     } else {
-      addValidationMessage(1, Level.ERROR, e.getLocalizedMessage());
+      addValidationMessage(1, Level.ERROR, "XML parser",
+          e.getLocalizedMessage());
     }
   }
 
@@ -128,7 +128,7 @@ public class ValidationResult {
   public void addValidationMessageForLink(String linkUrl, Reasons reasons) {
     for (Reason reason : new XercesCapExceptionMapper().map(reasons)) {
       addValidationMessageForLink(
-          linkUrl, reason.getLevel(), reason.getMessage());
+          linkUrl, reason.getLevel(), reason.getSource(), reason.getMessage());
     }
   }
   
@@ -140,22 +140,11 @@ public class ValidationResult {
    * @param message the free-text message
    */
   public void addValidationMessageForLink(
-      String linkUrl, Level level, String message) {
+      String linkUrl, Level level, String source, String message) {
     Integer lineNum = getLineOffsets().getLinkLineNumber(linkUrl);
     lineNum = (lineNum == null) ? 0 : lineNum;
     
-    addValidationMessage(lineNum, level, message);
-  }
-  
-  /**
-   * Adds the reasons as validation messages to the result.
-   *
-   * @param profile the profile that generated the messages
-   * @param reasons the reasons to add
-   */
-  public void addValidationMessageForProfile(
-      CapProfile profile, Reasons reasons) {
-    addValidationMessages(reasons, profile.getCode() + ": ");
+    addValidationMessage(lineNum, level, source, message);
   }
   
   /**

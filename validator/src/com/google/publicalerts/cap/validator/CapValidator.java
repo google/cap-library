@@ -81,7 +81,7 @@ public class CapValidator {
     } catch (IOException e) {
       // There was a problem loading the feed from a URL
       log.info("URLRequest: Error");
-      result.addValidationMessage(1, Level.ERROR,
+      result.addValidationMessage(1, Level.ERROR, "URL retriever",
           "Unable to load content from " + input);
       return result;
     }
@@ -117,8 +117,8 @@ public class CapValidator {
         result.addValidationMessages(ce);
       } catch (NotCapException nce) {
         log.info("InvalidRequest");
-        result.addValidationMessage(1, Level.ERROR, "The input must be a "
-            + "CAP 1.0, 1.1, or 1.2 message or an RSS or Atom feed of CAP "
+        result.addValidationMessage(1, Level.ERROR, "CAP", "The input must be "
+            + "a CAP 1.0, 1.1, or 1.2 message or an RSS or Atom feed of CAP "
             + "messages");
         return result;
       }
@@ -156,8 +156,7 @@ public class CapValidator {
   }
 
   private Reasons prefixReasonForContent(Reasons reasons, int entryIndex) {
-    return Reasons.prefixWithXpath(
-        reasons, "/feed/entry[" + entryIndex + "]/content");
+    return reasons.prefixWithXpath("/feed/entry[" + entryIndex + "]/content");
   }
   
   private void checkProfiles(Alert alert, ValidationResult result,
@@ -176,7 +175,7 @@ public class CapValidator {
         if (entryIndex >= 0) {
           reasons = prefixReasonForContent(reasons, entryIndex);
         }
-        result.addValidationMessageForProfile(profile, reasons);
+        result.addValidationMessages(reasons);
       }
     }
   }
@@ -190,7 +189,7 @@ public class CapValidator {
 
     long reqTime = System.currentTimeMillis() - result.getStartTimeMillis();
     if (reqTime > REQUEST_DEADLINE_MS) {
-      result.addValidationMessageForLink(capUrl, Level.ERROR,
+      result.addValidationMessageForLink(capUrl, Level.ERROR, "",
           "Validate request timed out before loading: " + capUrl);
       return null;
     }
@@ -199,8 +198,8 @@ public class CapValidator {
     try {
       cap = loadUrl(capUrl);
     } catch (IOException e) {
-      result.addValidationMessageForLink(
-          capUrl, Level.ERROR, "Unable to load CAP link: " + capUrl);
+      result.addValidationMessageForLink(capUrl, Level.ERROR, "URL retriever",
+          "Unable to load CAP link: " + capUrl);
       return null;
     }
 
@@ -211,7 +210,7 @@ public class CapValidator {
       return null;
     } catch (NotCapException e) {
       result.addValidationMessageForLink(
-          capUrl, Level.ERROR, "Link does not point to a CAP message");
+          capUrl, Level.ERROR, "CAP", "Link does not point to a CAP message");
       return null;
     }
   }

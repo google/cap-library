@@ -63,7 +63,7 @@ public class SimpleFatCapAtomFeedBuilder {
     syndFeed.setUri(feedUri);
     syndFeed.setPublishedDate(feedPublishedDate);
 
-    List<SyndEntry> feedEntries = Lists.newLinkedList();
+    List<SyndEntry> feedEntries = Lists.newArrayList();
     for (Alert alert : capAlerts) {
       SyndEntry entry = new SyndEntryImpl();
       entry.setUri(alert.getIdentifier());

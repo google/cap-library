@@ -22,6 +22,7 @@ import com.google.publicalerts.cap.CapException.ReasonType;
 import com.google.publicalerts.cap.CapXmlParser.CapXmlHandler;
 import com.google.publicalerts.cap.Reason.Level;
 import com.google.publicalerts.cap.testing.CapTestUtil;
+
 import junit.framework.TestCase;
 
 import org.xml.sax.SAXParseException;
