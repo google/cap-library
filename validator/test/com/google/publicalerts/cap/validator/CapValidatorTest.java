@@ -25,10 +25,8 @@ import junit.framework.TestCase;
 import com.google.common.collect.ImmutableMultiset;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.ImmutableListMultimap;
-import com.google.common.collect.HashMultimap;
 import com.google.common.collect.LinkedListMultimap;
 import com.google.common.collect.ListMultimap;
-import com.google.common.collect.SetMultimap;
 import com.google.common.collect.Sets;
 import com.google.publicalerts.cap.Reason.Level;
 import com.google.publicalerts.cap.testing.TestResources;
@@ -58,7 +56,7 @@ public class CapValidatorTest extends TestCase {
   public void testNotXml() {
     String xml = "invalid";
     
-    assertByLineReccomendationMap(
+    assertByLineValidationMessageMap(
         validator.validate(xml, NO_PROFILES),
         ImmutableListMultimap.of(1, Level.ERROR));
   }
@@ -68,7 +66,7 @@ public class CapValidatorTest extends TestCase {
         "<?xml version='1.0' encoding='UTF-8' standalone='yes'?><test></test>";
     
     // Expected error on line 1
-    assertByLineReccomendationMap(
+    assertByLineValidationMessageMap(
         validator.validate(xml, NO_PROFILES),
         ImmutableListMultimap.of(1, Level.ERROR));
   }
@@ -78,7 +76,7 @@ public class CapValidatorTest extends TestCase {
     cap = cap.replaceAll("identifier", "invalid");
     
     // Expect an error on line 4 (where <identifier> was in the alert)
-    assertByLineReccomendationMap(
+    assertByLineValidationMessageMap(
         validator.validate(cap, NO_PROFILES),
         ImmutableListMultimap.of(4, Level.ERROR));
   }
@@ -89,7 +87,7 @@ public class CapValidatorTest extends TestCase {
     
     // Expect an error on line 7 (where <author> was in the alert)    
     // TODO(sschiavoni): fix this regression
-    assertByLineReccomendationMap(
+    assertByLineValidationMessageMap(
         validator.validate(cap, NO_PROFILES),
         ImmutableListMultimap.of(1, Level.ERROR));
   }
@@ -117,7 +115,7 @@ public class CapValidatorTest extends TestCase {
     String cap = TestResources.load("earthquake_index.atom");
 
     // Expect an error at line 10, where the <link> appears
-    assertByLineReccomendationMap(
+    assertByLineValidationMessageMap(
         validator.validate(cap, NO_PROFILES),
         ImmutableListMultimap.of(10, Level.ERROR));
   }
@@ -131,6 +129,15 @@ public class CapValidatorTest extends TestCase {
     assertEquals(1, result.getValidAlerts().size());
   }
 
+  public void testFatAtomFeedNoEntries() throws Exception {
+    String feed = TestResources.load("no_entries.atom");
+
+    // Expect an error on the first
+    assertByLineValidationMessageMap(
+        validator.validate(feed, NO_PROFILES),
+        ImmutableListMultimap.of(1, Level.ERROR));
+  }
+  
   public void testCap() throws Exception {
     String cap = TestResources.load("earthquake.cap");
     ValidationResult result = validator.validate(cap, NO_PROFILES);
@@ -146,7 +153,7 @@ public class CapValidatorTest extends TestCase {
         Sets.<CapProfile>newHashSet(new Ipaws1Profile()));
     
     // Expect no errors, 2 recommendations from the profile
-    assertByLineReccomendationMap(
+    assertByLineValidationMessageMap(
         result,
         ImmutableListMultimap.of(
             11, Level.RECOMMENDATION,
@@ -159,7 +166,7 @@ public class CapValidatorTest extends TestCase {
         Sets.<CapProfile>newHashSet(new Ipaws1Profile()));
     
     // Expect 2 errors, 2 recommendations
-    assertByLineReccomendationMap(
+    assertByLineValidationMessageMap(
         result,
         ImmutableListMultimap.of(
             16, Level.ERROR,
@@ -174,14 +181,14 @@ public class CapValidatorTest extends TestCase {
         Sets.<CapProfile>newHashSet(new Ipaws1Profile()));
 
     // Expect no errors, one recommendation entry at the link line
-    assertByLineReccomendationMap(
+    assertByLineValidationMessageMap(
         result,
         ImmutableListMultimap.of(
             10, Level.RECOMMENDATION,
             10, Level.RECOMMENDATION));
   }
 
-  private void assertByLineReccomendationMap(
+  private void assertByLineValidationMessageMap(
       ValidationResult actualResult, ListMultimap<Integer, Level> expected) {
     ListMultimap<Integer, Level> actualMap = LinkedListMultimap.create();
     

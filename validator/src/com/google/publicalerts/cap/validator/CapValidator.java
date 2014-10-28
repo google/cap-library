@@ -126,6 +126,13 @@ public class CapValidator {
     } else {
       List<SyndEntry> entries = feed.getEntries();
       log.info("FeedRequest: " + entries.size() + " entries");
+      
+      if (entries.isEmpty()) {
+        result.addValidationMessage(1, Level.ERROR, "CAP", "The input must be "
+            + "a CAP 1.0, 1.1, or 1.2 message or an RSS or Atom feed of CAP "
+            + "messages");
+      }
+      
       for (int i = 0; i < entries.size(); i++) {
 
         SyndEntry entry = entries.get(i);
