@@ -47,37 +47,27 @@ public class XPath {
   private final Set<String> repeatedFields;
   private final Stack<String> elements;
   private Map<String, Integer> indexMap; // Key is a non-predicated XPath
-  private String lastNonPredicatedXPath;
   
   public XPath(Iterable<String> repeatedFields) {
     this.repeatedFields = ImmutableSet.copyOf(repeatedFields);
     this.elements = new Stack<String>();
     this.indexMap = Maps.newHashMap();
-    this.lastNonPredicatedXPath = null;
   }
 
   public void push(String element) {
-    if (elements.isEmpty() || !element.equals(elements.peek())) {
-      elements.push(element);
-    }
+    elements.push(element);
     
-    String currentSimpleXPath = getNonPredicatedXPath();
-    lastNonPredicatedXPath = null;
+    String currentNonPredicatedXPath = getNonPredicatedXPath();
     
-    if (indexMap.containsKey(currentSimpleXPath)) {
-      indexMap.put(currentSimpleXPath,
-          indexMap.get(currentSimpleXPath) + 1);
+    if (indexMap.containsKey(currentNonPredicatedXPath)) {
+      indexMap.put(currentNonPredicatedXPath,
+          indexMap.get(currentNonPredicatedXPath) + 1);
     } else {
-      indexMap.put(currentSimpleXPath, 0);
+      indexMap.put(currentNonPredicatedXPath, 0);
     }
   }
 
   public void pop() {
-    if (!elements.peek().equals(lastNonPredicatedXPath)) {
-      indexMap.remove(lastNonPredicatedXPath);
-    }
-
-    lastNonPredicatedXPath = getNonPredicatedXPath();
     elements.pop();
   }
 

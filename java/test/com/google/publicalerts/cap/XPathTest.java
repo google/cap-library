@@ -27,7 +27,7 @@ import junit.framework.TestCase;
  */
 public class XPathTest extends TestCase {
 
-  public void testGetXPaths() {
+  public void testGetXPath() {
     XPath xpath = new XPath(ImmutableSet.of("A", "B"));
     assertEquals("/", xpath.toString());
     assertEquals("/", xpath.getNonPredicatedXPath());
@@ -130,7 +130,7 @@ public class XPathTest extends TestCase {
    * Tests the case of an XML document that allows multiple repeated fields
    * with the same name in different parts of the document.
    */
-  public void testGetXPaths_multipleRepeatedFieldsWithSameName() {
+  public void testGetXPath_multipleRepeatedFieldsWithSameName() {
     XPath xpath = new XPath(ImmutableSet.of("link", "item"));
     assertEquals("/", xpath.toString());
     assertEquals("/", xpath.getNonPredicatedXPath());
@@ -198,5 +198,24 @@ public class XPathTest extends TestCase {
     xpath.push("link");
     assertEquals("/rss/channel/item[1]/link[1]", xpath.toString());
     assertEquals("/rss/channel/item[1]/link", xpath.getNonPredicatedXPath());
+  }
+  
+  /**
+   * Tests the case of an XML document that allows an element to contain itself, like
+   * 
+   *  <pre>
+   *  <feed>
+   *    <feed></feed>
+   *  </feed>
+   *  </pre>
+   */
+  public void testPushPop_nestedElementsWithSameName() {
+    XPath xpath = new XPath(ImmutableSet.<String>of());
+
+    xpath.push("feed");
+    xpath.push("feed");
+
+    xpath.pop();
+    xpath.pop();
   }
 }
