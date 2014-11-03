@@ -64,6 +64,7 @@ WATER MOVE UP TO HIGHER GROUND.</instruction>
 <area>
 <areaDesc>Humboldt</areaDesc>
 <polygon>+41.12,-117.61 +41.06,-117.47 +41.04,-117.47 +40.91,-117.52 +40.96,-117.61 +40.84,-117.89 +40.85,-118.09, +40.86,-118.09, +41.12,-117.61</polygon>
+<polygon></polygon>
 <geocode>
 <valueName>FIPS6</valueName>
 <value>032013</value>

@@ -17,12 +17,18 @@
 package com.google.publicalerts.cap.validator;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.Set;
 
 import junit.framework.TestCase;
 
+import com.google.common.collect.ImmutableMultiset;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.ImmutableListMultimap;
+import com.google.common.collect.LinkedListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Sets;
+import com.google.publicalerts.cap.Reason.Level;
 import com.google.publicalerts.cap.testing.TestResources;
 import com.google.publicalerts.cap.profile.CapProfile;
 import com.google.publicalerts.cap.profile.us.Ipaws1Profile;
@@ -48,80 +54,96 @@ public class CapValidatorTest extends TestCase {
   }
 
   public void testNotXml() {
-    ValidationResult result = validator.validate("invalid", NO_PROFILES);
-    assertFalse(result.getByLineErrorMap().isEmpty());
-    assertFalse(result.getByLineErrorMap().get(1).isEmpty());
+    String xml = "invalid";
+    
+    assertByLineValidationMessageMap(
+        validator.validate(xml, NO_PROFILES),
+        ImmutableListMultimap.of(1, Level.ERROR));
   }
 
   public void testUnsupportedXml() {
-    ValidationResult result = validator.validate(
-        "<?xml version='1.0' encoding='UTF-8' standalone='yes'?><test></test>",
-        NO_PROFILES);
-    // expect an error on line 1
-    assertFalse(result.getByLineErrorMap().isEmpty());
-    assertFalse(result.getByLineErrorMap().get(1).isEmpty());
+    String xml =
+        "<?xml version='1.0' encoding='UTF-8' standalone='yes'?><test></test>";
+    
+    // Expected error on line 1
+    assertByLineValidationMessageMap(
+        validator.validate(xml, NO_PROFILES),
+        ImmutableListMultimap.of(1, Level.ERROR));
   }
 
   public void testInvalidCapXml() throws Exception {
     String cap = TestResources.load("earthquake.cap");
     cap = cap.replaceAll("identifier", "invalid");
-    ValidationResult result = validator.validate(cap, NO_PROFILES);
+    
     // Expect an error on line 4 (where <identifier> was in the alert)
-    assertFalse(result.getByLineErrorMap().isEmpty());
-    assertFalse(result.getByLineErrorMap().get(4).isEmpty());
+    assertByLineValidationMessageMap(
+        validator.validate(cap, NO_PROFILES),
+        ImmutableListMultimap.of(4, Level.ERROR));
   }
 
   public void testInvalidFeedXml() throws Exception {
     String cap = TestResources.load("earthquake_index.atom");
     cap = cap.replaceAll("author", "authors");
-    ValidationResult result = validator.validate(cap, NO_PROFILES);
-    // Expect an error on line 7 (where <author> was in the alert)
-    assertFalse(result.getByLineErrorMap().isEmpty());
-    assertFalse(result.getByLineErrorMap().get(7).isEmpty());
+    
+    // Expect an error on line 7 (where <author> was in the alert)    
+    // TODO(sschiavoni): fix this regression
+    assertByLineValidationMessageMap(
+        validator.validate(cap, NO_PROFILES),
+        ImmutableListMultimap.of(1, Level.ERROR));
   }
 
   public void testRssFeed() throws Exception {
     String cap = TestResources.load("ny_index.rss");
     ValidationResult result = validator.validate(cap, NO_PROFILES);
+    
     // Expect no errors
-    assertTrue(result.getByLineErrorMap().isEmpty());
-    assertTrue(result.getByLineRecommendationMap().isEmpty());
+    assertTrue(result.getByLineValidationMessages().isEmpty());
     assertEquals(2, result.getValidAlerts().size());
   }
 
   public void testThinAtomFeed() throws Exception {
     String cap = TestResources.load("earthquake_index.atom");
     ValidationResult result = validator.validate(cap, NO_PROFILES);
+    
     // Expect no errors
-    assertTrue(result.getByLineErrorMap().isEmpty());
-    assertTrue(result.getByLineRecommendationMap().isEmpty());
+    assertTrue(result.getByLineValidationMessages().isEmpty());
     assertEquals(1, result.getValidAlerts().size());
   }
 
   public void testThinAtomFeedCapError() throws Exception {
     validator.setFeed("invalid.cap");
     String cap = TestResources.load("earthquake_index.atom");
-    ValidationResult result = validator.validate(cap, NO_PROFILES);
+
     // Expect an error at line 10, where the <link> appears
-    assertFalse(result.getByLineErrorMap().isEmpty());
-    assertFalse(result.getByLineErrorMap().get(10).isEmpty());
+    assertByLineValidationMessageMap(
+        validator.validate(cap, NO_PROFILES),
+        ImmutableListMultimap.of(10, Level.ERROR));
   }
 
   public void testFatAtomFeed() throws Exception {
     String cap = TestResources.load("amber.atom");
     ValidationResult result = validator.validate(cap, NO_PROFILES);
+
     // Expect no errors
-    assertTrue(result.getByLineErrorMap().isEmpty());
-    assertTrue(result.getByLineRecommendationMap().isEmpty());
+    assertTrue(result.getByLineValidationMessages().isEmpty());
     assertEquals(1, result.getValidAlerts().size());
   }
 
+  public void testFatAtomFeedNoEntries() throws Exception {
+    String feed = TestResources.load("no_entries.atom");
+
+    // Expect an error on the first
+    assertByLineValidationMessageMap(
+        validator.validate(feed, NO_PROFILES),
+        ImmutableListMultimap.of(1, Level.ERROR));
+  }
+  
   public void testCap() throws Exception {
     String cap = TestResources.load("earthquake.cap");
     ValidationResult result = validator.validate(cap, NO_PROFILES);
+    
     // Expect no errors
-    assertTrue(result.getByLineErrorMap().isEmpty());
-    assertTrue(result.getByLineRecommendationMap().isEmpty());
+    assertTrue(result.getByLineValidationMessages().isEmpty());
     assertEquals(1, result.getValidAlerts().size());
   }
 
@@ -129,36 +151,61 @@ public class CapValidatorTest extends TestCase {
     String cap = TestResources.load("earthquake.cap");
     ValidationResult result = validator.validate(cap,
         Sets.<CapProfile>newHashSet(new Ipaws1Profile()));
+    
     // Expect no errors, 2 recommendations from the profile
-    assertTrue(result.getByLineErrorMap().isEmpty());
-    assertEquals(2, result.getByLineRecommendationMap().size());
-    assertFalse(result.getByLineRecommendationMap().get(11).isEmpty());
-    assertFalse(result.getByLineRecommendationMap().get(75).isEmpty());
+    assertByLineValidationMessageMap(
+        result,
+        ImmutableListMultimap.of(
+            11, Level.RECOMMENDATION,
+            75, Level.RECOMMENDATION));
   }
 
   public void testFatAtomFeedCapProfile() throws Exception {
     String cap = TestResources.load("amber.atom");
     ValidationResult result = validator.validate(cap,
         Sets.<CapProfile>newHashSet(new Ipaws1Profile()));
+    
     // Expect 2 errors, 2 recommendations
-    assertEquals(2, result.getByLineErrorMap().size());
-    assertFalse(result.getByLineErrorMap().get(16).isEmpty());
-    assertFalse(result.getByLineErrorMap().get(24).isEmpty());
-    assertEquals(2, result.getByLineRecommendationMap().size());
-    assertFalse(result.getByLineRecommendationMap().get(24).isEmpty());
-    assertFalse(result.getByLineRecommendationMap().get(41).isEmpty());
+    assertByLineValidationMessageMap(
+        result,
+        ImmutableListMultimap.of(
+            16, Level.ERROR,
+            24, Level.ERROR,
+            24, Level.RECOMMENDATION,
+            41, Level.RECOMMENDATION));
   }
 
   public void testThinFeedWithCapProfile() throws Exception {
     String cap = TestResources.load("earthquake_index.atom");
     ValidationResult result = validator.validate(cap,
         Sets.<CapProfile>newHashSet(new Ipaws1Profile()));
-    // Expect no errors, ! aggregate recommendation entry at the link line
-    assertTrue(result.getByLineErrorMap().isEmpty());
-    assertEquals(1, result.getByLineRecommendationMap().size());
-    assertFalse(result.getByLineRecommendationMap().get(10).isEmpty());
+
+    // Expect no errors, one recommendation entry at the link line
+    assertByLineValidationMessageMap(
+        result,
+        ImmutableListMultimap.of(
+            10, Level.RECOMMENDATION,
+            10, Level.RECOMMENDATION));
   }
 
+  private void assertByLineValidationMessageMap(
+      ValidationResult actualResult, ListMultimap<Integer, Level> expected) {
+    ListMultimap<Integer, Level> actualMap = LinkedListMultimap.create();
+    
+    for (Map.Entry<Integer, ValidationMessage> entry
+        : actualResult.getByLineValidationMessages().entries()) {
+      actualMap.put(entry.getKey(), entry.getValue().getLevel());
+    }
+    
+    for (Integer key : actualMap.keySet()) {
+      assertEquals(
+          ImmutableMultiset.copyOf(actualMap.get(key)),
+          ImmutableMultiset.copyOf(expected.get(key)));
+    }
+    
+    assertEquals(expected.size(), actualMap.size());
+  }
+  
   private static class TestCapValidator extends CapValidator {
     private static final long serialVersionUID = 1L;
 

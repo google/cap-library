@@ -35,6 +35,7 @@ public class CapJsonBuilderTest extends TestCase {
     super(s);
   }
 
+  @Override
   protected void setUp() throws Exception {
     builder = new CapJsonBuilder();
   }

@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2011 Google Inc.
+ * Copyright (C) 2012 Google Inc.
  *
  * Licensed under the Apache License, Version 2.0 (the "License"); you may not
  * use this file except in compliance with the License. You may obtain a copy of
@@ -16,6 +16,7 @@
 
 package com.google.publicalerts.cap.feed;
 
+import com.google.common.collect.Lists;
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.testing.TestResources;
 
@@ -24,7 +25,6 @@ import com.sun.syndication.feed.synd.SyndFeed;
 
 import junit.framework.TestCase;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -48,7 +48,7 @@ public class SimpleFatCapAtomFeedBuilderTest extends TestCase {
   }
 
   private List<Alert> extractAlerts(SyndFeed feed) throws Exception {
-    List<Alert> alerts = new ArrayList<Alert>();
+    List<Alert> alerts = Lists.newArrayList();
     @SuppressWarnings("unchecked")
     List<SyndEntry> entries = feed.getEntries();
     for (SyndEntry entry : entries) {
@@ -58,7 +58,8 @@ public class SimpleFatCapAtomFeedBuilderTest extends TestCase {
   }
 
   public void testToAtomFeed() throws Exception {
-    SyndFeed expectedFeed = capFeedParser.parseFeed(TestResources.load("weather.atom"));
+    SyndFeed expectedFeed =
+        capFeedParser.parseFeed(TestResources.load("weather.atom"));
 
     String constructedFeedString = capFeedBuilder.toAtomFeed(
         expectedFeed.getTitle(),
@@ -69,7 +70,9 @@ public class SimpleFatCapAtomFeedBuilderTest extends TestCase {
 
     assertEquals("Title", expectedFeed.getTitle(), constructedFeed.getTitle());
     assertEquals("Uri", expectedFeed.getUri(), constructedFeed.getUri());
-    assertEquals("Date", expectedFeed.getPublishedDate(), constructedFeed.getPublishedDate());
-    assertEquals("CAP alerts", extractAlerts(expectedFeed), extractAlerts(constructedFeed));
+    assertEquals("Date", expectedFeed.getPublishedDate(),
+        constructedFeed.getPublishedDate());
+    assertEquals("CAP alerts", extractAlerts(expectedFeed),
+        extractAlerts(constructedFeed));
   }
 }

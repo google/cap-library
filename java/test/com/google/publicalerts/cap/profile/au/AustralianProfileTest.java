@@ -21,10 +21,10 @@ import com.google.publicalerts.cap.Alert.MsgType;
 import com.google.publicalerts.cap.Area;
 import com.google.publicalerts.cap.Group;
 import com.google.publicalerts.cap.Info;
+import com.google.publicalerts.cap.Reason;
 import com.google.publicalerts.cap.ValuePair;
-import com.google.publicalerts.cap.profile.au.AustralianProfile.ErrorType;
-import com.google.publicalerts.cap.profile.au.AustralianProfile.RecommendationType;
 import com.google.publicalerts.cap.profile.CapProfileTestCase;
+import com.google.publicalerts.cap.profile.au.AustralianProfile.ReasonType;
 
 /**
  * Tests for {@link AustralianProfile}.
@@ -46,49 +46,64 @@ public class AustralianProfileTest extends CapProfileTestCase {
     runTestParseFrom("earthquake.cap");
   }
 
-  public void testCheckForErrors() throws Exception {
+  public void testValidate_errors() throws Exception {
     Alert.Builder alert = loadAlert("australia.cap").toBuilder();
-    assertNoErrors(alert);
+    assertNoReasons(alert, Reason.Level.ERROR);
 
     alert.clearCode();
-    assertErrors(alert, ErrorType.VERSION_CODE_REQUIRED);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert", ReasonType.VERSION_CODE_REQUIRED));
 
     alert.setMsgType(MsgType.UPDATE)
         .clearReferences();
-    assertErrors(alert, ErrorType.VERSION_CODE_REQUIRED,
-        ErrorType.UPDATE_OR_CANCEL_MUST_REFERENCE);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert", ReasonType.VERSION_CODE_REQUIRED),
+        new Reason("/alert/msgType",
+            ReasonType.UPDATE_OR_CANCEL_MUST_REFERENCE));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.setMsgType(Alert.MsgType.CANCEL)
         .setReferences(Group.newBuilder().addValue("a,b,c"));
     // twice, once per <info>
-    assertErrors(alert, ErrorType.DO_NOT_USE_EFFECTIVE_WITH_MSGTYPE_CANCEL,
-        ErrorType.DO_NOT_USE_EFFECTIVE_WITH_MSGTYPE_CANCEL);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert/info[0]",
+            ReasonType.DO_NOT_USE_EFFECTIVE_WITH_MSGTYPE_CANCEL),
+        new Reason("/alert/info[1]",
+            ReasonType.DO_NOT_USE_EFFECTIVE_WITH_MSGTYPE_CANCEL));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).clearCategory();
-    assertErrors(alert, ErrorType.CATEGORIES_MUST_MATCH);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert/info[1]", ReasonType.CATEGORIES_MUST_MATCH));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).setEvent("foo");
-    assertErrors(alert, ErrorType.EVENTS_IN_SAME_LANGUAGE_MUST_MATCH,
-        ErrorType.EVENT_AND_EVENT_CODE_MUST_MATCH);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert/info[1]",
+            ReasonType.EVENTS_IN_SAME_LANGUAGE_MUST_MATCH),
+        new Reason("/alert/info[1]",
+            ReasonType.EVENT_AND_EVENT_CODE_MUST_MATCH));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).getEventCodeBuilder(0).setValueName("foo");
-    assertErrors(alert, ErrorType.EVENT_CODES_MUST_MATCH);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert/info[1]", ReasonType.EVENT_CODES_MUST_MATCH));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(0).clearEventCode();
     alert.getInfoBuilder(1).clearEventCode();
-    assertErrors(alert, ErrorType.ONE_AUTHORIZED_EVENT_CODE_PER_ALERT,
-        ErrorType.ONE_AUTHORIZED_EVENT_CODE_PER_ALERT);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert/info[0]",
+            ReasonType.ONE_AUTHORIZED_EVENT_CODE_PER_ALERT),
+        new Reason("/alert/info[1]",
+            ReasonType.ONE_AUTHORIZED_EVENT_CODE_PER_ALERT));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(0).getEventCodeBuilder(0).setValue("foo");
     alert.getInfoBuilder(1).getEventCodeBuilder(0).setValue("foo");
-    assertErrors(alert, ErrorType.UNRECOGNIZED_EVENT_CODE,
-        ErrorType.UNRECOGNIZED_EVENT_CODE);
+    assertReasons(alert, Reason.Level.ERROR, 
+        new Reason("/alert/info[0]", ReasonType.UNRECOGNIZED_EVENT_CODE),
+        new Reason("/alert/info[1]", ReasonType.UNRECOGNIZED_EVENT_CODE));
 
     alert = loadAlert("australia.cap").toBuilder();
     ValuePair secondEventCode = ValuePair.newBuilder().setValueName(
@@ -97,23 +112,28 @@ public class AustralianProfileTest extends CapProfileTestCase {
         .build();
     alert.getInfoBuilder(0).addEventCode(secondEventCode);
     alert.getInfoBuilder(1).addEventCode(secondEventCode);
-    assertErrors(alert, ErrorType.ONE_AUTHORIZED_EVENT_CODE_PER_ALERT,
-        ErrorType.ONE_AUTHORIZED_EVENT_CODE_PER_ALERT);
+    assertReasons(alert, Reason.Level.ERROR, 
+        new Reason("/alert/info[0]",
+            ReasonType.ONE_AUTHORIZED_EVENT_CODE_PER_ALERT),
+        new Reason("/alert/info[1]",
+            ReasonType.ONE_AUTHORIZED_EVENT_CODE_PER_ALERT));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).clearArea();
-    assertErrors(alert, ErrorType.AREA_IS_REQUIRED);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert/info[1]", ReasonType.AREA_IS_REQUIRED));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.clearInfo();
-    assertErrors(alert, ErrorType.INFO_IS_REQUIRED);
+    assertReasons(alert, Reason.Level.ERROR,
+        new Reason("/alert", ReasonType.INFO_IS_REQUIRED));
     alert.setMsgType(MsgType.ACK);
-    assertNoErrors(alert);
+    assertNoReasons(alert, Reason.Level.ERROR);
   }
 
-  public void testCheckForRecommendations() throws Exception {
+  public void testValidate_recommendations() throws Exception {
     Alert.Builder alert = loadAlert("australia.cap").toBuilder();
-    assertNoRecommendations(alert);
+    assertReasons(alert, Reason.Level.RECOMMENDATION);
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.setSender("foo")
@@ -125,31 +145,39 @@ public class AustralianProfileTest extends CapProfileTestCase {
         .clearSenderName()
         .clearResponseType()
         .clearInstruction();
-    assertRecommendations(alert,
-        RecommendationType.SENDER_SHOULD_BE_EMAIL,
-        RecommendationType.TEST_ALERT_WILL_NOT_BE_BROADCAST,
-        RecommendationType.EXPIRES_STRONGLY_RECOMMENDED,
-        RecommendationType.SENDER_NAME_STRONGLY_RECOMMENDED,
-        RecommendationType.RESPONSE_TYPE_STRONGLY_RECOMMENDED,
-        RecommendationType.INSTRUCTION_STRONGLY_RECOMMENDED);
+    assertReasons(alert, Reason.Level.RECOMMENDATION,
+        new Reason("/alert/sender", ReasonType.SENDER_SHOULD_BE_EMAIL),
+        new Reason("/alert/status",
+            ReasonType.TEST_ALERT_WILL_NOT_BE_BROADCAST),
+        new Reason("/alert/info[0]",
+            ReasonType.EXPIRES_STRONGLY_RECOMMENDED),
+        new Reason("/alert/info[0]",
+            ReasonType.SENDER_NAME_STRONGLY_RECOMMENDED),
+        new Reason("/alert/info[0]",
+            ReasonType.RESPONSE_TYPE_STRONGLY_RECOMMENDED),
+        new Reason("/alert/info[0]",
+            ReasonType.INSTRUCTION_STRONGLY_RECOMMENDED));
 
     alert = loadAlert("australia.cap").toBuilder();
     Info.Builder info = alert.getInfoBuilder(0);
     for (Area.Builder area : info.getAreaBuilderList()) {
       area.clearPolygon().clearCircle();
     }
-    assertRecommendations(alert,
-        RecommendationType.CIRCLE_POLYGON_ENCOURAGED);
+    assertReasons(alert, Reason.Level.RECOMMENDATION,
+        new Reason("/alert/info[0]/area[0]",
+            ReasonType.CIRCLE_POLYGON_ENCOURAGED));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).getAreaBuilder(0).getGeocodeBuilder(0)
         .setValueName("foo");
-    assertRecommendations(alert,
-        RecommendationType.AREA_GEOCODE_IS_RECOMMENDED);
+    assertReasons(alert, Reason.Level.RECOMMENDATION,
+        new Reason("/alert/info[1]/area[0]",
+            ReasonType.AREA_GEOCODE_IS_RECOMMENDED));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).getAreaBuilder(0).clearGeocode();
-    assertRecommendations(alert,
-        RecommendationType.AREA_GEOCODE_IS_RECOMMENDED);
+    assertReasons(alert, Reason.Level.RECOMMENDATION,
+        new Reason("/alert/info[1]/area[0]",
+            ReasonType.AREA_GEOCODE_IS_RECOMMENDED));
   }
 }

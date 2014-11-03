@@ -25,14 +25,14 @@ import java.util.logging.Logger;
 
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.CapException;
-import com.google.publicalerts.cap.CapUtil;
-import com.google.publicalerts.cap.CapException.Reason;
 import com.google.publicalerts.cap.NotCapException;
+import com.google.publicalerts.cap.Reason.Level;
+import com.google.publicalerts.cap.Reasons;
 import com.google.publicalerts.cap.feed.CapFeedException;
 import com.google.publicalerts.cap.feed.CapFeedParser;
 import com.google.publicalerts.cap.feed.CapFeedValidator;
 import com.google.publicalerts.cap.profile.CapProfile;
-import com.google.publicalerts.cap.profile.CapProfiles;
+
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
@@ -49,10 +49,10 @@ public class CapValidator {
 
   private static final int REQUEST_DEADLINE_MS = 20000;
 
-  private final CapFeedParser capParser;
+  private final CapFeedParser capFeedParser;
 
   public CapValidator() {
-    this.capParser = new CapFeedParser(true);
+    this.capFeedParser = new CapFeedParser(true);
   }
 
   /**
@@ -81,7 +81,8 @@ public class CapValidator {
     } catch (IOException e) {
       // There was a problem loading the feed from a URL
       log.info("URLRequest: Error");
-      result.addError(1, 1, "Unable to load content from " + input);
+      result.addValidationMessage(1, Level.ERROR, "URL retriever",
+          "Unable to load content from " + input);
       return result;
     }
     result.recordTiming("Feed URL detection/loading");
@@ -89,16 +90,16 @@ public class CapValidator {
     // Is the input a feed?
     SyndFeed feed;
     try {
-      feed = capParser.parseFeed(input);
+      feed = capFeedParser.parseFeed(input);
     } catch (IllegalArgumentException e) {
       feed = null;
     } catch (FeedException e) {
       log.info("FeedRequest: Syntax Error");
-      result.addFeedError(e);
+      result.addValidationMessage(e);
       return result;
     } catch (CapFeedException e) {
       log.info("FeedRequest: Error");
-      result.addFeedError(e);
+      result.addValidationMessages(e);
       return result;
     }
     result.recordTiming("Feed detection/parsing");
@@ -106,49 +107,65 @@ public class CapValidator {
     if (feed == null) {
       // Is the input CAP?
       try {
-        Alert alert = capParser.parseAlert(input);
-        log.info("CAPRequest: Success");
+        Reasons.Builder reasonsBuilder = Reasons.newBuilder();
+        Alert alert = capFeedParser.parseAlert(input, reasonsBuilder);
+        result.addValidationMessages(reasonsBuilder.build());
         checkProfiles(
             alert, result, profiles, -1 /* entryIndex */, null /* linkUrl */);
       } catch (CapException ce) {
         log.info("CAPRequest: Error");
-        result.addError(ce);
+        result.addValidationMessages(ce);
       } catch (NotCapException nce) {
         log.info("InvalidRequest");
-        result.addError(1, 1, "The input must be a CAP 1.0, 1.1, " +
-            "or 1.2 message or an RSS or Atom feed of CAP messages");
+        result.addValidationMessage(1, Level.ERROR, "CAP", "The input must be "
+            + "a CAP 1.0, 1.1, or 1.2 message or an RSS or Atom feed of CAP "
+            + "messages");
         return result;
       }
       result.recordTiming("Alert parsing");
     } else {
-      @SuppressWarnings("unchecked")
-      List<SyndEntry> entries = (List<SyndEntry>) feed.getEntries();
+      List<SyndEntry> entries = feed.getEntries();
       log.info("FeedRequest: " + entries.size() + " entries");
+      
+      if (entries.isEmpty()) {
+        result.addValidationMessage(1, Level.ERROR, "CAP", "The input must be "
+            + "a CAP 1.0, 1.1, or 1.2 message or an RSS or Atom feed of CAP "
+            + "messages");
+      }
+      
       for (int i = 0; i < entries.size(); i++) {
+
         SyndEntry entry = entries.get(i);
         try {
-          Alert alert = capParser.parseAlert(entry);
+          Reasons.Builder reasonsBuilder = Reasons.newBuilder();
+          Alert alert = capFeedParser.parseAlert(entry, reasonsBuilder);
+          result.addValidationMessages(
+              prefixReasonForContent(reasonsBuilder.build(), i));
           checkProfiles(alert, result, profiles, i, null);
           result.recordTiming("Alert parsing");
         } catch (CapException e) {
-          result.addCapContentError(e, i);
+          result.addValidationMessages(
+              prefixReasonForContent(e.getReasons(), i));
         } catch (NotCapException e) {
           // No CAP in the <content> field, maybe there's a link to an alert?
           Alert alert = handleThinEntry(entry, result);
-          checkProfiles(alert, result, profiles, i, capParser.getCapUrl(entry));
+          checkProfiles(alert, result, profiles, i, capFeedParser.getCapUrl(entry));
           result.recordTiming(
-              String.valueOf(capParser.getCapUrl(entry)) + "load/parse");
+              String.valueOf(capFeedParser.getCapUrl(entry)) + "load/parse");
         }
       }
 
-      result.addFeedRecommendations(
-          new CapFeedValidator().checkForRecommendations(feed));
+      result.addValidationMessages(new CapFeedValidator().validate(feed));
       result.recordTiming("Feed recommendations");
     }
 
     return result;
   }
 
+  private Reasons prefixReasonForContent(Reasons reasons, int entryIndex) {
+    return reasons.prefixWithXpath("/feed/entry[" + entryIndex + "]/content");
+  }
+  
   private void checkProfiles(Alert alert, ValidationResult result,
       Set<CapProfile> profiles, int entryIndex, String linkUrl) {
     if (alert == null) {
@@ -157,18 +174,21 @@ public class CapValidator {
     result.addValidAlert(alert);
 
     for (CapProfile profile: profiles) {
-      List<Reason> errors = profile.checkForErrors(alert);
-      List<Reason> suggestions = profile.checkForRecommendations(alert);
+      Reasons reasons = profile.validate(alert);
       if (linkUrl != null) {
-        result.addProfileResult(profile, linkUrl, errors, suggestions);
+        result.addValidationMessageForLink(linkUrl, reasons);
       } else {
-        result.addProfileResult(profile, entryIndex, errors, suggestions);
+        
+        if (entryIndex >= 0) {
+          reasons = prefixReasonForContent(reasons, entryIndex);
+        }
+        result.addValidationMessages(reasons);
       }
     }
   }
 
   private Alert handleThinEntry(SyndEntry entry, ValidationResult result) {
-    String capUrl = capParser.getCapUrl(entry);
+    String capUrl = capFeedParser.getCapUrl(entry);
     if (capUrl == null) {
       // Feed parser already added an error
       return null;
@@ -176,7 +196,7 @@ public class CapValidator {
 
     long reqTime = System.currentTimeMillis() - result.getStartTimeMillis();
     if (reqTime > REQUEST_DEADLINE_MS) {
-      result.addCapLinkError(capUrl,
+      result.addValidationMessageForLink(capUrl, Level.ERROR, "",
           "Validate request timed out before loading: " + capUrl);
       return null;
     }
@@ -185,23 +205,24 @@ public class CapValidator {
     try {
       cap = loadUrl(capUrl);
     } catch (IOException e) {
-      result.addCapLinkError(capUrl, "Unable to load CAP link: " + capUrl);
+      result.addValidationMessageForLink(capUrl, Level.ERROR, "URL retriever",
+          "Unable to load CAP link: " + capUrl);
       return null;
     }
 
     try {
-      return capParser.parseAlert(cap);
+      return capFeedParser.parseAlert(cap);
     } catch (CapException e) {
-      result.addCapLinkError(capUrl, e);
+      result.addValidationMessageForLink(capUrl, e.getReasons());
       return null;
     } catch (NotCapException e) {
-      result.addCapLinkError(capUrl, "Link does not point to a CAP message");
+      result.addValidationMessageForLink(
+          capUrl, Level.ERROR, "CAP", "Link does not point to a CAP message");
       return null;
     }
   }
 
-  String loadUrl(String capUrl) throws IOException {
-    URL url = new URL(capUrl);
-    return ValidatorUtil.readFully(url.openStream());
+  String loadUrl(String url) throws IOException {
+    return ValidatorUtil.readFully(new URL(url).openStream());
   }
 }

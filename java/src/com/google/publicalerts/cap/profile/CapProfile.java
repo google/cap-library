@@ -17,9 +17,7 @@
 package com.google.publicalerts.cap.profile;
 
 import com.google.publicalerts.cap.AlertOrBuilder;
-import com.google.publicalerts.cap.CapException;
-
-import java.util.List;
+import com.google.publicalerts.cap.Reasons;
 
 /**
  * Specifies a set of extra constraints on the CAP format.
@@ -53,28 +51,24 @@ public interface CapProfile {
   String getDocumentationUrl();
 
   /**
-   * Checks the given alert against the profile and returns a list
-   * of errors explaining how the alert does not match the profile.
-   * The profile should assume that the given alert is valid CAP and
+   * Checks the given alert against the profile and returns a collection of:
+   * <ul>
+   * <li>errors explaining how the alert does not match the profile,
+   * <li>recommendations and best-practices recommended by the profile to
+   * improve the alert.
+   * </ul>
+   * 
+   * <p>The profile should assume that the given alert is valid CAP and
    * check only the extra constraints it specifies.
-   *
-   * @param alert the alert to check
-   * @return errors errors found during the check, an empty list
-   * if there are none
+   * 
+   * <p>An alert not adhering to the recommendations and best-practices would
+   * still be accepted by whatever system that claims to require alerts
+   * adhering to the profile, but adopting the recommendations allows for more
+   * full compatibility and perhaps extra features.
+   * 
+   * @param alert the alert to validate
+   * @return errors and recommendations found during the validation, an empty
+   * collection if there are none
    */
-  List<CapException.Reason> checkForErrors(AlertOrBuilder alert);
-
-  /**
-   * Checks the given alert against suggestions and best-practices
-   * recommended by the profile. An alert not adhering to these
-   * recommendations would still be accepted by whatever system
-   * that claims to require alerts adhering to the profile, but
-   * adopting the recommendations allows for more full compatibility
-   * and perhaps extra features.
-   *
-   * @param alert the alert to check
-   * @return recommendations found during the check, an empty list if
-   * there are none
-   */
-  List<CapException.Reason> checkForRecommendations(AlertOrBuilder alert);
+  Reasons validate(AlertOrBuilder alert);
 }

@@ -16,13 +16,15 @@
 
 package com.google.publicalerts.cap.feed;
 
-import com.google.publicalerts.cap.CapException.Reason;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import com.google.publicalerts.cap.CapUtil;
 import com.google.publicalerts.cap.CapValidator;
-import com.google.publicalerts.cap.feed.CapFeedException.FeedErrorType;
-import com.google.publicalerts.cap.feed.CapFeedException.FeedRecommendationType;
-import com.google.publicalerts.cap.edxl.types.ContentObject;
+import com.google.publicalerts.cap.Reason;
+import com.google.publicalerts.cap.Reasons;
 import com.google.publicalerts.cap.edxl.DistributionFeed;
+import com.google.publicalerts.cap.edxl.types.ContentObject;
+import com.google.publicalerts.cap.feed.CapFeedException.ReasonType;
 
 import com.sun.syndication.feed.atom.Entry;
 import com.sun.syndication.feed.atom.Feed;
@@ -31,9 +33,8 @@ import com.sun.syndication.feed.rss.Channel;
 import com.sun.syndication.feed.rss.Item;
 import com.sun.syndication.feed.synd.SyndFeed;
 
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Validates portions of Atom/RSS feeds (fat or thin) of CAP alerts
@@ -44,42 +45,95 @@ import java.util.List;
 public class CapFeedValidator {
 
   /**
-   * Checks the given feed for errors. Assumes the given feed
-   * has a non-null {@code originalWireFeed()}.
+   * Validates a feed.
+   * 
+   * <p>Assumes that the given feed has a non-null {@code originalWireFeed()}.
    *
-   * @param feed the parsed feed to validate
-   * @throws CapFeedException if the feed is invalid
+   * @param feed The parsed feed to validate.
+   * @return A collection of reasons storing errors, warnings or
+   * recommendations.
    */
-  public void checkForErrors(SyndFeed feed) throws CapFeedException {
+  public Reasons validate(SyndFeed feed) {
+    
     if (feed.originalWireFeed() instanceof Feed) {
-      checkForErrors((Feed) feed.originalWireFeed());
+      return validate((Feed) feed.originalWireFeed());
     } else if (feed.originalWireFeed() instanceof Channel) {
-      checkForErrors((Channel) feed.originalWireFeed());
+      return validate((Channel) feed.originalWireFeed());
     } else if (feed.originalWireFeed() instanceof DistributionFeed) {
-      checkForErrors((DistributionFeed) feed.originalWireFeed());
+      return validate((DistributionFeed) feed.originalWireFeed());
     } else {
       throw new IllegalArgumentException("Unsupported feed " + feed);
     }
   }
 
   /**
-   * Checks the given Atom feed for errors.
-   *
-   * @param feed the feed to check
-   * @throws CapFeedException if the feed is invalid
+   * Validates a feed.
+   * 
+   * @param feed The feed to validate.
+   * @return A collection of reasons storing errors, warnings or
+   * recommendations.
    */
-  public void checkForErrors(Feed feed) throws CapFeedException {
+  private Reasons validate(Feed feed) {
+    Reasons.Builder reasons = Reasons.newBuilder();
+    checkForErrors(feed, reasons);
+    return reasons.build();
+  }
+  
+  /**
+   * Validates a channel.
+   * 
+   * @param channel the Channel to validate.
+   * @return A collection of reasons storing errors, warnings or
+   * recommendations.
+   */
+  private Reasons validate(Channel channel) {
+    Reasons.Builder reasons = Reasons.newBuilder();
+    checkForErrors(channel, reasons);
+    checkForRecommendations(channel, reasons);
+    return reasons.build();
+  }
+  
+  /**
+   * Validates an EDXL-DE distribution feed.
+   * 
+   * @param distributionFeed The distribution feed to validate.
+   * @return A collection of reasons storing errors, warnings or
+   * recommendations.
+   */
+  private Reasons validate(DistributionFeed distributionFeed) {
+    Reasons.Builder reasons = Reasons.newBuilder();
+    checkForErrors(distributionFeed, reasons);
+    return reasons.build();
+  }
+  
+  /**
+   * Checks the feed for errors and populates the collection provided as input.
+   */
+  private void checkForErrors(Feed feed, Reasons.Builder reasons) {
     @SuppressWarnings("unchecked")
     List<Entry> entries = feed.getEntries();
+    Set<String> entryIds = Sets.newHashSet();
     for (int i = 0; i < entries.size(); i++) {
+      // It'd be annoying to see these errors repeated once per entry,
+      // so just return after the first set of errors we see.
+
       Entry entry = entries.get(i);
       if (entry.getContents().isEmpty() && !hasCapLink(entry)) {
-        throw new CapFeedException(new Reason("/feed/entry[" + i + "]",
-            FeedErrorType.ATOM_ENTRY_MISSING_CAP_LINK));
+        reasons.add(new Reason("/feed/entry[" + i + "]",
+            ReasonType.ATOM_ENTRY_MISSING_CAP_LINK));
+        return;
+      }
+      
+      if (entryIds.contains(entry.getId())) {
+        reasons.add(new Reason("/feed/entry[" + i + "]",
+            ReasonType.ATOM_ENTRY_NON_UNIQUE_IDS, entry.getId()));
+        return;
+      } else {
+        entryIds.add(entry.getId());
       }
     }
   }
-
+  
   private boolean hasCapLink(Entry entry) {
     @SuppressWarnings("unchecked")
     List<Link> links = entry.getAlternateLinks();
@@ -104,67 +158,60 @@ public class CapFeedValidator {
   }
 
   /**
-   * Checks the given RSS channel for errors.
-   *
-   * @param channel the channel to check
-   * @throws CapFeedException if the channel is invalid
+   * Checks the channel for errors and populates the collection provided as
+   * input.
    */
-  public void checkForErrors(Channel channel) throws CapFeedException {
-    List<Reason> reasons = new ArrayList<Reason>();
-
-    List<Reason> itemReasons = new ArrayList<Reason>();
+  private void checkForErrors(Channel channel, Reasons.Builder reasons) {
     @SuppressWarnings("unchecked")
     List<Item> items = channel.getItems();
+    boolean errorFound = false;
+    
     for (int i = 0; i < items.size(); i++) {
       Item item = items.get(i);
-      String xpath = "/channel/item[" + i + "]";
+      String xpath = "/rss/channel/item[" + i + "]";
       if (CapUtil.isEmptyOrWhitespace(item.getTitle())
           && (item.getDescription() == null
           || CapUtil.isEmptyOrWhitespace(item.getDescription().getValue()))) {
-        itemReasons.add(new Reason(xpath,
-            FeedErrorType.RSS_ITEM_TITLE_OR_DESCRIPTION_IS_REQUIRED));
+        reasons.add(new Reason(xpath,
+            ReasonType.RSS_ITEM_TITLE_OR_DESCRIPTION_IS_REQUIRED));
+        errorFound = true;
       }
       if (CapUtil.isEmptyOrWhitespace(item.getLink())) {
-        itemReasons.add(new Reason(xpath,
-            FeedErrorType.RSS_ITEM_MISSING_CAP_LINK));
+        reasons.add(new Reason(xpath,
+            ReasonType.RSS_ITEM_MISSING_CAP_LINK));
+        errorFound = true;
       }
+      
       // It'd be annoying to see these errors repeated once per entry,
-      // so just throw after the first set of errors we see.
-      if (!itemReasons.isEmpty()) {
-        reasons.addAll(itemReasons);
-        break;
+      // so just return after the first set of errors we see.
+      if (errorFound) {
+        return;
       }
-    }
-    if (!reasons.isEmpty()) {
-      throw new CapFeedException(reasons);
     }
   }
 
   /**
-   * Checks the given EDXL-DE distribution feed for errors.
+   * Checks the given EDXL-DE distribution feed for errors and populates the
+   * collection provided as input.
    *
-   * In particular, ensures that every contentObject has either an xmlContent
+   * <p>In particular, ensures that every contentObject has either an xmlContent
    * object containing a CAP alert, or a nonXMLContent object containing a
    * reference to a CAP alert. Note that this method does not ensure that the
    * CAP alert can be successfully created, but merely that a CAP specification
    * exists.
-   *
-   * @param feed the distribution feed object to check
-   * @throws CapFeedException if the feed is invalid
    */
-  public void checkForErrors(DistributionFeed feed) throws CapFeedException {
-    List<Reason> reasons = new ArrayList<Reason>();
-    boolean foundcap = false;
-    boolean errors = false;
-
+  private void checkForErrors(DistributionFeed feed, Reasons.Builder reasons) {
     if (feed.getContentObjects().isEmpty()) {
-      throw new CapFeedException(new Reason("/EDXLDistribution",
-          FeedErrorType.EDXLDE_CONTENT_OBJECT_IS_REQUIRED));
+      reasons.add(new Reason("/EDXLDistribution",
+          ReasonType.EDXLDE_CONTENT_OBJECT_IS_REQUIRED));
+      return;
     }
 
     for (int i = 0; i < feed.getContentObjects().size(); i++) {
+      boolean foundcap = false;
+      List<Reason> reasonBuffer = Lists.newArrayList();
+      
       ContentObject content = feed.getContentObjects().get(i);
-      foundcap = false;
 
       if (content.getXmlContent() != null) {
         for (String xml : content.getXmlContent().getEmbeddedXmlContent()) {
@@ -174,85 +221,53 @@ public class CapFeedValidator {
             foundcap = true;
           }
         }
-
+        
         if (!foundcap) {
-          reasons.add(new Reason(
+          reasonBuffer.add(new Reason(
               "/EDXLDistribution/contentObject[" + i + "]/xmlContent",
-              FeedErrorType.EDXLDE_NO_CAP_IN_CONTENT_OBJECT));
+              ReasonType.EDXLDE_NO_CAP_IN_CONTENT_OBJECT));
         }
       }
 
       if (content.getNonXmlContent() != null) {
         String mimeType = content.getNonXmlContent().getMimeType();
-        if ((mimeType.equalsIgnoreCase(CapFeedParser.CAP_MIME_TYPE) ||
-            mimeType.equalsIgnoreCase(CapFeedParser.ALTERNATE_CAP_MIME_TYPE))
+        if ((mimeType.equalsIgnoreCase(CapFeedParser.CAP_MIME_TYPE)
+            || mimeType.equalsIgnoreCase(CapFeedParser.ALTERNATE_CAP_MIME_TYPE))
             && content.getNonXmlContent().getUri() != null) {
           foundcap = true;
         } else {
-          reasons.add(new Reason(
-              "/EDXLDistribution/contentObject[" + i + "]/nonMXLContent",
-              FeedErrorType.EDXLDE_NO_CAP_IN_CONTENT_OBJECT));
+          reasonBuffer.add(new Reason(
+              "/EDXLDistribution/contentObject[" + i + "]/nonXMLContent",
+              ReasonType.EDXLDE_NO_CAP_IN_CONTENT_OBJECT));
         }
       }
 
       if (!foundcap) {
-        errors = true;
+        reasons.addAll(reasonBuffer);
       }
     }
-
-    if (errors) {
-      throw new CapFeedException(reasons);
-    }
   }
 
   /**
-   * Checks the given feed for recommendations. Assumes the given feed
-   * has a non-null {@code originalWireFeed()}.
-   *
-   * @param feed the feed to check
-   * @return a list of recommendations, empty list if there are none
+   * Checks the channel for recommendations and populates the collection
+   * provided as input.
    */
-  public List<Reason> checkForRecommendations(SyndFeed feed) {
-    if (feed.originalWireFeed() instanceof Feed) {
-      return checkForRecommendations((Feed) feed.originalWireFeed());
-    } else if (feed.originalWireFeed() instanceof Channel) {
-      return checkForRecommendations((Channel) feed.originalWireFeed());
-    }
-    return Collections.<Reason>emptyList();
-  }
-
-  /**
-   * Checks the given Atom feed for recommendations. Currently a no-op.
-   *
-   * @param feed the feed to check
-   * @return an empty list
-   */
-  public List<Reason> checkForRecommendations(Feed feed) {
-    return Collections.<Reason>emptyList();
-  }
-
-  /**
-   * Checks the given RSS feed for recommendations.
-   *
-   * @param channel the channel to check
-   * @return a list of recommendations, empty list if there are none
-   */
-  public List<Reason> checkForRecommendations(Channel channel) {
-    List<Reason> reasons = new ArrayList<Reason>();
+  private void checkForRecommendations(
+      Channel channel, Reasons.Builder reasons) {
     if (channel.getPubDate() == null) {
-      reasons.add(new Reason("/channel",
-          FeedRecommendationType.RSS_PUBDATE_IS_RECOMMENDED));
+      reasons.add(new Reason("/rss/channel",
+          ReasonType.RSS_PUBDATE_IS_RECOMMENDED));
     }
 
-    List<Reason> itemReasons = new ArrayList<Reason>();
+    List<Reason> itemReasons = Lists.newArrayList();
     @SuppressWarnings("unchecked")
     List<Item> items = channel.getItems();
     for (int i = 0; i < items.size(); i++) {
       Item item = items.get(i);
       if (item.getGuid() == null ||
           CapUtil.isEmptyOrWhitespace(item.getGuid().getValue())) {
-        itemReasons.add(new Reason("/channel/item[" + i + "]",
-            FeedRecommendationType.RSS_ITEM_GUID_IS_RECOMMENDED));
+        itemReasons.add(new Reason("/rss/channel/item[" + i + "]",
+            ReasonType.RSS_ITEM_GUID_IS_RECOMMENDED));
       }
       // It'd be annoying to see these errors repeated once per entry,
       // so just throw after the first set of errors we see.
@@ -261,6 +276,5 @@ public class CapFeedValidator {
         break;
       }
     }
-    return reasons;
   }
 }

@@ -18,7 +18,6 @@ package com.google.publicalerts.cap.validator;
 
 import com.google.common.base.Charsets;
 import com.google.common.base.Splitter;
-import com.google.common.collect.Sets;
 import com.google.common.io.CharStreams;
 
 import java.io.ByteArrayOutputStream;
@@ -26,11 +25,9 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.URL;
 import java.net.MalformedURLException;
 import java.util.Arrays;
-import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Level;
@@ -41,7 +38,6 @@ import javax.mail.MessagingException;
 import javax.mail.Session;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
-import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
 import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServlet;
@@ -49,7 +45,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 
-import com.google.publicalerts.cap.CapUtil;
 import com.google.publicalerts.cap.profile.CapProfile;
 
 /**
@@ -158,7 +153,7 @@ public class PshbServlet extends HttpServlet {
     ValidationResult result = capValidator.validate(input, profiles);
 
     // If there are errors, send email
-    if (!result.getByLineErrorMap().isEmpty()) {
+    if (result.containsErrors()) {
       String msg = renderMessage(req, resp, email, topic, profiles, result);
       sendMail(email, topic, msg, profiles, result);
     }
@@ -224,8 +219,7 @@ public class PshbServlet extends HttpServlet {
     req.setAttribute("url", url.replace("/pshb", ""));
     req.setAttribute("unsubscribe", unsubscribeUrl);
     req.setAttribute("profiles", ValidatorUtil.getProfilesJsp(profiles));
-    req.setAttribute("errors", result.getByLineErrorMap());
-    req.setAttribute("recommendations", result.getByLineRecommendationMap());
+    req.setAttribute("validationResult", result);
     req.setAttribute("lines", Arrays.asList(result.getInput().split("\n")));
 
     try {

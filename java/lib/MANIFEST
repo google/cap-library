@@ -46,3 +46,10 @@ jar: jarjar.jar
      License: Apache 2.0
      Local Modifications: None.
      Download date: 2011-02-25
+
+jar: guava.jar
+     URL: http://search.maven.org/remotecontent?filepath=com/google/guava/guava/18.0/guava-18.0.jar
+     Version: 18.0
+     License: Apache 2.0
+     Local Modifications: None.
+     Download date: 2014-10-09

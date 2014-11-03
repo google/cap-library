@@ -16,24 +16,25 @@
 
 package com.google.publicalerts.cap.testing;
 
+import com.google.common.collect.HashMultimap;
+import com.google.common.collect.Multimap;
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.Area;
-import com.google.publicalerts.cap.CapException.Reason;
-import com.google.publicalerts.cap.CapException.ReasonType;
+import com.google.publicalerts.cap.CapException;
 import com.google.publicalerts.cap.CapValidator;
 import com.google.publicalerts.cap.Circle;
 import com.google.publicalerts.cap.Group;
 import com.google.publicalerts.cap.Info;
 import com.google.publicalerts.cap.Point;
 import com.google.publicalerts.cap.Polygon;
+import com.google.publicalerts.cap.Reason;
+import com.google.publicalerts.cap.Reasons;
 import com.google.publicalerts.cap.Resource;
 import com.google.publicalerts.cap.ValuePair;
 
 import junit.framework.Assert;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Map.Entry;
 
 /**
  * Test utilities.
@@ -112,26 +113,51 @@ public class CapTestUtil {
         .setMimeType("image/gif")
         .setSize(123);
   }
-
-  public static void assertErrorTypes(
-      List<Reason> reasons, ReasonType...types) {
-    List<ReasonType> actual = new ArrayList<ReasonType>();
-    List<ReasonType> expected = new ArrayList<ReasonType>();
-    expected.addAll(Arrays.asList(types));
-    for (Reason reason : reasons) {
-      if (!expected.remove(reason.getType())) {
-        actual.add(reason.getType());
+  
+  /**
+   * Asserts that the {@code expected} matches {@code actual}, where equality
+   * between {@link Reason} objects is guaranteed if two objects have same:
+   * <ul>
+   * <li>reason type,
+   * <li>XPath.
+   * </ul>
+   */
+  public static void assertReasons(Reasons actual, Reason... expected) {
+    Multimap<Reason.Type, String> expectedReasonTypeToXPath =
+        HashMultimap.create();
+    
+    for (Reason reason : expected) {
+      expectedReasonTypeToXPath.put(reason.getType(), reason.getXPath());
+    }
+    
+    String msg = "";
+    boolean failed = false;
+    
+    for (Reason reason : actual) {
+      if (!expectedReasonTypeToXPath.remove(
+          reason.getType(), reason.getXPath())) {
+        msg += " Unexpected reason: " + reason;
+        failed = true;
       }
     }
-
-    String msg = "";
-    if (!expected.isEmpty()) {
-      msg += "Missing exception types: " + expected;
+    
+    
+    for (Entry<Reason.Type, String> expectedEntry
+        : expectedReasonTypeToXPath.entries()) {
+      msg += " Expected reason with type: " + expectedEntry.getKey()
+          + " and XPath: " + expectedEntry.getValue();
+      failed = true;
     }
-    if (!actual.isEmpty()) {
-      msg += " Unexpected exception types: " + actual;
-    }
-    Assert.assertTrue(msg, "".equals(msg));
+    
+    Assert.assertFalse(msg, failed);
+  }
+  
+  /**
+   * @see #assertReasons(Reasons, Reason...)
+   */
+  public static void assertCapException(
+      CapException capException, Reason... expectedReasons) {
+    assertReasons(capException.getReasons(), expectedReasons);
   }
   
   private CapTestUtil() {}

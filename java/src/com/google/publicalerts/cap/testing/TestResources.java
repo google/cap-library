@@ -18,6 +18,7 @@ package com.google.publicalerts.cap.testing;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -32,6 +33,9 @@ public class TestResources {
 
   public static String load(String filename) throws IOException {
     InputStream stream = TestResources.class.getResourceAsStream("testdata/" + filename);
+    if (stream == null) {
+      throw new FileNotFoundException(filename);
+    }
     BufferedReader br = new BufferedReader(
         new InputStreamReader(stream, Charset.forName("UTF-8")));
     StringBuilder sb = new StringBuilder();

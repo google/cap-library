@@ -19,8 +19,9 @@ package com.google.publicalerts.cap.profile;
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.AlertOrBuilder;
 import com.google.publicalerts.cap.CapException;
-import com.google.publicalerts.cap.CapException.ReasonType;
 import com.google.publicalerts.cap.CapXmlParser;
+import com.google.publicalerts.cap.Reason;
+import com.google.publicalerts.cap.Reasons;
 import com.google.publicalerts.cap.testing.CapTestUtil;
 import com.google.publicalerts.cap.testing.TestResources;
 
@@ -57,19 +58,13 @@ public abstract class CapProfileTestCase extends TestCase {
     return profile.parseFrom(cap);
   }
 
-  protected void assertNoErrors(AlertOrBuilder alert) {
-    assertErrors(alert, new ReasonType[] {});
+  protected void assertNoReasons(AlertOrBuilder alert, Reason.Level level) {
+    assertReasons(alert, level);
   }
 
-  protected void assertErrors(AlertOrBuilder alert, ReasonType...types) {
-    CapTestUtil.assertErrorTypes(profile.checkForErrors(alert), types);
-  }
-
-  protected void assertNoRecommendations(AlertOrBuilder alert) {
-    assertRecommendations(alert, new ReasonType[] {});
-  }
-
-  protected void assertRecommendations(AlertOrBuilder alert, ReasonType...types) {
-    CapTestUtil.assertErrorTypes(profile.checkForRecommendations(alert), types);
+  protected void assertReasons(
+      AlertOrBuilder alert, Reason.Level level, Reason... expected) {
+    CapTestUtil.assertReasons(Reasons.newBuilder()
+        .addAll(profile.validate(alert).getWithLevel(level)).build(), expected);
   }
 }

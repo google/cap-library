@@ -16,10 +16,10 @@
 
 package com.google.publicalerts.cap.testing;
 
+import com.google.common.collect.Sets;
 import com.google.publicalerts.cap.TrustStrategy;
 
 import java.security.PublicKey;
-import java.util.HashSet;
 import java.util.Set;
 
 /**
@@ -31,7 +31,7 @@ import java.util.Set;
 public class MockTrustStrategy implements TrustStrategy {
   private boolean allowMissingSignatures = true;
   private boolean allowUntrustedCredentials = true;
-  private final Set<PublicKey> trustedKeys = new HashSet<PublicKey>();
+  private final Set<PublicKey> trustedKeys = Sets.newHashSet();
 
   @Override
   public boolean allowMissingSignatures() {

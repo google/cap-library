@@ -19,21 +19,20 @@ package com.google.publicalerts.cap.profile;
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.CachedSaxInputSource;
 import com.google.publicalerts.cap.CapDateUtil;
-import com.google.publicalerts.cap.CapException.Reason;
-import com.google.publicalerts.cap.CapException.ReasonType;
 import com.google.publicalerts.cap.CapXmlParser;
 import com.google.publicalerts.cap.NotCapException;
+import com.google.publicalerts.cap.Reason;
+import com.google.publicalerts.cap.Reasons;
 
 import org.xml.sax.SAXParseException;
-
-import java.util.List;
 
 /**
  * Abstract base class for CAP profiles.
  *
  * @author shakusa@google.com (Steve Hakusa)
  */
-public abstract class AbstractCapProfile extends CapXmlParser implements CapProfile {
+public abstract class AbstractCapProfile
+    extends CapXmlParser implements CapProfile {
 
   public AbstractCapProfile() {
     this(false);
@@ -50,24 +49,24 @@ public abstract class AbstractCapProfile extends CapXmlParser implements CapProf
   }
 
   @Override
-  protected Alert parseFromInternal(CachedSaxInputSource is, List<Reason> parseErrors)
-      throws NotCapException, SAXParseException {
-    Alert alert = super.parseFromInternal(is, parseErrors);
-    parseErrors.addAll(checkForErrors(alert));
+  protected Alert parseFromInternal(CachedSaxInputSource is,
+      Reasons.Builder reasons) throws NotCapException, SAXParseException {
+    Alert alert = super.parseFromInternal(is, reasons);
+    reasons.addAll(validate(alert));
     return alert;
   }
 
   /**
    * Checks if the timezone on the given {@code dateStr} is zero.  If so, adds
-   * a new reason with the given xpath and type to the list of reasons.
+   * a new reason with the given xpath and type to the collection of reasons.
    *
-   * @param reasons list to add to if timezone is zero
+   * @param reasons collection to add to if timezone is zero
    * @param dateStr date string to check
    * @param xpath xpath of the element
    * @param type type of the error to add if timezone is zero
    */
-  protected void checkZeroTimezone(List<Reason> reasons,
-      String dateStr, String xpath, ReasonType type) {
+  protected void checkZeroTimezone(Reasons.Builder reasons,
+      String dateStr, String xpath, Reason.Type type) {
     if (!CapDateUtil.isValidDate(dateStr)) {
       return;
     }

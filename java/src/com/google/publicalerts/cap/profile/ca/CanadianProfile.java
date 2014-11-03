@@ -16,19 +16,17 @@
 
 package com.google.publicalerts.cap.profile.ca;
 
+import com.google.common.collect.Sets;
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.AlertOrBuilder;
 import com.google.publicalerts.cap.Area;
-import com.google.publicalerts.cap.CapException;
-import com.google.publicalerts.cap.CapException.Reason;
 import com.google.publicalerts.cap.CapUtil;
 import com.google.publicalerts.cap.Info;
+import com.google.publicalerts.cap.Reason;
+import com.google.publicalerts.cap.Reasons;
 import com.google.publicalerts.cap.ValuePair;
 import com.google.publicalerts.cap.profile.AbstractCapProfile;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -63,6 +61,8 @@ public class CanadianProfile extends AbstractCapProfile {
    */
   public static final String EC_MSC_SMC_PARENT_URI = "layer:EC-MSC-SMC:1.0:Parent_URI";
 
+  private static final String CANADIAN_PROFILE_CODE = "profile:CAP-CP:1.0";
+  
   public CanadianProfile() {
     super();
   }
@@ -84,7 +84,7 @@ public class CanadianProfile extends AbstractCapProfile {
 
   @Override
   public String getCode() {
-    return "profile:CAP-CP:1.0";
+    return CANADIAN_PROFILE_CODE;
   }
 
   @Override
@@ -98,9 +98,19 @@ public class CanadianProfile extends AbstractCapProfile {
   }
 
   @Override
-  public List<Reason> checkForErrors(AlertOrBuilder alert) {
-    List<Reason> reasons = new ArrayList<Reason>();
-
+  public Reasons validate(AlertOrBuilder alert) {
+    Reasons.Builder reasons = Reasons.newBuilder();
+    
+    checkForErrors(alert, reasons);
+    checkForRecommendations(alert, reasons);
+    
+    return reasons.build();
+  }
+  
+  /**
+   * Checks the Alert for errors and populates the collection provided as input.
+   */
+  private void checkForErrors(AlertOrBuilder alert, Reasons.Builder reasons) {
     // Note: numbers in the comments refer to the corresponding numbers
     // in the profile documentation.
 
@@ -112,8 +122,8 @@ public class CanadianProfile extends AbstractCapProfile {
       }
     }
     if (!hasVersionCode) {
-      reasons.add(new Reason("/alert",
-          ErrorType.VERSION_CODE_REQUIRED, getCode()));
+      reasons.add(
+          new Reason("/alert", ReasonType.VERSION_CODE_REQUIRED, getCode()));
     }
 
     // 5. Alert messages intended for public distribution must include
@@ -121,7 +131,7 @@ public class CanadianProfile extends AbstractCapProfile {
     if (alert.getMsgType() != Alert.MsgType.ACK
         && alert.getMsgType() != Alert.MsgType.ERROR
         && alert.getInfoCount() == 0) {
-      reasons.add(new Reason("/alert", ErrorType.IS_REQUIRED));
+      reasons.add(new Reason("/alert", ReasonType.IS_REQUIRED));
     }
 
     // 12. An Update or Cancel message should minimally include
@@ -130,7 +140,7 @@ public class CanadianProfile extends AbstractCapProfile {
         || alert.getMsgType() == Alert.MsgType.CANCEL)
         && alert.getReferences().getValueCount() == 0) {
       reasons.add(new Reason("/alert/msgType",
-          ErrorType.UPDATE_OR_CANCEL_MUST_REFERENCE));
+          ReasonType.UPDATE_OR_CANCEL_MUST_REFERENCE));
     }
 
     Set<ValuePair> eventCodes = null;
@@ -139,12 +149,12 @@ public class CanadianProfile extends AbstractCapProfile {
       String xpath = "/alert/info[" + i + "]";
 
       // 2. Constraint of one subject event per alert message
-      Set<ValuePair> ecs = new HashSet<ValuePair>();
+      Set<ValuePair> ecs = Sets.newHashSet();
       ecs.addAll(info.getEventCodeList());
       if (eventCodes == null) {
         eventCodes = ecs;
       } else if (!eventCodes.equals(ecs)) {
-        reasons.add(new Reason(xpath, ErrorType.EVENT_CODES_MUST_MATCH));
+        reasons.add(new Reason(xpath, ReasonType.EVENT_CODES_MUST_MATCH));
       }
 
       // 8. A recognized <eventCode> must be used
@@ -157,13 +167,13 @@ public class CanadianProfile extends AbstractCapProfile {
         }
       }
       if (!hasRecognizedEventCode) {
-        reasons.add(new Reason(xpath,
-            ErrorType.RECOGNIZED_EVENT_CODE_REQUIRED));
+        reasons.add(
+            new Reason(xpath, ReasonType.RECOGNIZED_EVENT_CODE_REQUIRED));
       }
 
       // 10. <area> blocks are required
       if (info.getAreaCount() == 0) {
-        reasons.add(new Reason(xpath, ErrorType.AREA_IS_REQUIRED));
+        reasons.add(new Reason(xpath, ReasonType.AREA_IS_REQUIRED));
       }
 
       for (int j = 0; j < info.getAreaCount(); j++) {
@@ -181,22 +191,23 @@ public class CanadianProfile extends AbstractCapProfile {
         }
         if (!hasValidGeocode) {
           reasons.add(new Reason(xpath + "/area[" + j + "]",
-              ErrorType.AREA_GEOCODE_IS_REQUIRED));
+              ReasonType.AREA_GEOCODE_IS_REQUIRED));
         }
       }
     }
-
-    return reasons;
   }
-
-  @Override
-  public List<Reason> checkForRecommendations(AlertOrBuilder alert) {
-    List<Reason> reasons = new ArrayList<Reason>();
-
+  
+  /**
+   * Checks the Alert for recommendations and populates the collection provided
+   * as input.
+   */
+  private void checkForRecommendations(
+      AlertOrBuilder alert, Reasons.Builder reasons) {
+    
     // 7. Use established <event> values
     // TODO(shakusa) Lookup established event values?
 
-    Set<String> languages = new HashSet<String>();
+    Set<String> languages = Sets.newHashSet();
     for (int i = 0; i < alert.getInfoCount(); i++) {
       Info info = alert.getInfo(i);
       String xpath = "/alert/info[" + i + "]";
@@ -207,24 +218,24 @@ public class CanadianProfile extends AbstractCapProfile {
       if (!info.hasExpires()
           || CapUtil.isEmptyOrWhitespace(info.getExpires())) {
         reasons.add(new Reason(xpath,
-            RecommendationType.EXPIRES_STRONGLY_RECOMMENDED));
+            ReasonType.EXPIRES_STRONGLY_RECOMMENDED));
       }
 
       // 14. A <senderName> is strongly recommended
       if (CapUtil.isEmptyOrWhitespace(info.getSenderName())) {
         reasons.add(new Reason(xpath,
-            RecommendationType.SENDER_NAME_STRONGLY_RECOMMENDED));
+            ReasonType.SENDER_NAME_STRONGLY_RECOMMENDED));
       }
 
       // 15. <responseType> is strongly recommended, when applicable,
       // along with a corresponding <instruction> value
       if (info.getResponseTypeCount() == 0) {
         reasons.add(new Reason(xpath,
-            RecommendationType.RESPONSE_TYPE_STRONGLY_RECOMMENDED));
+            ReasonType.RESPONSE_TYPE_STRONGLY_RECOMMENDED));
       }
       if (CapUtil.isEmptyOrWhitespace(info.getInstruction())) {
         reasons.add(new Reason(xpath,
-            RecommendationType.INSTRUCTION_STRONGLY_RECOMMENDED));
+            ReasonType.INSTRUCTION_STRONGLY_RECOMMENDED));
       }
 
       // 16. Indicate when an update message contains non-substantive
@@ -237,90 +248,108 @@ public class CanadianProfile extends AbstractCapProfile {
 
       // 18. Preferential treatment of <polygon> and <circle>
       boolean hasPolygonOrCircle = false;
-      int polygonCircleGeocodeAreaIndex = -1;
       for (int j = 0; j < info.getAreaCount(); j++) {
         Area area = info.getArea(j);
         if (area.getCircleCount() != 0 || area.getPolygonCount() != 0) {
           hasPolygonOrCircle = true;
-          if (area.getGeocodeCount() != 0) {
-            polygonCircleGeocodeAreaIndex = j;
-          }
         }
       }
       if (!hasPolygonOrCircle && info.getAreaCount() > 0) {
         reasons.add(new Reason(xpath + "/area[0]",
-            RecommendationType.CIRCLE_POLYGON_ENCOURAGED));
+            ReasonType.CIRCLE_POLYGON_ENCOURAGED));
       }
     }
 
     // 6. <info> blocks must specify the content language
     if ((!languages.contains("en-US") && !languages.contains("en-CA"))
         || !languages.contains("fr-CA")) {
-      reasons.add(new Reason("/alert",
-          RecommendationType.ENGLISH_AND_FRENCH));
+      reasons.add(
+          new Reason("/alert", ReasonType.ENGLISH_AND_FRENCH));
     }
-
-    return reasons;
   }
 
   // TODO(shakusa) Localize messages
-  public enum ErrorType implements CapException.ReasonType {
+  enum ReasonType implements Reason.Type {
     // Errors
-    VERSION_CODE_REQUIRED("<code>{0}</code> required"),
-    UPDATE_OR_CANCEL_MUST_REFERENCE("All related messages that have not yet " +
-    "expired MUST be referenced for \"Update\" and \"Cancel\" messages."),
+    VERSION_CODE_REQUIRED(
+        Reason.Level.ERROR,
+        "<code>{0}</code> required."),
+    UPDATE_OR_CANCEL_MUST_REFERENCE(
+        Reason.Level.ERROR,
+        "All related messages that have not yet expired MUST be referenced for "
+            + "\"Update\" and \"Cancel\" messages."),
     EVENT_CODES_MUST_MATCH(
-        "All <info> blocks must contain the same <eventCode>s"),
-    RECOGNIZED_EVENT_CODE_REQUIRED("The CAP-CP requires the use of an " +
-        "<eventCode> value from the CAP-CP Event References document that " +
-        "should match the corresponding <event> value"),
-    IS_REQUIRED("At least one <info> must be present"),
-    AREA_IS_REQUIRED("At least one <area> must be present"),
-    AREA_GEOCODE_IS_REQUIRED("At least one <geocode> value from the CAP-CP" +
-        "Location References document for messages that describe areas " +
-        "within Canada is required."),
-    ;
-    private final String message;
+        Reason.Level.ERROR,
+        "All <info> blocks must contain the same <eventCode>s."),
+    RECOGNIZED_EVENT_CODE_REQUIRED(
+        Reason.Level.ERROR,
+        "The CAP-CP requires the use of an <eventCode> value from the CAP-CP "
+            + "Event References document that should match the corresponding "
+            + "<event> value."),
+    IS_REQUIRED(
+        Reason.Level.ERROR,
+        "At least one <info> must be present."),
+    AREA_IS_REQUIRED(
+        Reason.Level.ERROR,
+        "At least one <area> must be present."),
+    AREA_GEOCODE_IS_REQUIRED(
+        Reason.Level.ERROR,
+        "At least one <geocode> value from the CAP-CP Location References "
+            + "document for messages that describe areas within Canada is "
+            + "required."),
 
-    private ErrorType(String message) {
-      this.message = message;
-    }
-
-    @Override
-    public String getMessage(Locale locale) {
-      return message;
-    }
-  }
-
-  // TODO(shakusa) Localize messages
-  public enum RecommendationType implements CapException.ReasonType {
-    ENGLISH_AND_FRENCH("Consider alerts with 2 <info> blocks, one each for " +
-        "English and French"),
-    EXPIRES_STRONGLY_RECOMMENDED("<expires> is strongly recommended."),
+    // Recommendations
+    ENGLISH_AND_FRENCH(
+        Reason.Level.RECOMMENDATION,
+        "Consider alerts with 2 <info> blocks, one each for English and "
+            + "French."),
+    EXPIRES_STRONGLY_RECOMMENDED(
+        Reason.Level.RECOMMENDATION,
+        "<expires> is strongly recommended."),
     SENDER_NAME_STRONGLY_RECOMMENDED(
+        Reason.Level.RECOMMENDATION,
         "<senderName> is strongly recommended."),
     RESPONSE_TYPE_STRONGLY_RECOMMENDED(
+        Reason.Level.RECOMMENDATION,
         "<responseType> is strongly recommended."),
     INSTRUCTION_STRONGLY_RECOMMENDED(
+        Reason.Level.RECOMMENDATION,
         "<instruction> is strongly recommended."),
-    CIRCLE_POLYGON_ENCOURAGED("<polygon> and <circle>, while optional, are " +
-        "encouraged as more accurate representations of <geocode> values"),
-    CIRCLE_POLYGON_PREFERRED("When <polygon> or <circle> values are present " +
-        "in an area block, the combination of <polygon> and <circle> values " +
-        "is the more accurate representation of the alert area. This is " +
-        "contrary to what is currently defined in CAP, which recognizes the " +
-        "area as the combination of the <geocode>, <polygon> and <circle> " +
-        "values"),
+    CIRCLE_POLYGON_ENCOURAGED(
+        Reason.Level.RECOMMENDATION,
+        "<polygon> and <circle>, while optional, are encouraged as more "
+            + "accurate representations of <geocode> values."),
+    CIRCLE_POLYGON_PREFERRED(
+        Reason.Level.RECOMMENDATION,
+        "When <polygon> or <circle> values are present in an area block, the "
+            + "combination of <polygon> and <circle> values is the more "
+            + "accurate representation of the alert area. This is contrary to "
+            + "what is currently defined in CAP, which recognizes the area as "
+            + "the combination of the <geocode>, <polygon> and <circle> "
+            + "values"),
     ;
+    
+    private final Reason.Level defaultLevel;
     private final String message;
 
-    private RecommendationType(String message) {
+    private ReasonType(Reason.Level defaultLevel, String message) {
+      this.defaultLevel = defaultLevel;
       this.message = message;
     }
 
     @Override
     public String getMessage(Locale locale) {
       return message;
+    }
+
+    @Override
+    public Reason.Level getDefaultLevel() {
+      return defaultLevel;
+    }
+    
+    @Override
+    public String getSource() {
+      return CANADIAN_PROFILE_CODE;
     }
   }
 }

@@ -1,0 +1,89 @@
+<feed xmlns="http://www.w3.org/2005/Atom" xmlns:georss="http://www.georss.org/georss">
+  <id>http://www.cfs.sa.gov.au</id>
+  <title>SA Country Fire Service Warning Messages</title>
+  <updated>2014-06-17T09:39:15+09:30</updated>
+
+  <!--A valid CAP alert exits in the feed, but is not in an <entry>, thus it is
+    seen as, legitimate, foreign markup.-->
+
+  <alert xmlns="urn:oasis:names:tc:emergency:cap:1.2">
+    <identifier>9227922014-06-17T09:35:35+09:30</identifier>
+    <sender>cfsmedia@cfs.sa.gov.au</sender>
+    <sent>2014-06-17T09:35:35+09:30</sent>
+    <incidents>MCLAREN VALE: Incident Number 922792</incidents>
+    <status>Actual</status>
+    <msgType>Alert</msgType>
+    <references>
+      cfsmedia@cfs.sa.gov.au,9227922014-06-11T09:41:37+09:30,2014-06-11T09:41:37+09:30
+    </references>
+    <scope>Public</scope>
+    <info>
+      <category>Fire</category>
+      <event>Grass Fire</event>
+      <responseType>Execute</responseType>
+      <urgency>Expected</urgency>
+      <severity>Severe</severity>
+      <certainty>Observed</certainty>
+      <eventCode>
+        <valueName>
+          urn:oasis:names:tc:emergency:cap:1.2:profile:CAP-AU:1.0:AUeventLIST:1.0
+        </valueName>
+        <value>grassFire</value>
+      </eventCode>
+      <expires>2014-06-17T11:33:00+09:30</expires>
+      <senderName>South Australian Country Fire Service</senderName>
+      <headline>Bushfire Watch and Act : MCLAREN VALE</headline>
+      <description>
+        CFS advises situation at the bushfire at McLaren Vale TEST on the
+        Fleurieu Peninsula near Main Road and Mudge Street may change and
+        threaten your safety. CFS expects that a change in the wind direction or
+        fuel type at approximately 11:00am may cause the fire to change
+        direction or accelerate and move towards Reeves Street, McLaren Vale
+        near Reeves Street. People in this area may be threatened by this fire
+        from now. Check and follow your Bushfire Survival Plan. If your plan is
+        to leave or you are not prepared, leave now. Well prepared and actively
+        defended homes can offer safety.
+        You should not enter this area as the roads may not be safe. Stay tuned
+        to our emergency broadcast partners on a battery-powered radio for
+        updates. For information about bushfires, check the CFS website
+        www.cfs.sa.gov.au or call the Bushfire Information Hotline 1300 362 361.
+      </description>
+      <instruction>
+        Check and follow your Bushfire Survival Plan. If your plan is to leave
+        or you are not prepared, leave now. You should not enter this area as
+        the roads may not be safe.
+      </instruction>
+      <web>http://www.cfs.sa.gov.au/custom/criimson/922792.html</web>
+      <parameter>
+        <valueName>IncidentName</valueName>
+        <value>MCLAREN VALE</value>
+      </parameter>
+      <parameter>
+        <valueName>WarningLevel</valueName>
+        <value>Bushfire Watch and Act</value>
+      </parameter>
+      <parameter>
+        <valueName>IncidentLevel</valueName>
+        <value>1</value>
+      </parameter>
+      <parameter>
+        <valueName>Status</valueName>
+        <value>GOING</value>
+      </parameter>
+      <parameter>
+        <valueName>ControlAuthority</valueName>
+        <value>South Australian Country Fire Service</value>
+      </parameter>
+      <area>
+        <areaDesc>McLaren Vale TEST on the Fleurieu Peninsula</areaDesc>
+        <Point>
+          <coordinates>-35.2208853361912,138.547376822689</coordinates>
+        </Point>
+        <geocode>
+          <valueName>ISO 3166-2</valueName>
+          <value>AU_SA</value>
+        </geocode>
+      </area>
+    </info>
+  </alert>
+</feed>

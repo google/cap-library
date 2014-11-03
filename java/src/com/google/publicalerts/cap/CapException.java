@@ -16,11 +16,6 @@
 
 package com.google.publicalerts.cap;
 
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 import java.util.Locale;
 
 /**
@@ -31,25 +26,22 @@ import java.util.Locale;
 public class CapException extends Exception {
   private static final long serialVersionUID = -8060028892021203660L;
 
-  /** List of reasons for the exception */
-  private final List<Reason> reasons;
+  /** Reasons for the exception */
+  private final Reasons reasons;
 
   public CapException(Reason...reasons) {
-    this(Arrays.asList(reasons));
+    this(Reasons.of(reasons));
   }
 
-  public CapException(List<Reason> reasons) {
+  public CapException(Reasons reasons) {
     super(getMessage(reasons, Locale.ENGLISH));
-    this.reasons = Collections.unmodifiableList(
-        new ArrayList<Reason>(reasons));
+    this.reasons = reasons;
   }
 
   /**
-   * Returns the list of reasons for this exception.
-   *
-   * @return the list of reasons
+   * @return the reasons for this exception
    */
-  public List<Reason> getReasons() {
+  public Reasons getReasons() {
     return reasons;
   }
 
@@ -62,7 +54,8 @@ public class CapException extends Exception {
     return getMessage(reasons, locale);
   }
 
-  private static String getMessage(List<Reason> reasons, Locale locale) {
+  @SuppressWarnings("unused")
+  private static String getMessage(Reasons reasons, Locale locale) {
     StringBuilder sb = new StringBuilder();
     for (Reason reason : reasons) {
       sb.append(reason.getMessage()).append("; ");
@@ -72,242 +65,130 @@ public class CapException extends Exception {
   }
 
   /**
-   * A reason for a {@link CapException}. This allows a single exception to
-   * contain multiple causes. This class is immutable and thread-safe.
-   */
-  public static class Reason {
-
-    /**
-     * Type of the reason. Should allow equality comparison to avoid
-     * resorting to string comparisons on the exception message.
-     */
-    private final ReasonType type;
-
-    /**
-     * XPath expression to the error.
-     */
-    private final String xpath;
-
-    /**
-     * Line number of the reason. Valid only when parsing an alert from text,
-     * otherwise -1.
-     */
-    private final int lineNumber;
-
-    /**
-     * Column number of the reason.  Valid only when parsing an alert from
-     * text, otherwise -1.
-     */
-    private final int columnNumber;
-
-    /** Message parameters for the reason. */
-    private final Object[] messageParams;
-
-    /**
-     * Returns a new {@link Reason} with the given line number.
-     *
-     * @return a new {@link Reason} with the given line number
-     */
-    public static Reason withNewLineNumber(Reason reason, int newLineNumber) {
-      return new Reason(newLineNumber, reason.columnNumber, reason.xpath,
-          reason.type, reason.messageParams);
-    }
-
-    public Reason(String xpath, ReasonType type, Object...messageParams) {
-      this(-1, -1, xpath, type, messageParams);
-    }
-
-    public Reason(int line, int col, String xpath, ReasonType type,
-        Object...messageParams) {
-      this.lineNumber = line;
-      this.columnNumber = col;
-      this.xpath = xpath;
-      this.type = type;
-      this.messageParams = messageParams;
-    }
-
-    /**
-     * Gets the type of this reason.
-     *
-     * @return the type of this reason
-     */
-    public ReasonType getType() {
-      return type;
-    }
-
-    /**
-     * Returns the number of message params
-     *
-     * @return the number of message parameters
-     */
-    public int getMessageParamsCount() {
-      return messageParams.length;
-    }
-
-    /**
-     * Gets the {@code i}th message param, or null if {@code i} is out of bounds
-     *
-     * @param i the index of the param to retrieve
-     * @return the {@code i}th message param, or null if {@code i} is out of
-     * bounds
-     */
-    public Object getMessageParam(int i) {
-      return getMessageParamsCount() > i ? messageParams[i] : null;
-    }
-
-    /**
-     * Gets a line number associated with the reason, or -1 if none.
-     *
-     * @return the line number of the reason
-     */
-    public int getLineNumber() {
-      return lineNumber;
-    }
-
-    /**
-     * Gets a column number associated with the reason, or -1 if none.
-     *
-     * @return the column number of the reason
-     */
-    public int getColumnNumber() {
-      return columnNumber;
-    }
-
-    /**
-     * Gets an XPath expression tying the error to a CAP message
-     *
-     * @return an XPath expression tying the error to a CAP message
-     */
-    public String getXPath() {
-      return xpath;
-    }
-
-    /**
-     * Returns the {@link ReasonType}'s message formatted with the
-     * {@link #messageParams}.
-     * @return an English human-readable message for this reason
-     */
-    public String getMessage() {
-      return getLocalizedMessage(Locale.ENGLISH);
-    }
-
-    /**
-     * Returns the {@link ReasonType}'s message formatted with the
-     * {@link #messageParams}.
-     * @param locale for the requested message
-     * @return a human-readable message for this reason
-     */
-    public String getLocalizedMessage(Locale locale) {
-      StringBuilder sb = new StringBuilder();
-      if (messageParams.length == 0) {
-        sb.append(type.getMessage(locale));
-      } else {
-        sb.append(MessageFormat.format(
-            type.getMessage(locale), messageParams));
-      }
-      return sb.toString();
-    }
-
-    @Override
-    public String toString() {
-      return getMessage();
-    }
-
-    @Override
-    public boolean equals(Object other) {
-      if (!(other instanceof Reason)) {
-        return false;
-      }
-      Reason that = (Reason) other;
-      return type == that.type
-          && (xpath == null ? that.xpath == null : xpath.equals(that.xpath))
-          && lineNumber == that.lineNumber
-          && columnNumber == that.columnNumber
-          && Arrays.deepEquals(messageParams, that.messageParams);
-    }
-
-    @Override
-    public int hashCode() {
-      int result = 1;
-      result = 31 * result + columnNumber;
-      result = 31 * result + lineNumber;
-      result = 31 * result + Arrays.hashCode(messageParams);
-      result = 31 * result + ((xpath == null) ? 0 : xpath.hashCode());
-      result = 31 * result + ((type == null) ? 0 : type.hashCode());
-      return result;
-    }
-  }
-
-  /**
-   * Interface defining the type of a CapException Reason.
-   * This allows for external types to be defined.
-   */
-  public static interface ReasonType {
-
-    /**
-     * Returns a localized message for this type (currently English-only)
-     * @return the localized message for this type
-     */
-    String getMessage(Locale locale);
-  }
-
-  /**
    * Type of the exception message. Use {@link #OTHER} if your exception
    * doesn't fit one of the listed types.
    */
   // TODO(shakusa) Localize messages
-  public enum Type implements ReasonType {
-    CERTAINTY_VERY_LIKELY_DEPRECATED("<certainty> \"Very Likely\" has been " +
-        "deprecated. Use Likely instead"),
-    DUPLICATE_ELEMENT("Invalid duplicate <{0}>, ignoring \"{1}\""),
-    INVALID_ALTITUDE_CEILING_RANGE("Invalid <area>; ceiling must " +
-        "be greater than altitude"),
-    INVALID_AREA("Invalid <area>; when ceiling is specified " +
-        "altitude must also be specified."),
-    INVALID_CHARACTERS("Invalid characters in element \"{0}\""),
-    INVALID_CIRCLE("Invalid <circle> \"{0}\". Must be formatted like: " +
-        "\"-12.345,67.89 15.2\", which is a [WGS 84] coordinate followed by a " +
-        "radius in kilometers"),
-    INVALID_DATE("Invalid <{0}>: \"{1}\". " +
-        "Must be formatted like \"2002-05-24T16:49:00-07:00\""),
-    INVALID_ENUM_VALUE("Invalid enum value <{0}> = \"{1}\". " +
-        "Must be one of {2}"),
-    INVALID_IDENTIFIER("Invalid <identifier> \"{0}\". Must not include " +
-        "spaces, commas, or restricted characters (< and &)"),
-    INVALID_LANGUAGE("Invalid <language> \"{0}\". Must follow RFC 3066."),
-    INVALID_POLYGON("Invalid <polygon> \"{0}\". Expect a minimum of four " +
-        "[WGS 84] coordinates like: " +
-        "\"12.3,-4.2 12.3,-4.3 12.4,-4.3 12.3,-4.2\", " +
-        "where the first and last coordinates are equal."),
-    INVALID_REFERENCES("Invalid <references>: \"{0}\". Must be a non-empty, " +
-        "space-separated list of sender,identifier,sent triplets."),
-    INVALID_RESOURCE_SIZE("Invalid size: \"{0}\""),
-    INVALID_RESOURCE_URI("Invalid URI: \"{0}\""),
-    INVALID_SENDER("Invalid <sender>: \"{0}\". Must not include " +
-        "spaces, commas, or restricted characters (< and &)"),
-    INVALID_SEQUENCE("Elements are not in the correct sequence order." +
-        "One of {0} expected instead of \"{1}\"."),
-    INVALID_VALUE("Unsupported value <{0}> = \"{1}\""),
-    INVALID_WEB("Invalid <web>: \"{0}\". Must be a full " +
-        "absolute URI"),
-    MISSING_REQUIRED_ELEMENT("The content of <{0}> is not complete. One of " +
-        "{1} is required"),
-    OTHER("{0}"),
-    PASSWORD_DEPRECATED("<password> has been deprecated"),
+  public enum ReasonType implements Reason.Type {
+    
+    // Errors
+    CERTAINTY_VERY_LIKELY_DEPRECATED(
+        Reason.Level.ERROR,
+        "<certainty> \"Very Likely\" has been deprecated. Use Likely instead."),
+    CIRCULAR_REFERENCE(
+        Reason.Level.ERROR,
+        "Invalid <references>: \"{0}\". Alert cannot reference itself."),
+    DUPLICATE_ELEMENT(
+        Reason.Level.ERROR,
+        "Invalid duplicate <{0}>, ignoring \"{1}\"."),
+    INVALID_ALTITUDE_CEILING_RANGE(
+        Reason.Level.ERROR,
+        "Invalid <area>; ceiling must be greater than altitude."),
+    INVALID_AREA(
+        Reason.Level.ERROR,
+        "Invalid <area>; when ceiling is specified altitude must also be "
+            + "specified."),
+    INVALID_CHARACTERS(
+        Reason.Level.ERROR,
+        "Invalid characters in element \"{0}\"."),
+    INVALID_CIRCLE(
+        Reason.Level.ERROR,
+        "Invalid <circle> \"{0}\". Must be formatted like: "
+            + "\"-12.345,67.89 15.2\", which is a [WGS 84] coordinate followed "
+            + "by a radius in kilometers."),
+    INVALID_DATE(
+        Reason.Level.ERROR,
+        "Invalid <{0}>: \"{1}\". Must be formatted like "
+            + "\"2002-05-24T16:49:00-07:00\"."),
+    INVALID_DEREF_URI(
+        Reason.Level.ERROR,
+        "Invalid <derefUri> \"{0}\". Must be base64-encoded."),
+    INVALID_ENUM_VALUE(
+        Reason.Level.ERROR,
+        "Invalid enum value <{0}> = \"{1}\". Must be one of {2}."),
+    INVALID_IDENTIFIER(
+        Reason.Level.ERROR,
+        "Invalid <identifier> \"{0}\". Must not include spaces, commas, or "
+            + "restricted characters (< and &)."),
+    INVALID_LANGUAGE(
+        Reason.Level.ERROR,
+        "Invalid <language> \"{0}\". Must follow RFC 3066."),
+    INVALID_MIME_TYPE(
+        Reason.Level.ERROR,
+        "Invalid <mimeType> \"{0}\". Must follow RFC 2046."),
+    INVALID_POLYGON(
+        Reason.Level.ERROR,
+        "Invalid <polygon> \"{0}\". Expect a minimum of four [WGS 84] "
+            + "coordinates like: \"12.3,-4.2 12.3,-4.3 12.4,-4.3 12.3,-4.2\", "
+            + "where the first and last coordinates are equal."),
+    INVALID_REFERENCES(
+        Reason.Level.ERROR,
+        "Invalid <references>: \"{0}\". Must be a non-empty, space-separated "
+           + "list of sender,identifier,sent triplets."),
+    INVALID_RESOURCE_SIZE(
+        Reason.Level.ERROR,
+        "Invalid size: \"{0}\"."),
+    INVALID_RESOURCE_URI(
+        Reason.Level.ERROR,
+        "Invalid URI: \"{0}\"."),
+    INVALID_SENDER(
+        Reason.Level.ERROR,
+        "Invalid <sender>: \"{0}\". Must not include spaces, commas, or "
+            + "restricted characters (< and &)."),
+    INVALID_SEQUENCE(
+        Reason.Level.ERROR,
+            "Elements are not in the correct sequence order."
+            + "One of {0} expected instead of \"{1}\"."),
+    INVALID_VALUE(
+        Reason.Level.ERROR,
+        "Unsupported value <{0}> = \"{1}\"."),
+    INVALID_WEB(
+        Reason.Level.ERROR,
+        "Invalid <web>: \"{0}\". Must be a full absolute URI."),
+    MISSING_REQUIRED_ELEMENT(
+        Reason.Level.ERROR,
+        "The content of <{0}> is not complete. One of {1} is required."),
+    OTHER(
+        Reason.Level.ERROR,
+        "{0}"),
+    PASSWORD_DEPRECATED(
+        Reason.Level.ERROR,
+        "<password> has been deprecated."),
     RESTRICTION_SCOPE_MISMATCH(
-        "<restriction> should be used only when <scope> is Restricted"),
-    UNSUPPORTED_ELEMENT("Unsupported element <{0}>"),
+        Reason.Level.ERROR,
+        "<restriction> should be used only when <scope> is Restricted."),
+    UNSUPPORTED_ELEMENT(
+        Reason.Level.ERROR,
+        "Unsupported element <{0}>."),
+        
+    // Warnings
+    POSTDATED_REFERENCE(
+        Reason.Level.WARNING,
+        "Invalid <references>: \"{0}\". Alert should not have have post-dated "
+            + "references."),
     ;
 
+    private final Reason.Level defaultLevel;
     private final String message;
 
-    private Type(String message) {
+    private ReasonType(Reason.Level defaultLevel, String message) {
+      this.defaultLevel = defaultLevel;
       this.message = message;
     }
 
     @Override
     public String getMessage(Locale locale) {
       return message;
+    }
+
+    @Override
+    public Reason.Level getDefaultLevel() {
+      return defaultLevel;
+    }
+
+    @Override
+    public String getSource() {
+      return "CAP";
     }
   }
 }

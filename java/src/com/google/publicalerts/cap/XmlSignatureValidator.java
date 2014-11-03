@@ -16,6 +16,9 @@
 
 package com.google.publicalerts.cap;
 
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
@@ -29,9 +32,6 @@ import java.security.PublicKey;
 import java.security.cert.CertificateExpiredException;
 import java.security.cert.CertificateNotYetValidException;
 import java.security.cert.X509Certificate;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Level;
@@ -89,11 +89,11 @@ public class XmlSignatureValidator {
 
     Result(boolean isSignatureValid, Detail... details) {
       this.isSignatureValid = isSignatureValid;
-      Set<Detail> mutableDetails = new HashSet<Detail>();
+      ImmutableSet.Builder<Detail> detailsBuilder = ImmutableSet.builder();
       for (Detail detail : details) {
-        mutableDetails.add(detail);
+        detailsBuilder.add(detail);
       }
-      this.details = Collections.unmodifiableSet(mutableDetails);
+      this.details = detailsBuilder.build();
     }
 
     /**
@@ -174,9 +174,9 @@ public class XmlSignatureValidator {
     // We assume that each signature was applied to the document without any
     // other signature nodes.  Thus we remove all signature nodes and add back
     // one-at-a-time each we test for validity.
-    List<Result.Detail> details = new ArrayList<Result.Detail>();
+    List<Result.Detail> details = Lists.newArrayList();
     Node parent = nl.item(0).getParentNode();
-    List<Node> signatureNodes = new ArrayList<Node>();
+    List<Node> signatureNodes = Lists.newArrayList();
     for (int i = 0; i < numSignatures; i++) {
       // Note NodeList is just a view on the DOM, it gets mutated each time you call
       // removeChild, therefore we always remove the 0th child.

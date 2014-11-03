@@ -118,8 +118,7 @@ public class CapValidatorServlet extends HttpServlet {
 
     req.setAttribute("input", input);
     req.setAttribute("profiles", ValidatorUtil.getProfilesJsp(profiles));
-    req.setAttribute("errors", result.getByLineErrorMap());
-    req.setAttribute("recommendations", result.getByLineRecommendationMap());
+    req.setAttribute("validationResult", result);
     req.setAttribute("lines", Arrays.asList(result.getInput().split("\n")));
     req.setAttribute("timing", result.getTiming());
     JSONArray alertsJs =

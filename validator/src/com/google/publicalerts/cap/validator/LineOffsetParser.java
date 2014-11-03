@@ -18,10 +18,8 @@ package com.google.publicalerts.cap.validator;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.Stack;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -32,70 +30,67 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
 import com.google.publicalerts.cap.CapUtil;
+import com.google.publicalerts.cap.XPath;
+import com.google.publicalerts.cap.feed.CapFeedParser;
 
 /**
- * Parses a given XML document to maintain mappings
- * from elements to their given line number, which is helpful
- * to know where to display in-line error messages.
+ * Parses a given XML document to maintain mappings from elements to their given
+ * line number, which is helpful to know where to display in-line error
+ * messages.
  *
  * @author shakusa@google.com (Steve Hakusa)
  */
 public class LineOffsetParser {
-
-  private static final Set<String> REPEATED_ELEMENTS = getRepeatedElements();
-
-  private static Set<String> getRepeatedElements() {
-    // Start with repeated fields from Atom and RSS
-    Set<String> elements = Sets.newHashSet(
-        "entry", "author", "category", "contributor", "link", "item");
-    // Add repeated fields from CAP
-    for (Set<String> repeated : CapUtil.getRepeatedFieldNames().values()) {
-      elements.addAll(repeated);
-    }
-    return elements;
-  }
+  private static final Set<String> REPEATED_ELEMENTS =
+      ImmutableSet.<String>builder()
+          .addAll(CapFeedParser.FEED_REPEATED_ELEMENTS)
+          .addAll(CapUtil.getRepeatedFieldNamesFlatSet()).build();
 
   /**
-   * Container object for line offsets based on either xpath epxressions or
-   * link href's in the parsed xml document.
+   * Container object for line offsets based on either xPath expressions or
+   * link href's in the parsed XML document.
    */
   public static class LineOffsets {
     private final Map<String, Integer> linkLineNumbers = Maps.newHashMap();
     private final Map<String, Integer> xpathLineNumbers = Maps.newHashMap();
 
     /**
-     * @param the 0-based index of the entry in the xml document
-     * @return the line number where the &lt;entry&gt; tag starts
+     * @param index the 0-based index of the entry in the XML document
+     * @return the line number where the &lt;entry&gt; or &lt;item&gt; tag
+     * starts
+     * 
+     * TODO(sschiavoni): rewrite this method
      */
     public int getEntryLineNumber(int index) {
       int lineNumber = getXPathLineNumber("/feed/entry[" + index + "]");
       if (lineNumber == 0) {
-        lineNumber = getXPathLineNumber("/channel/item[" + index + "]");
+        lineNumber = getXPathLineNumber("/rss/channel/item[" + index + "]");
       }
+      
       return lineNumber;
     }
 
     /**
-     * @param xpath the xpath expression to return a line number for
-     * @param the line number of the start of the element referred to by the
-     * xpath, or 0 if the xpath doesn't exist
+     * @param xPath the xPath expression to return a line number for
+     * @return the line number of the start of the element referred to by the
+     * xPath, or 0 if the xPath doesn't exist
      */
-    public int getXPathLineNumber(String xpath) {
-      Integer lineNumber = xpathLineNumbers.get(xpath);
-      return lineNumber == null ? 0 : lineNumber;
+    public int getXPathLineNumber(String xPath) {
+      Integer lineNumber = xpathLineNumbers.get(xPath);
+      return (lineNumber == null) ? 0 : lineNumber;
     }
 
     /**
      * @param href a link href
      * @return the line number of the last link element with the href,
-     * or 0 if the xpath doesn't exist
+     * or 0 if the xPath doesn't exist
      */
     public int getLinkLineNumber(String href) {
       Integer lineNumber = linkLineNumbers.get(href);
-      return lineNumber == null ? 0 : lineNumber;
+      return (lineNumber == null) ? 0 : lineNumber;
     }
   }
 
@@ -126,30 +121,31 @@ public class LineOffsetParser {
     return handler.lineOffsets;
   }
 
-  static class Handler extends DefaultHandler {
-    Locator locator;
-    LineOffsets lineOffsets = new LineOffsets();
-    Xpath xpath = new Xpath();
-    int linkLine;
-    String linkHref;
-    StringBuilder characters = new StringBuilder();
+  private static class Handler extends DefaultHandler {
+    private Locator locator;
+    private LineOffsets lineOffsets = new LineOffsets();
+    private XPath xPath = new XPath(REPEATED_ELEMENTS);
+    private Integer linkLine;
+    private String linkHref;
+    private StringBuilder characters = new StringBuilder();
 
     @Override
-    public void setDocumentLocator (Locator locator) {
+    public void setDocumentLocator(Locator locator) {
       this.locator = locator;
     }
 
     @Override
     public void startElement(String uri, String localName, String qName,
         Attributes attributes) {
+      xPath.push(localName);
+      lineOffsets.xpathLineNumbers
+          .put(xPath.toString(), locator.getLineNumber());
+      
       characters.setLength(0);
-      linkLine = -1;
+      linkLine = null;
       linkHref = null;
 
-      xpath.push(localName, REPEATED_ELEMENTS.contains(localName));
-      lineOffsets.xpathLineNumbers.put(
-          xpath.toString(), locator.getLineNumber());
-      if ("link".equals(localName)) {
+      if ("link".equals(qName)) {
         linkLine = locator.getLineNumber();
         linkHref = attributes.getValue("href");
       }
@@ -157,9 +153,10 @@ public class LineOffsetParser {
 
     @Override
     public void endElement(String uri, String localName, String qName) {
-      xpath.pop();
+      xPath.pop();
+      
       if ("link".equals(localName)) {
-        String href = linkHref == null ? characters.toString() : linkHref;
+        String href = (linkHref == null) ? characters.toString() : linkHref;
         lineOffsets.linkLineNumbers.put(href, linkLine);
       }
     }
@@ -167,43 +164,6 @@ public class LineOffsetParser {
     @Override
     public void characters(char ch[], int start, int length) {
       characters.append(ch, start, length);
-    }
-
-    private static class Xpath {
-      Stack<String> elements;
-      Stack<Integer> indexes;
-      Map<String, Integer> indexCounts;
-      String lastElement;
-
-      public Xpath() {
-        this.elements = new Stack<String>();
-        this.indexes = new Stack<Integer>();
-        this.indexCounts = new HashMap<String, Integer>();
-      }
-
-      public void push(String element, boolean repeated) {
-        elements.push(element);
-        indexes.push(repeated ?
-            element.equals(lastElement) ? indexCounts.get(lastElement) + 1 : 0
-            : null);
-      }
-
-      public void pop() {
-        lastElement = elements.pop();
-        indexCounts.put(lastElement, indexes.pop());
-      }
-
-      @Override
-      public String toString() {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < elements.size(); i++) {
-          sb.append("/").append(elements.get(i));
-          if (indexes.get(i) != null) {
-            sb.append("[").append(indexes.get(i)).append("]");
-          }
-        }
-        return sb.toString();
-      }
     }
   }
 }

@@ -19,6 +19,7 @@ package com.google.publicalerts.cap.feed;
 import static com.google.publicalerts.cap.CapUtil.stripXmlPreamble;
 import static java.util.Collections.singletonList;
 
+import com.google.common.collect.Lists;
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.CapDateUtil;
 import com.google.publicalerts.cap.CapXmlBuilder;
@@ -32,7 +33,6 @@ import com.sun.syndication.feed.synd.SyndFeedImpl;
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.SyndFeedOutput;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -63,7 +63,7 @@ public class SimpleFatCapAtomFeedBuilder {
     syndFeed.setUri(feedUri);
     syndFeed.setPublishedDate(feedPublishedDate);
 
-    List<SyndEntry> feedEntries = new ArrayList<SyndEntry>();
+    List<SyndEntry> feedEntries = Lists.newArrayList();
     for (Alert alert : capAlerts) {
       SyndEntry entry = new SyndEntryImpl();
       entry.setUri(alert.getIdentifier());

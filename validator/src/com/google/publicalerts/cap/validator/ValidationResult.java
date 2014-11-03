@@ -17,17 +17,19 @@
 package com.google.publicalerts.cap.validator;
 
 import java.util.List;
+import java.util.Set;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Multimap;
+import com.google.common.collect.Sets;
 import com.google.common.collect.TreeMultimap;
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.CapException;
-import com.google.publicalerts.cap.CapException.Reason;
+import com.google.publicalerts.cap.Reason;
+import com.google.publicalerts.cap.Reasons;
+import com.google.publicalerts.cap.Reason.Level;
 import com.google.publicalerts.cap.XercesCapExceptionMapper;
-import com.google.publicalerts.cap.feed.CapFeedException;
-import com.google.publicalerts.cap.profile.CapProfile;
+
 import com.sun.syndication.io.FeedException;
 import com.sun.syndication.io.ParsingFeedException;
 
@@ -38,8 +40,7 @@ import com.sun.syndication.io.ParsingFeedException;
  */
 public class ValidationResult {
   private final String xml;
-  private final List<ValidationError> errors;
-  private final List<ValidationError> recommendations;
+  private final Set<ValidationMessage> validationMessages;
   private final List<Alert> validAlerts;
   private final Timing timing;
 
@@ -48,12 +49,11 @@ public class ValidationResult {
   /**
    * Creates a new validation result.
    *
-   * @param xml the xml of the document being validated
+   * @param xml the XML of the document being validated
    */
   public ValidationResult(String xml) {
     this.xml = xml;
-    this.errors = Lists.newArrayList();
-    this.recommendations = Lists.newArrayList();
+    this.validationMessages = Sets.newLinkedHashSet();
     this.validAlerts = Lists.newArrayList();
     this.timing = new Timing();
   }
@@ -68,230 +68,85 @@ public class ValidationResult {
   }
 
   /**
-   * Adds a recommendation to the result and HTML-escapes the message.
+   * Adds a validation message to the result and HTML-escapes the message.
    *
-   * @param lineNum line number of the recommendation
-   * @param colNum column number of the recommendation
-   * @param recommendation recommendation text
+   * @param lineNum line number of the message
+   * @param level level (i.e., severity) of the message
+   * @param unescapedMessage the unescaped text of validation message text
    */
-  public void addRecommendation(
-      int lineNum, int colNum, String recommendation) {
-    recommendations.add(
-        ValidationError.unescaped(lineNum, colNum, recommendation));
+  public void addValidationMessage(
+      int lineNum, Level level, String source, String unescapedMessage) {
+    validationMessages.add(ValidationMessage.withUnescapedMessage(
+        lineNum, level, source, unescapedMessage));
   }
 
   /**
-   * Adds an error to the result and HTML-escapes the message
+   * Adds the reasons as validation messages to the result.
    *
-   * @param lineNum line number of the error
-   * @param colNum column number of the error
-   * @param errorMsg error message
+   * @param reasons the reasons to add
    */
-  public void addError(int lineNum, int colNum, String errorMsg) {
-    errors.add(
-        ValidationError.unescaped(lineNum, colNum, errorMsg));
+  public void addValidationMessages(Reasons reasons) {
+    for (Reason reason : new XercesCapExceptionMapper().map(reasons)) {
+      int lineOffset = getLineOffsets().getXPathLineNumber(reason.getXPath());
+      addValidationMessage(lineOffset, reason.getLevel(),
+          reason.getSource(), reason.getMessage());
+    }
   }
+  
+  /**
+   * Adds the reasons stored in the exception as validation messages to the
+   * result.
+   * 
+   * @param capException the exception storing the reasons to add
+   */
+  public void addValidationMessages(CapException capException) {
+    addValidationMessages(capException.getReasons());
+  }  
 
   /**
-   * Adds a recommendation to the result. Be careful to escape
-   * any user-generated data passed into this method.
-   *
-   * @param lineNum line number of the recommendation
-   * @param colNum column number of the recommendation
-   * @param recommendation HTML-escaped recommendation text
-   */
-  public void addEscapedRecommendation(
-      int lineNum, int colNum, String recommendation) {
-    recommendations.add(
-        ValidationError.escaped(lineNum, colNum, recommendation));
-  }
-
-  /**
-   * Adds an error to the result. Be careful to escape
-   * any user-generated data passed into this method.
-   *
-   * @param lineNum line number of the error
-   * @param colNum column number of the error
-   * @param errorMsg HTML-escaped error message
-   */
-  public void addEscapedError(int lineNum, int colNum, String errorMsg) {
-    errors.add(
-        ValidationError.escaped(lineNum, colNum, errorMsg));
-  }
-
-  /**
-   * Adds the reasons in the given exception as errors to the result.
+   * Adds the message corresponding to the given exception to the result.
    *
    * @param e the exception to add
    */
-  public void addFeedError(FeedException e) {
+  public void addValidationMessage(FeedException e) {
     if (e instanceof ParsingFeedException) {
       ParsingFeedException pfe = (ParsingFeedException) e;
-      addError(pfe.getLineNumber(), pfe.getColumnNumber(),
+      addValidationMessage(pfe.getLineNumber(), Level.ERROR, "XML parser",
           pfe.getLocalizedMessage());
     } else {
-      addError(1, 1, e.getLocalizedMessage());
+      addValidationMessage(1, Level.ERROR, "XML parser",
+          e.getLocalizedMessage());
     }
   }
 
   /**
-   * Adds the reasons in the given exception as errors to the result.
+   * Adds the reasons as validation messages to the result.
    *
-   * @param e the exception to add
+   * @param linkUrl the url that generated the messages
+   * @param reasons the reasons to add
    */
-  public void addFeedError(CapFeedException e) {
-    for (Reason reason : e.getReasons()) {
-      int lineNumber = reason.getLineNumber();
-      if (reason.getLineNumber() == -1) {
-        lineNumber = getLineOffsets().getXPathLineNumber(reason.getXPath());
-      }
-      addError(lineNumber, reason.getColumnNumber(), reason.getMessage());
+  public void addValidationMessageForLink(String linkUrl, Reasons reasons) {
+    for (Reason reason : new XercesCapExceptionMapper().map(reasons)) {
+      addValidationMessageForLink(
+          linkUrl, reason.getLevel(), reason.getSource(), reason.getMessage());
     }
   }
-
+  
   /**
-   * Adds the reasons as recommendations to the result.
+   * Adds the string as validation messages to the result.
    *
-   * @param reasons the recommendations to add
+   * @param linkUrl the url that generated the messages
+   * @param level the level of the validation message
+   * @param message the free-text message
    */
-  public void addFeedRecommendations(List<Reason> reasons) {
-    for (Reason reason : reasons) {
-      int lineOffset = getLineOffsets().getXPathLineNumber(reason.getXPath());
-      addRecommendation(lineOffset, reason.getColumnNumber(), reason.getMessage());
-    }
-  }
-
-  /**
-   * Adds the reasons in the given exception as errors to the result at the
-   * link identified by the given url.
-   *
-   * @param linkUrl the url that generated the errors
-   * @param e the exception to add
-   */
-  public void addCapLinkError(String linkUrl, CapException e) {
-    addCapLinkReasons(linkUrl, e.getReasons(), true);
-  }
-
-  /**
-   * Adds the given message as an error to the result at the
-   * link identified by the given URL.
-   *
-   * @param linkUrl the url that generated the errors
-   * @param errorMsg the message to add
-   */
-  public void addCapLinkError(String linkUrl, String errorMsg) {
+  public void addValidationMessageForLink(
+      String linkUrl, Level level, String source, String message) {
     Integer lineNum = getLineOffsets().getLinkLineNumber(linkUrl);
-    lineNum = lineNum == null ? 0 : lineNum;
-    addError(lineNum, 1, errorMsg);
+    lineNum = (lineNum == null) ? 0 : lineNum;
+    
+    addValidationMessage(lineNum, level, source, message);
   }
-
-  /**
-   * Adds the reasons in the given exception as errors to the result.
-   *
-   * @param e the exception to add
-   */
-  public void addError(CapException e) {
-    addCapContentError(e, -1);
-  }
-
-  /**
-   * For feeds of "fat" pings.  Adds the reasons in the given exception
-   * as errors to the result, where the line numbers of the errors are offset
-   * by the location of the entry containing the invalid CAP message.
-   *
-   * @param e the exception to add
-   * @param entryIndex the 0-based index of the entry containing the invalid
-   * CAP message
-   */
-  public void addCapContentError(CapException e, int entryIndex) {
-    e = new XercesCapExceptionMapper().map(e);
-    int lineOffset = getLineOffsets().getEntryLineNumber(entryIndex);
-    String xpath = entryIndex == -1
-        ? "" : "/feed/entry[" + entryIndex + "]/content";
-    for (Reason reason : e.getReasons()) {
-      int lineNumber = reason.getLineNumber() == -1 ?
-          getLineOffsets().getXPathLineNumber(xpath + reason.getXPath())
-          : reason.getLineNumber() + lineOffset;
-      addError(lineNumber, reason.getColumnNumber(),
-          reason.getMessage());
-    }
-  }
-
-  /**
-   * Adds the given errors and reasons caused by the given profile
-   * to the result at the link identified by the given URL.
-   * @param profile the profile generating the errors and recommendations
-   * @param linkUrl the URL that generated the errors
-   * @param errors the errors generated by the profile
-   * @param recommendations the recommendations generated by the profile
-   */
-  public void addProfileResult(CapProfile profile, String linkUrl,
-      List<Reason> errors, List<Reason> recommendations) {
-    addCapLinkReasons(linkUrl, errors, true);
-    addCapLinkReasons(linkUrl, recommendations, false);
-  }
-
-  /**
-   * Adds the given errors and reasons caused by the given profile
-   * to the result, where the line numbers of the errors are offset
-   * by the location of the entry containing the invalid CAP message.
-   *
-   * @param profile the profile generating the errors and recommendations
-   * @param entryIndex the 0-based index of the entry containing the invalid
-   * CAP message
-   * @param errors the errors generated by the profile
-   * @param recommendations the recommendations generated by the profile
-   */
-  public void addProfileResult(CapProfile profile, int entryIndex,
-      List<Reason> errors, List<Reason> recommendations) {
-    errors = errors == null ? ImmutableList.<Reason>of() : errors;
-    recommendations = recommendations == null
-        ? ImmutableList.<Reason>of() : recommendations;
-
-    String xpath = entryIndex == -1
-        ? "" : "/feed/entry[" + entryIndex + "]/content";
-    for (Reason reason : errors) {
-      int line = getLineOffsets().getXPathLineNumber(xpath + reason.getXPath());
-      addError(line, reason.getColumnNumber(),
-          profile.getCode() + ": " + reason.getMessage());
-    }
-    for (Reason reason : recommendations) {
-      int line = getLineOffsets().getXPathLineNumber(xpath + reason.getXPath());
-      addRecommendation(line, reason.getColumnNumber(),
-          profile.getCode() + ": " + reason.getMessage());
-    }
-  }
-
-  private void addCapLinkReasons(
-      String linkUrl, List<Reason> reasons, boolean isError) {
-    if (reasons == null || reasons.isEmpty()) {
-      return;
-    }
-
-    Integer lineNum = getLineOffsets().getLinkLineNumber(linkUrl);
-    lineNum = lineNum == null ? 0 : lineNum;
-
-    String escapedUrl = StringUtil.htmlEscape(linkUrl);
-    StringBuilder sb = new StringBuilder(
-        isError ? "Errors" : "Recommendations")
-        .append(" for CAP message loaded from: <a href='")
-        .append(escapedUrl)
-        .append("'>")
-        .append(escapedUrl)
-        .append("</a><br/>");
-    reasons = new XercesCapExceptionMapper().map(reasons);
-    for (Reason reason : reasons) {
-      sb.append("\u2022 ")
-          .append(StringUtil.htmlEscape(reason.getMessage()))
-          .append("<br/>");
-    }
-    if (isError) {
-      addEscapedError(lineNum, 1, sb.toString());
-    } else {
-      addEscapedRecommendation(lineNum, 1, sb.toString());
-    }
-  }
-
+  
   /**
    * Logs the current elapsed time for the request, adding the given label
    * @param label the label for the current status of the request
@@ -315,27 +170,28 @@ public class ValidationResult {
   }
 
   /**
-   * @return a map of line number to errors that occurred at that line
+   * @return a map of line number to validation messages corresponding to
+   * that line
    */
-  public Multimap<Integer, ValidationError> getByLineErrorMap() {
-    Multimap<Integer, ValidationError> errorMap = TreeMultimap.create();
-    for (ValidationError error : errors) {
-      errorMap.put(error.getLineNumber(), error);
+  public Multimap<Integer, ValidationMessage>
+      getByLineValidationMessages() {
+    Multimap<Integer, ValidationMessage> map =
+        TreeMultimap.create();
+    for (ValidationMessage validationMessage : validationMessages) {
+      map.put(validationMessage.getLineNumber(), validationMessage);
     }
-    return errorMap;
+    return map;
   }
 
-  /**
-   * @return a map of line number to recommendations for that line
-   */
-  public Multimap<Integer, ValidationError> getByLineRecommendationMap() {
-    Multimap<Integer, ValidationError> recommendationMap = TreeMultimap.create();
-    for (ValidationError error : recommendations) {
-      recommendationMap.put(error.getLineNumber(), error);
+  public boolean containsErrors() {
+    for (ValidationMessage validationMessage : validationMessages) {
+      if (validationMessage.getLevel().equals(Level.ERROR)) {
+        return true;
+      }
     }
-    return recommendationMap;
+    return false;
   }
-
+  
   /**
    * @return the time this result was created, in milliseconds.
    */

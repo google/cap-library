@@ -68,11 +68,6 @@ public class ValidatorUtil {
     return ret;
   }
 
-  /**
-   * 
-   * @param profileStr
-   * @return
-   */
   public static Set<CapProfile> parseProfiles(String profileStr) {
     if (CapUtil.isEmptyOrWhitespace(profileStr)) {
       return ImmutableSet.of();

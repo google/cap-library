@@ -16,6 +16,10 @@
 
 package com.google.publicalerts.cap;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
 import com.google.protobuf.Descriptors.Descriptor;
 import com.google.protobuf.Descriptors.EnumValueDescriptor;
 import com.google.protobuf.Descriptors.FieldDescriptor;
@@ -23,11 +27,10 @@ import com.google.protobuf.Message.Builder;
 import com.google.protobuf.ProtocolMessageEnum;
 
 import java.util.Calendar;
-import java.util.HashMap;
-import java.util.HashSet;
+import java.util.Date;
 import java.util.Map;
 import java.util.Set;
-
+import java.util.regex.Pattern;
 
 /**
  * Utilities for dealing with transforming to and from CAP protos.
@@ -37,18 +40,17 @@ import java.util.Set;
 public class CapUtil {
 
   private static final Map<String, String> ENUM_CASING_EXCEPTIONS =
-      buildEnumCasingExceptions();
+      ImmutableMap.<String, String>builder()
+          .put("VERY_LIKELY", "Very Likely")
+          .put("CBRNE", "CBRNE")
+          .put("UNKNOWN_URGENCY", "Unknown")
+          .put("UNKNOWN_SEVERITY", "Unknown")
+          .put("UNKNOWN_CERTAINTY", "Unknown")
+          .build();
 
-  private static Map<String, String> buildEnumCasingExceptions() {
-    Map<String, String> ret = new HashMap<String, String>();
-    ret.put("VERY_LIKELY", "Very Likely");
-    ret.put("CBRNE", "CBRNE");
-    ret.put("UNKNOWN_URGENCY", "Unknown");
-    ret.put("UNKNOWN_SEVERITY", "Unknown");
-    ret.put("UNKNOWN_CERTAINTY", "Unknown");
-    return ret;
-  }
-
+  private static final Pattern BASE_64_PATTERN = Pattern.compile(
+      "^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$");
+  
   /**
    * Returns a CAP field value for an enum field.
    * <p/>
@@ -155,14 +157,14 @@ public class CapUtil {
    * @return a map of CAP fields to their child fields that may be repeated
    */
   public static Map<String, Set<String>> getRepeatedFieldNames() {
-    Map<String, Set<String>> map = new HashMap<String, Set<String>>();
+    Map<String, Set<String>> map = Maps.newHashMap();
     getRepeatedFieldNamesInternal(Alert.getDescriptor(), map);
     return map;
   }
 
   private static void getRepeatedFieldNamesInternal(
       Descriptor d, Map<String, Set<String>> result) {
-    Set<String> repeatedFields = new HashSet<String>();
+    Set<String> repeatedFields = Sets.newHashSet();
     for (FieldDescriptor fd : d.getFields()) {
       if (fd.isRepeated()) {
         repeatedFields.add(javaCase(fd.getName()));
@@ -177,6 +179,19 @@ public class CapUtil {
   }
 
   /**
+   * @return a flat set of names of repeated CAP fields
+   */
+  public static Set<String> getRepeatedFieldNamesFlatSet() {
+    ImmutableSet.Builder<String> result = ImmutableSet.builder();
+    
+    for (Set<String> set : getRepeatedFieldNames().values()) {
+      result.addAll(set);
+    }
+    
+    return result.build();
+  }
+  
+  /**
    * Returns true if the string is null or {@code s.trim()}
    * returns the empty string.
    *
@@ -186,13 +201,27 @@ public class CapUtil {
   public static boolean isEmptyOrWhitespace(String s) {
     return s == null || "".equals(s.trim());
   }
-
+  
+  /**
+   * Returns {@code true} if the string represents base64-encoded content,
+   * {@code false} otherwise.
+   * 
+   * <p>The input string cannot be {@code null}, but can be empty. In this
+   * case, the function would return {@code true}.
+   * 
+   * <p>The new-line character '\n' is stripped.
+   */
+  public static boolean isBased64(String s) {
+    return BASE_64_PATTERN.matcher(s.replace("\n", "")).find();
+  }
+  
   /**
    * Returns a string legal for use in a CAP {@literal <references>} parameter.
    */
   public static String formatCapReference(
       String capSender, String capIdentifier, Calendar sent) {
-    return formatCapReference(capSender, capIdentifier, CapDateUtil.formatCapDate(sent));
+    return formatCapReference(
+        capSender, capIdentifier, CapDateUtil.formatCapDate(sent));
   }
 
   /**
@@ -204,6 +233,41 @@ public class CapUtil {
     return String.format("%s,%s,%s", capSender, capIdentifier, sent);
   }
 
+  /**
+   * Parses a CAP identifier from a single valid reference in
+   * {@literal <references>}.
+   *
+   * <p>Different parsing rules are applied according to the version of CAP
+   * being employed.
+   * 
+   * <p>If the input string is not compliant with the XSD schema, and parsing it
+   * is not possible, {@code null} is returned.
+   */
+  public static String parseReferenceIdentifier(String s, int capVersion) {
+    if (capVersion <= 10) {
+      int separatorIndex = s.indexOf('/');
+      return (separatorIndex > 0) ? s.substring(0, separatorIndex) : null;
+    }
+
+    String[] parts = s.split(",", 3);
+    return (parts.length > 1) ? parts[1] : null;
+  }
+  
+  /**
+   * Parses the date specified in a single valid reference in
+   * {@literal <references>}.
+   * 
+   * <p>This method should be called only when parsing CAP feeds of version
+   * 1.1 or greater.
+   *
+   * <p>If the input string is not compliant with the XSD schema, and parsing it
+   * is not possible, {@code null} is returned.
+   */
+  public static Date parseReferenceSent(String s) {
+    String[] parts = s.split(",", 3);
+    return (parts.length > 2) ? CapDateUtil.toJavaDate(parts[2]) : null;
+  }
+  
   /**
    * Strips the XML preamble, if any, from the start of the given string.
    *
