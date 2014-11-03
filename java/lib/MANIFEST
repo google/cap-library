@@ -53,10 +53,3 @@ jar: guava.jar
      License: Apache 2.0
      Local Modifications: None.
      Download date: 2014-10-09
-
-jar: javax.mail.jar
-     URL: http://java.net/projects/javamail/downloads/download/javax.mail.jar
-     Version 1.5.2
-     License: Common Development and Distribution License (CDDL) v1.1 and GNU General Public License (GPL) v2 with Classpath Exception
-     Local Modifications: None.
-     Download date: 2014-10-25
