@@ -44,9 +44,6 @@ td {
 .footer a:hover {
   text-decoration: underline;
 }
-h4 {
-  margin-bottom: 1ex;
-}
 .title {
   margin-left: 0.5em;
   font-size: 18pt;
@@ -94,73 +91,3 @@ textarea {
   color: red;
 }
 
-.linesTable {
-  border-spacing:0;
-  width:800px;
-  padding-left:1em;
-}
-
-.linesTable td {
-  padding:0.3em;
-}
-
-.linesTable p {
-  font-size:14px;
-  margin:0;
-}
-
-.lineNumberCell {
-  width:3em;
-  text-align:right;
-  vertical-align:top;
-}
-
-.lineNumberCell a {
-  color:black;
-}
-
-.normal-dark {
-  background-color: #e0e0e0;
-}
-
-.normal {
-  background-color: #eeeeee;
-}
-
-.error-dark {
-  background-color: #f36c60;
-}
-
-.error {
-  background-color: #f69988;
-}
-
-.warning-dark {
-  background-color: #ffb74d;
-}
-
-.warning {
-  background-color: #ffcc80;
-}
-
-.recommendation-dark {
-  background-color: #91a7ff;
-}
-
-.recommendation {
-  background-color: #afbfff;
-}
-
-.info-dark {
-  background-color: #4db6ac;
-}
-
-.info {
-  background-color: #80cbc4;
-}
-
-pre {
-  margin:0px;
-  padding:0px;
-  white-space: pre-wrap;
-}
