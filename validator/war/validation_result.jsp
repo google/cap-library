@@ -6,6 +6,8 @@
 <%@ page import="com.google.common.collect.Multimap"%>
 <%@ page import="java.util.List"%>
 
+<%-- NOTE! This template is used in an email as well as in a web page, so styles must remain inline. --%>
+
 <%!
 String getColorForLevel(Level level, boolean dark) {
   if (dark) {
