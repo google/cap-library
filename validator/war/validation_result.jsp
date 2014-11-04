@@ -114,6 +114,8 @@ if (validationResult != null) {
   </tr>
 <%
       for (ValidationMessage message : validationMessages.get(lineNumber)) {
+          darkColor = getColorForLevel(message.getLevel(), true);
+          color = getColorForLevel(message.getLevel(), false);
 %>
   <tr>
     <td style="padding:0.3em; width:3em; text-align:right; vertical-align:top; background-color:<%=darkColor%>;"></td>
