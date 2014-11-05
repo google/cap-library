@@ -19,6 +19,7 @@ package com.google.publicalerts.cap.validator;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
@@ -36,6 +37,8 @@ import com.google.publicalerts.cap.profile.CapProfile;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
+
+import org.apache.xerces.impl.dv.util.Base64;
 
 /**
  * Validates CAP messages and feeds of CAP messages where the actual
@@ -222,7 +225,17 @@ public class CapValidator {
     }
   }
 
-  String loadUrl(String url) throws IOException {
-    return ValidatorUtil.readFully(new URL(url).openStream());
+  String loadUrl(String stringUrl) throws IOException {
+    URL url = new URL(stringUrl);
+    URLConnection urlConnection = url.openConnection();
+
+    if (url.getUserInfo() != null) {
+      String encodedUserInfo =
+          new String(Base64.encode(url.getUserInfo().getBytes()));
+        urlConnection.setRequestProperty(
+            "Authorization", "Basic " + encodedUserInfo);
+    }
+
+    return ValidatorUtil.readFully(urlConnection.getInputStream());
   }
 }
