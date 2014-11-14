@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.logging.Logger;
 
+import com.google.common.base.CharMatcher;
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.CapException;
 import com.google.publicalerts.cap.NotCapException;
@@ -236,6 +237,8 @@ public class CapValidator {
             "Authorization", "Basic " + encodedUserInfo);
     }
 
-    return ValidatorUtil.readFully(urlConnection.getInputStream());
+    // Stripping Unicode Character 65279 (BOM), added by NotePad
+    return CharMatcher.anyOf("\uFEFF").removeFrom(
+        ValidatorUtil.readFully(urlConnection.getInputStream()));
   }
 }
