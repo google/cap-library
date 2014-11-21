@@ -22,11 +22,7 @@ import com.google.publicalerts.cap.CapException.ReasonType;
 import com.google.publicalerts.cap.CapXmlParser.CapXmlHandler;
 import com.google.publicalerts.cap.Reason.Level;
 import com.google.publicalerts.cap.testing.CapTestUtil;
-// MOE:begin_strip
-import com.google.testing.testsize.MediumTest;
-import com.google.testing.testsize.MediumTestAttribute;
 
-// MOE:end_strip
 import junit.framework.TestCase;
 
 import org.xml.sax.SAXParseException;
@@ -36,9 +32,6 @@ import org.xml.sax.SAXParseException;
  *
  * @author shakusa@google.com (Steve Hakusa)
  */
-// MOE:begin_strip
-@MediumTest(MediumTestAttribute.SYSTEM_PROPERTIES)
-// MOE:end_strip
 public class CapXmlParserTest extends TestCase {
 
   private static final String SCHEMA_FACTORY =
