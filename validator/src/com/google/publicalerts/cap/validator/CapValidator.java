@@ -123,7 +123,7 @@ public class CapValidator {
       } catch (NotCapException nce) {
         log.info("InvalidRequest");
         result.addValidationMessage(1, Level.ERROR, "CAP", "The input must be "
-            + "a CAP 1.0, 1.1, or 1.2 message or an RSS or Atom feed of CAP "
+            + "a CAP 1.0, 1.1, or 1.2 message or an RSS, Atom or EDXL-DE feed of CAP "
             + "messages");
         return result;
       }
@@ -134,7 +134,7 @@ public class CapValidator {
       
       if (entries.isEmpty()) {
         result.addValidationMessage(1, Level.ERROR, "CAP", "The input must be "
-            + "a CAP 1.0, 1.1, or 1.2 message or an RSS or Atom feed of CAP "
+            + "a CAP 1.0, 1.1, or 1.2 message or an RSS, Atom or EDXL-DE feed of CAP "
             + "messages");
       }
       
