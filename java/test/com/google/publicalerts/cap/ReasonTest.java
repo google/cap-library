@@ -16,9 +16,13 @@
 
 package com.google.publicalerts.cap;
 
-import com.google.common.collect.ImmutableList;
+import static com.google.common.truth.Truth.assertThat;
+
+import static com.google.publicalerts.cap.Reason.Level.ERROR;
+import static com.google.publicalerts.cap.Reason.Level.RECOMMENDATION;
+import static com.google.publicalerts.cap.Reason.Level.WARNING;
+
 import com.google.publicalerts.cap.CapException.ReasonType;
-import com.google.publicalerts.cap.Reason.Level;
 
 import junit.framework.TestCase;
 
@@ -34,23 +38,17 @@ public class ReasonTest extends TestCase {
   }
 
   public void testGetHigherLevels() {
-    assertEquals(
-        ImmutableList.of(Level.WARNING,  Level.ERROR),
-        Level.RECOMMENDATION.getHigherLevels());
-    assertEquals(
-        ImmutableList.of(Level.ERROR),
-        Level.WARNING.getHigherLevels());
-    assertEquals(
-        ImmutableList.of(),
-        Level.ERROR.getHigherLevels());
+    assertThat(RECOMMENDATION.getHigherLevels()).containsExactly(WARNING, ERROR).inOrder();
+    assertThat(WARNING.getHigherLevels()).containsExactly(ERROR).inOrder();
+    assertThat(ERROR.getHigherLevels()).isEmpty();
   }
   
   public void testPrefixWithXpath() {
     Reason reason =
-        new Reason("/alert", ReasonType.INVALID_AREA, "param1", "param2");
-    Reason expectedReason = new Reason("/feed/entry[1]/alert",
-        ReasonType.INVALID_AREA, "param1", "param2");
+        new Reason("/alert[1]", ReasonType.INVALID_AREA, "param1", "param2");
+    Reason expectedReason =
+        new Reason("/feed[1]/entry[1]/alert[1]", ReasonType.INVALID_AREA, "param1", "param2");
     
-    assertEquals(expectedReason, reason.prefixWithXpath("/feed/entry[1]"));
+    assertThat(reason.prefixWithXpath("/feed[1]/entry[1]")).isEqualTo(expectedReason);
   }
 }

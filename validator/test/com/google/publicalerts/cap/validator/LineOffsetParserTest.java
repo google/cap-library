@@ -16,6 +16,8 @@
 
 package com.google.publicalerts.cap.validator;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import junit.framework.TestCase;
 
 import com.google.publicalerts.cap.testing.TestResources;
@@ -27,7 +29,6 @@ import com.google.publicalerts.cap.validator.LineOffsetParser.LineOffsets;
  * @author shakusa@google.com (Steve Hakusa)
  */
 public class LineOffsetParserTest extends TestCase {
-
   private static final LineOffsetParser parser = new LineOffsetParser();
   
   public LineOffsetParserTest(String name) {
@@ -39,16 +40,14 @@ public class LineOffsetParserTest extends TestCase {
     LineOffsets offsets = parser.parse(cap);
 
     // Invalid queries
-    assertEquals(0, offsets.getEntryLineNumber(-1));
-    assertEquals(0, offsets.getXPathLineNumber("invalid"));
-    assertEquals(0, offsets.getEntryLineNumber(0));
+    assertThat(offsets.getXPathLineNumber("invalid")).isEqualTo(0);
     
     // getXPathLineNumber
-    assertEquals(2, offsets.getXPathLineNumber("/alert"));
-    assertEquals(8, offsets.getXPathLineNumber("/alert/msgType"));
-    assertEquals(22, offsets.getXPathLineNumber("/alert/info[0]/expires"));
-    assertEquals(48, offsets.getXPathLineNumber(
-        "/alert/info[0]/parameter[1]/value[0]"));
+    assertThat(offsets.getXPathLineNumber("/alert[1]")).isEqualTo(2);
+    assertThat(offsets.getXPathLineNumber("/alert[1]/msgType[1]")).isEqualTo(8);
+    assertThat(offsets.getXPathLineNumber("/alert[1]/info[1]/expires[1]")).isEqualTo(22);
+    assertThat(offsets.getXPathLineNumber("/alert[1]/info[1]/parameter[2]/value[1]"))
+        .isEqualTo(48);
   }
   
   public void testLineOffsets_atomFeed() throws Exception {
@@ -56,28 +55,20 @@ public class LineOffsetParserTest extends TestCase {
     LineOffsets offsets = parser.parse(atom);
 
     // Invalid queries
-    assertEquals(0, offsets.getEntryLineNumber(-1));
-    assertEquals(0, offsets.getXPathLineNumber("invalid"));
+    assertThat(offsets.getXPathLineNumber("invalid")).isEqualTo(0);
 
-    // getEntryLineNumber
-    assertEquals(17, offsets.getEntryLineNumber(0));
-    
     // getXPathLineNumber
-    assertEquals(17, offsets.getXPathLineNumber(
-        "/feed/entry[0]"));
-    assertEquals(28, offsets.getXPathLineNumber(
-        "/feed/entry[0]/content/alert"));
-    assertEquals(37, offsets.getXPathLineNumber(
-        "/feed/entry[0]/content/alert/info[0]"));
-    assertEquals(91, offsets.getXPathLineNumber(
-        "/feed/entry[0]/content/alert/info[0]/area[0]/geocode[1]"));
+    assertThat(offsets.getXPathLineNumber("/feed[1]/entry[1]")).isEqualTo(17);
+    assertThat(offsets.getXPathLineNumber("/feed[1]/entry[1]/content[1]/alert[1]")).isEqualTo(28);
+    assertThat(offsets.getXPathLineNumber("/feed[1]/entry[1]/content[1]/alert[1]/info[1]"))
+        .isEqualTo(37);
+    assertThat(offsets.getXPathLineNumber(
+        "/feed[1]/entry[1]/content[1]/alert[1]/info[1]/area[1]/geocode[2]")).isEqualTo(91);
     
     // getLinkLineNumber
-    assertEquals(16, offsets.getLinkLineNumber(
-        "http://www.weather.gov/alerts-beta/"));
-    assertEquals(25, offsets.getLinkLineNumber(
-        "http://www.weather.gov/alerts-beta/wwacapget.php?" +
-        "x=DC20100829202900LWXAirQualityAlertLWX20100831040000DC"));
+    assertThat(offsets.getLinkLineNumber("http://www.weather.gov/alerts-beta/")).isEqualTo(16);
+    assertThat(offsets.getLinkLineNumber("http://www.weather.gov/alerts-beta/wwacapget.php?"
+        + "x=DC20100829202900LWXAirQualityAlertLWX20100831040000DC")).isEqualTo(25);
   }
   
   public void testLineOffsets_atomFeedFullyQualifiedTags() throws Exception {
@@ -85,20 +76,15 @@ public class LineOffsetParserTest extends TestCase {
     LineOffsets offsets = parser.parse(atom);
 
     // Invalid queries
-    assertEquals(0, offsets.getEntryLineNumber(-1));
-    assertEquals(0, offsets.getXPathLineNumber("invalid"));
-    
-    // getEntryLineNumber
-    assertEquals(5, offsets.getEntryLineNumber(0));
+    assertThat(offsets.getXPathLineNumber("invalid")).isEqualTo(0);
     
     // getXPathLineNumber
-    assertEquals(5, offsets.getXPathLineNumber("/feed/entry[0]"));
-    assertEquals(16, offsets.getXPathLineNumber(
-        "/feed/entry[0]/content/alert"));
-    assertEquals(24, offsets.getXPathLineNumber(
-        "/feed/entry[0]/content/alert/info[0]"));
-    assertEquals(43, offsets.getXPathLineNumber(
-        "/feed/entry[0]/content/alert/info[0]/area[0]/geocode[0]"));
+    assertThat(offsets.getXPathLineNumber("/feed[1]/entry[1]")).isEqualTo(5);
+    assertThat(offsets.getXPathLineNumber("/feed[1]/entry[1]/content[1]/alert[1]")).isEqualTo(16);
+    assertThat(offsets.getXPathLineNumber("/feed[1]/entry[1]/content[1]/alert[1]/info[1]"))
+        .isEqualTo(24);
+    assertThat(offsets.getXPathLineNumber(
+        "/feed[1]/entry[1]/content[1]/alert[1]/info[1]/area[1]/geocode[1]")).isEqualTo(43);
   }
   
   public void testLineOffsets_rssFeed() throws Exception {
@@ -106,24 +92,35 @@ public class LineOffsetParserTest extends TestCase {
     LineOffsets offsets = parser.parse(rss);
 
     // Invalid queries
-    assertEquals(0, offsets.getEntryLineNumber(-1));
-    assertEquals(0, offsets.getXPathLineNumber("invalid"));
-
-    // getEntryLineNumber
-    assertEquals(11, offsets.getEntryLineNumber(0));
-    assertEquals(20, offsets.getEntryLineNumber(1));
+    assertThat(offsets.getXPathLineNumber("invalid")).isEqualTo(0);
     
     // getXPathLineNumber
-    assertEquals(3, offsets.getXPathLineNumber("/rss/channel"));
-    assertEquals(6, offsets.getXPathLineNumber("/rss/channel/link[0]"));
-    assertEquals(21, offsets.getXPathLineNumber("/rss/channel/item[1]/title"));
+    assertThat(offsets.getXPathLineNumber("/rss[1]/channel[1]")).isEqualTo(3);
+    assertThat(offsets.getXPathLineNumber("/rss[1]/channel[1]/link[1]")).isEqualTo(6);
+    assertThat(offsets.getXPathLineNumber("/rss[1]/channel[1]/item[2]/title[1]")).isEqualTo(21);
     
     // getLinkLineNumber
-    assertEquals(6, offsets.getLinkLineNumber("http://www.nyalert.gov/"));
-    assertEquals(14, offsets.getLinkLineNumber("http://www.nyalert.gov/Public/"
-        + "News/GetCapAlert.aspx?capID=NYAlert-ALLHAZALERT-3167113"));
-    assertEquals(23, offsets.getLinkLineNumber("http://www.nyalert.gov/Public/"
-        + "News/GetCapAlert.aspx?capID=NYAlert-ALLHAZALERT-3162202"));
+    assertThat(offsets.getLinkLineNumber("http://www.nyalert.gov/")).isEqualTo(6);
+    assertThat(offsets.getLinkLineNumber("http://www.nyalert.gov/Public/"
+        + "News/GetCapAlert.aspx?capID=NYAlert-ALLHAZALERT-3167113")).isEqualTo(14);
+    assertThat(offsets.getLinkLineNumber("http://www.nyalert.gov/Public/"
+        + "News/GetCapAlert.aspx?capID=NYAlert-ALLHAZALERT-3162202")).isEqualTo(23);
+  }
+  
+  public void testLineOffsets_edxldeFeed() throws Exception {
+    String rss = TestResources.load("bushfire_valid.edxlde");
+    LineOffsets offsets = parser.parse(rss);
+
+    // Invalid queries
+    assertThat(offsets.getXPathLineNumber("invalid")).isEqualTo(0);
+    
+    // getXPathLineNumber
+    assertThat(offsets.getXPathLineNumber("/EDXLDistribution[1]/contentObject[1]/xmlContent[1]/"
+        + "embeddedXMLContent[1]/alert[1]")).isEqualTo(18);
+    assertThat(offsets.getXPathLineNumber("/EDXLDistribution[1]/contentObject[2]/xmlContent[1]/"
+        + "embeddedXMLContent[1]/alert[1]/sender[1]")).isEqualTo(96);
+    assertThat(offsets.getXPathLineNumber("/EDXLDistribution[1]/contentObject[2]/xmlContent[1]/"
+        + "embeddedXMLContent[1]/alert[1]/info[1]/parameter[2]")).isEqualTo(122);
   }
   
   public void testLineOffsets_invalidXml() throws Exception {

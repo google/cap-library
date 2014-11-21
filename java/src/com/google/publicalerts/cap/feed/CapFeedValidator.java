@@ -119,13 +119,13 @@ public class CapFeedValidator {
 
       Entry entry = entries.get(i);
       if (entry.getContents().isEmpty() && !hasCapLink(entry)) {
-        reasons.add(new Reason("/feed/entry[" + i + "]",
+        reasons.add(new Reason("/feed[1]/entry[" + (i + 1) + "]",
             ReasonType.ATOM_ENTRY_MISSING_CAP_LINK));
         return;
       }
       
       if (entryIds.contains(entry.getId())) {
-        reasons.add(new Reason("/feed/entry[" + i + "]",
+        reasons.add(new Reason("/feed[1]/entry[" + (i + 1) + "]",
             ReasonType.ATOM_ENTRY_NON_UNIQUE_IDS, entry.getId()));
         return;
       } else {
@@ -168,7 +168,7 @@ public class CapFeedValidator {
     
     for (int i = 0; i < items.size(); i++) {
       Item item = items.get(i);
-      String xpath = "/rss/channel/item[" + i + "]";
+      String xpath = "/rss[1]/channel[1]/item[" + (i + 1) + "]";
       if (CapUtil.isEmptyOrWhitespace(item.getTitle())
           && (item.getDescription() == null
           || CapUtil.isEmptyOrWhitespace(item.getDescription().getValue()))) {
@@ -202,7 +202,7 @@ public class CapFeedValidator {
    */
   private void checkForErrors(DistributionFeed feed, Reasons.Builder reasons) {
     if (feed.getContentObjects().isEmpty()) {
-      reasons.add(new Reason("/EDXLDistribution",
+      reasons.add(new Reason("/EDXLDistribution[1]",
           ReasonType.EDXLDE_CONTENT_OBJECT_IS_REQUIRED));
       return;
     }
@@ -224,7 +224,7 @@ public class CapFeedValidator {
         
         if (!foundcap) {
           reasonBuffer.add(new Reason(
-              "/EDXLDistribution/contentObject[" + i + "]/xmlContent",
+              "/EDXLDistribution[1]/contentObject[" + (i + 1) + "]/xmlContent[1]",
               ReasonType.EDXLDE_NO_CAP_IN_CONTENT_OBJECT));
         }
       }
@@ -237,7 +237,7 @@ public class CapFeedValidator {
           foundcap = true;
         } else {
           reasonBuffer.add(new Reason(
-              "/EDXLDistribution/contentObject[" + i + "]/nonXMLContent",
+              "/EDXLDistribution[1]/contentObject[" + (i + 1) + "]/nonXMLContent[1]",
               ReasonType.EDXLDE_NO_CAP_IN_CONTENT_OBJECT));
         }
       }
@@ -255,7 +255,7 @@ public class CapFeedValidator {
   private void checkForRecommendations(
       Channel channel, Reasons.Builder reasons) {
     if (channel.getPubDate() == null) {
-      reasons.add(new Reason("/rss/channel",
+      reasons.add(new Reason("/rss[1]/channel[1]",
           ReasonType.RSS_PUBDATE_IS_RECOMMENDED));
     }
 
@@ -266,7 +266,7 @@ public class CapFeedValidator {
       Item item = items.get(i);
       if (item.getGuid() == null ||
           CapUtil.isEmptyOrWhitespace(item.getGuid().getValue())) {
-        itemReasons.add(new Reason("/rss/channel/item[" + i + "]",
+        itemReasons.add(new Reason("/rss[1]/channel[1]/item[" + (i + 1) + "]",
             ReasonType.RSS_ITEM_GUID_IS_RECOMMENDED));
       }
       // It'd be annoying to see these errors repeated once per entry,

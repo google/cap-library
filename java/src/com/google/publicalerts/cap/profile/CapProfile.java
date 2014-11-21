@@ -21,7 +21,8 @@ import com.google.publicalerts.cap.Reasons;
 
 /**
  * Specifies a set of extra constraints on the CAP format.
- * The constraints are usually country-specific.
+ * 
+ * <p>The constraints are usually country-specific.
  *
  * @author shakusa@google.com (Steve Hakusa)
  */
@@ -35,16 +36,14 @@ public interface CapProfile {
   String getName();
 
   /**
-   * Returns a code unique to the profile.  Ideally, it will
-   * include a version number.
+   * Returns a code unique to the profile.  Ideally, it will include a version number.
    *
    * @return a unique code identifying the profile
    */
   String getCode();
 
   /**
-   * Returns the canonical URL of the official document describing
-   * the profile.
+   * Returns the canonical URL of the official document describing the profile.
    *
    * @return the documentation url
    */
@@ -54,21 +53,19 @@ public interface CapProfile {
    * Checks the given alert against the profile and returns a collection of:
    * <ul>
    * <li>errors explaining how the alert does not match the profile,
-   * <li>recommendations and best-practices recommended by the profile to
-   * improve the alert.
+   * <li>recommendations and best-practices recommended by the profile to improve the alert.
    * </ul>
    * 
-   * <p>The profile should assume that the given alert is valid CAP and
-   * check only the extra constraints it specifies.
+   * <p>The profile should assume that the given alert is valid CAP and check only the extra
+   * constraints it specifies.
    * 
-   * <p>An alert not adhering to the recommendations and best-practices would
-   * still be accepted by whatever system that claims to require alerts
-   * adhering to the profile, but adopting the recommendations allows for more
-   * full compatibility and perhaps extra features.
+   * <p>An alert not adhering to the recommendations and best-practices would still be accepted by
+   * whatever system that claims to require alerts adhering to the profile, but adopting the
+   * recommendations allows for more full compatibility and perhaps extra features.
    * 
    * @param alert the alert to validate
-   * @return errors and recommendations found during the validation, an empty
-   * collection if there are none
+   * @return errors and recommendations found during the validation, an empty collection if there
+   * are none
    */
   Reasons validate(AlertOrBuilder alert);
 }

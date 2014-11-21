@@ -62,9 +62,8 @@ public abstract class CapProfileTestCase extends TestCase {
     assertReasons(alert, level);
   }
 
-  protected void assertReasons(
-      AlertOrBuilder alert, Reason.Level level, Reason... expected) {
-    CapTestUtil.assertReasons(Reasons.newBuilder()
-        .addAll(profile.validate(alert).getWithLevel(level)).build(), expected);
+  protected void assertReasons(AlertOrBuilder alert, Reason.Level level, Reason... expected) {
+    CapTestUtil.assertReasons(
+        Reasons.newBuilder().addAll(profile.validate(alert).getWithLevel(level)).build(), expected);
   }
 }

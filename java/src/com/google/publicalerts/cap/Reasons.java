@@ -16,16 +16,19 @@
 
 package com.google.publicalerts.cap;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableListMultimap;
 import com.google.publicalerts.cap.Reason.Level;
+import com.google.publicalerts.cap.Reason.Type;
 
 import java.util.Iterator;
 import java.util.List;
 
 /**
- * A simple collection of {@link Reason} objects. The content is indexed to
- * allow for fast lookups based on the reasons' levels.
+ * A simple collection of {@link Reason} objects. The content is indexed to allow for fast lookups
+ * based on the reasons' levels.
  * 
  * <p>Insertion order is not preserved, duplicate objects are not overwritten.
  * 
@@ -42,20 +45,37 @@ public final class Reasons implements Iterable<Reason> {
    * Builder for {@link Reasons}.
    */
   public static class Builder {
-    private final ImmutableListMultimap.Builder<Level, Reason>
-        multimapBuilder = ImmutableListMultimap.builder();
+    private final ImmutableListMultimap.Builder<Level, Reason> multimapBuilder =
+        ImmutableListMultimap.builder();
 
     /**
      * Use {@link Reasons#newBuilder()} instead.
      */
     private Builder() { }
     
+    /**
+     * Adds a {@link Reason} object to the collection.
+     */
     public Builder add(Reason reason) {
+      checkNotNull(reason);
+      
       multimapBuilder.put(reason.getLevel(), reason);
       return this;
     }
     
+    /**
+     * Adds a {@link Reason} object to the collection.
+     */
+    public Builder add(String xPath, Type type, Object... messageParams) {
+      return add(new Reason(xPath, type, messageParams));
+    }
+    
+    /**
+     * Adds {@link Reason} objects to the collection.
+     */
     public Builder addAll(Iterable<Reason> reasons) {
+      checkNotNull(reasons);
+      
       for (Reason reason : reasons) {
         add(reason);
       }
@@ -63,6 +83,9 @@ public final class Reasons implements Iterable<Reason> {
       return this;
     }
     
+    /**
+     * Builds and returns the immutable collection.
+     */
     public Reasons build() {
       return new Reasons(multimapBuilder.build());
     }
@@ -91,20 +114,20 @@ public final class Reasons implements Iterable<Reason> {
   /**
    * Private constructor.
    * 
-   * <p>Build {@link Reasons} objects using the static
-   * {@link Reasons#of(Reason...)} or {@link Reasons.Builder}.
+   * <p>Build {@link Reasons} objects using the static factory methods.
    */  
   private Reasons(ImmutableListMultimap<Level, Reason> multimap) {
-    this.multimap = multimap;
+    this.multimap = checkNotNull(multimap);
   }
 
   /**
-   * Builds a copy of this {@link Reasons} object, with the XPath prefixed
-   * with {@code xPathPrefix}.
+   * Builds a copy of this {@link Reasons} object, with the XPath prefixed with {@code xPathPrefix}.
    * 
    * @see Reason#prefixWithXpath(String)
    */
   public Reasons prefixWithXpath(String xPathPrefix) {
+    checkNotNull(xPathPrefix);
+    
     Reasons.Builder builder = Reasons.newBuilder();
     
     for (Reason reason : this) {
@@ -120,34 +143,38 @@ public final class Reasons implements Iterable<Reason> {
   }
 
   /**
-   * @return {@code true} if and only if the collection contains {@link Reason}
-   * objects with the level specified
+   * @return {@code true} if and only if the collection contains {@link Reason} objects with the
+   * level specified
    */
   public boolean containsWithLevel(Level level) {
+    checkNotNull(level);
     return !getWithLevel(level).isEmpty();
   }
   
   /**
-   * @return {@code true} if and only if the collection contains {@link Reason}
-   * objects with the level specified or higher
+   * @return {@code true} if and only if the collection contains {@link Reason} objects with the
+   * level specified or higher
    */
   public boolean containsWithLevelOrHigher(Level level) {
+    checkNotNull(level);
     return !getWithLevelOrHigher(level).isEmpty();
   }
   
   /**
-   * @return the {@link Reason} objects stored in the collection, with the
-   * level specified
+   * @return the {@link Reason} objects stored in the collection, with the level specified
    */
   public List<Reason> getWithLevel(Level level) {
+    checkNotNull(level);
     return multimap.get(level);
   }
   
   /**
-   * @return the {@link Reason} objects stored in the collection, with the
-   * level specified or higher
+   * @return the {@link Reason} objects stored in the collection, with the level specified or
+   * higher
    */
   public List<Reason> getWithLevelOrHigher(Level level) {
+    checkNotNull(level);
+    
     ImmutableList.Builder<Reason> list = ImmutableList.builder();
     
     list.addAll(getWithLevel(level));

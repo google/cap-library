@@ -116,7 +116,7 @@ public class CapValidator {
     if (alert.hasRestriction()
         && !CapUtil.isEmptyOrWhitespace(alert.getRestriction())
         && alert.getScope() != Alert.Scope.RESTRICTED) {
-      reasons.add(new Reason("/alert/restriction",
+      reasons.add(new Reason("/alert[1]/restriction[1]",
           ReasonType.RESTRICTION_SCOPE_MISMATCH));
     }
 
@@ -126,7 +126,7 @@ public class CapValidator {
       int version = getValidateVersion(alert.getXmlns());
       for (int i = 0; i < alert.getInfoOrBuilderList().size(); ++i) {
         reasons.addAll(validateInfo(alert.getInfoOrBuilderList().get(i),
-            "/alert/info[" + i + "]", version, visitChildren));
+            "/alert[1]/info[" + (i + 1) + "]", version, visitChildren));
       }
     }
 
@@ -151,7 +151,7 @@ public class CapValidator {
         }
         
         if (alertIdentifier.equals(referenceIdentifier)) {
-          reasons.add(new Reason("/alert/references",
+          reasons.add(new Reason("/alert[1]/references[1]",
               ReasonType.CIRCULAR_REFERENCE, reference));
         }
         
@@ -160,7 +160,7 @@ public class CapValidator {
           
           if (alertSent != null && referenceSent != null
               && referenceSent.after(alertSent)) {
-            reasons.add(new Reason("/alert/references",
+            reasons.add(new Reason("/alert[1]/references[1]",
                 ReasonType.POSTDATED_REFERENCE, reference));
           }
         }
@@ -181,12 +181,12 @@ public class CapValidator {
     if (visitChildren) {
       for (int i = 0; i < info.getAreaOrBuilderList().size(); ++i) {
         reasons.addAll(validateArea(info.getAreaOrBuilderList().get(i),
-            xpath + "/area[" + i + "]", version, visitChildren));
+            xpath + "/area[" + (i + 1) + "]", version, visitChildren));
       }
 
       for (int i = 0; i < info.getResourceOrBuilderList().size(); ++i) {
         reasons.addAll(validateResource(info.getResourceOrBuilderList().get(i),
-            xpath + "/resource[" + i + "]", version));
+            xpath + "/resource[" + (i + 1) + "]", version));
       }
     }
     
@@ -205,8 +205,8 @@ public class CapValidator {
       return Reasons.EMPTY;
     }
 
-    return Reasons.of(
-        new Reason(xpath + "/language", ReasonType.INVALID_LANGUAGE, language));
+    return Reasons.of(new Reason(xpath + "/language[1]",
+        ReasonType.INVALID_LANGUAGE, language));
   }
 
   @SuppressWarnings("unused")
@@ -217,7 +217,7 @@ public class CapValidator {
     if (visitChildren) {
       for (int i = 0; i < area.getPolygonOrBuilderList().size(); i++) {
         reasons.addAll(validatePolygon(
-            area.getPolygonOrBuilder(i), xpath + "/polygon[" + i + "]"));
+            area.getPolygonOrBuilder(i), xpath + "/polygon[" + (i + 1) + "]"));
       }
     }
 
@@ -227,7 +227,7 @@ public class CapValidator {
 
     if (area.hasAltitude() && area.hasCeiling()) {
       if (area.getAltitude() > area.getCeiling()) {
-        reasons.add(new Reason(xpath + "/ceiling",
+        reasons.add(new Reason(xpath + "/ceiling[1]",
             ReasonType.INVALID_ALTITUDE_CEILING_RANGE));
       }
     }
@@ -257,12 +257,12 @@ public class CapValidator {
       if (!mimeType.contains("/") || !VALID_CONTENT_TYPES.contains(
           mimeType.substring(0, mimeType.indexOf('/')))) {
         reasons.add(new Reason(
-            xpath + "/mimeType", ReasonType.INVALID_MIME_TYPE, mimeType));
+            xpath + "/mimeType[1]", ReasonType.INVALID_MIME_TYPE, mimeType));
       }    
     }
     
     if (resource.hasDerefUri() && !CapUtil.isBased64(resource.getDerefUri())) {
-      reasons.add(new Reason(xpath + "/derefUri",
+      reasons.add(new Reason(xpath + "/derefUri[1]",
           ReasonType.INVALID_DEREF_URI, resource.getDerefUri()));
     }
 
