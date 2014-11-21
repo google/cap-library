@@ -17,7 +17,6 @@
 package com.google.publicalerts.cap.feed;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.CapException;
@@ -62,7 +61,6 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -138,10 +136,6 @@ public class CapFeedParser {
     }
   }
 
-  public static final Set<String> FEED_REPEATED_ELEMENTS =
-      ImmutableSet.of(
-          "entry", "author", "category", "contributor", "link", "item");
-  
   /** True to validate feeds and alerts that are parsed. */
   private boolean validate;
 
@@ -455,13 +449,13 @@ public class CapFeedParser {
         XmlSignatureValidator.Result result = xmlSignatureValidator.validate(
             new InputSource(new ByteArrayInputStream(entryPayload)));
         if (!result.isSignatureValid()) {
-          reasons.add(new Reason("/alert/Signature", ReasonType.OTHER,
+          reasons.add(new Reason("/alert[1]/Signature[1]", ReasonType.OTHER,
               "Signature failed validation - " + result.details() + " - "
                   + Arrays.toString(entryPayload)));
         }
       }
     } catch (SAXParseException e) {
-      throw new CapException(new Reason("/alert", ReasonType.OTHER,
+      throw new CapException(new Reason("/alert[1]", ReasonType.OTHER,
           "Invalid XML: " + new String(entryPayload, UTF_8)));
     }
 
@@ -532,7 +526,7 @@ public class CapFeedParser {
   }
 
   private static class FeedHandler extends DefaultHandler {
-    private XPath xPath = new XPath(FEED_REPEATED_ELEMENTS);
+    private XPath xPath = new XPath();
     private Reasons.Builder reasons;
 
     private FeedHandler() {

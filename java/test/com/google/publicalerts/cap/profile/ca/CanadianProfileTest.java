@@ -16,13 +16,28 @@
 
 package com.google.publicalerts.cap.profile.ca;
 
+import static com.google.publicalerts.cap.Reason.Level.ERROR;
+import static com.google.publicalerts.cap.Reason.Level.RECOMMENDATION;
+import static com.google.publicalerts.cap.profile.ca.CanadianProfile.ReasonType.AREA_GEOCODE_IS_REQUIRED;
+import static com.google.publicalerts.cap.profile.ca.CanadianProfile.ReasonType.AREA_IS_REQUIRED;
+import static com.google.publicalerts.cap.profile.ca.CanadianProfile.ReasonType.CIRCLE_POLYGON_ENCOURAGED;
+import static com.google.publicalerts.cap.profile.ca.CanadianProfile.ReasonType.ENGLISH_AND_FRENCH;
+import static com.google.publicalerts.cap.profile.ca.CanadianProfile.ReasonType.EVENT_CODES_MUST_MATCH;
+import static com.google.publicalerts.cap.profile.ca.CanadianProfile.ReasonType.EXPIRES_STRONGLY_RECOMMENDED;
+import static com.google.publicalerts.cap.profile.ca.CanadianProfile.ReasonType.INSTRUCTION_STRONGLY_RECOMMENDED;
+import static com.google.publicalerts.cap.profile.ca.CanadianProfile.ReasonType.IS_REQUIRED;
+import static com.google.publicalerts.cap.profile.ca.CanadianProfile.ReasonType.RECOGNIZED_EVENT_CODE_REQUIRED;
+import static com.google.publicalerts.cap.profile.ca.CanadianProfile.ReasonType.RESPONSE_TYPE_STRONGLY_RECOMMENDED;
+import static com.google.publicalerts.cap.profile.ca.CanadianProfile.ReasonType.SENDER_NAME_STRONGLY_RECOMMENDED;
+import static com.google.publicalerts.cap.profile.ca.CanadianProfile.ReasonType.UPDATE_OR_CANCEL_MUST_REFERENCE;
+import static com.google.publicalerts.cap.profile.ca.CanadianProfile.ReasonType.VERSION_CODE_REQUIRED;
+
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.Alert.MsgType;
 import com.google.publicalerts.cap.Area;
 import com.google.publicalerts.cap.Info;
 import com.google.publicalerts.cap.Reason;
 import com.google.publicalerts.cap.profile.CapProfileTestCase;
-import com.google.publicalerts.cap.profile.ca.CanadianProfile.ReasonType;
 
 /**
  * Tests for {@link CanadianProfile}.
@@ -49,37 +64,29 @@ public class CanadianProfileTest extends CapProfileTestCase {
     assertNoReasons(alert, Reason.Level.ERROR);
 
     alert.clearCode();
-    assertReasons(alert, Reason.Level.ERROR,
-        new Reason("/alert", ReasonType.VERSION_CODE_REQUIRED));
+    assertReasons(alert, ERROR, new Reason("/alert[1]", VERSION_CODE_REQUIRED));
 
-    alert.setMsgType(MsgType.UPDATE)
-        .clearReferences();
-    assertReasons(alert, Reason.Level.ERROR,
-        new Reason("/alert", ReasonType.VERSION_CODE_REQUIRED),
-        new Reason("/alert/msgType",
-            ReasonType.UPDATE_OR_CANCEL_MUST_REFERENCE));
+    alert.setMsgType(MsgType.UPDATE).clearReferences();
+    assertReasons(alert, ERROR,
+        new Reason("/alert[1]", VERSION_CODE_REQUIRED),
+        new Reason("/alert[1]/msgType[1]", UPDATE_OR_CANCEL_MUST_REFERENCE));
 
     alert = loadAlert("canada.cap").toBuilder();
     alert.getInfoBuilder(0).clearEventCode();
-    assertReasons(alert, Reason.Level.ERROR,
-        new Reason("/alert/info[1]", ReasonType.EVENT_CODES_MUST_MATCH),
-        new Reason("/alert/info[0]",
-            ReasonType.RECOGNIZED_EVENT_CODE_REQUIRED));
+    assertReasons(alert, ERROR,
+        new Reason("/alert[1]/info[2]", EVENT_CODES_MUST_MATCH),
+        new Reason("/alert[1]/info[1]", RECOGNIZED_EVENT_CODE_REQUIRED));
 
     alert = loadAlert("canada.cap").toBuilder();
     alert.getInfoBuilder(1).getAreaBuilder(0).clearGeocode();
-    assertReasons(alert, Reason.Level.ERROR,
-        new Reason("/alert/info[1]/area[0]",
-            ReasonType.AREA_GEOCODE_IS_REQUIRED));
+    assertReasons(alert, ERROR, new Reason("/alert[1]/info[2]/area[1]", AREA_GEOCODE_IS_REQUIRED));
 
     alert.getInfoBuilder(1).clearArea();
-    assertReasons(alert, Reason.Level.ERROR,
-        new Reason("/alert/info[1]", ReasonType.AREA_IS_REQUIRED));
+    assertReasons(alert, ERROR, new Reason("/alert[1]/info[2]", AREA_IS_REQUIRED));
 
     alert = loadAlert("canada.cap").toBuilder();
     alert.clearInfo();
-    assertReasons(alert, Reason.Level.ERROR,
-        new Reason("/alert", ReasonType.IS_REQUIRED));
+    assertReasons(alert, ERROR, new Reason("/alert[1]", IS_REQUIRED));
     alert.setMsgType(MsgType.ACK);
     assertReasons(alert, Reason.Level.ERROR);
   }
@@ -95,24 +102,19 @@ public class CanadianProfileTest extends CapProfileTestCase {
         .clearSenderName()
         .clearResponseType()
         .clearInstruction();
-    assertReasons(alert, Reason.Level.RECOMMENDATION,
-        new Reason("/alert", ReasonType.ENGLISH_AND_FRENCH),
-        new Reason("/alert/info[0]",
-            ReasonType.EXPIRES_STRONGLY_RECOMMENDED),
-        new Reason("/alert/info[0]",
-            ReasonType.SENDER_NAME_STRONGLY_RECOMMENDED),
-        new Reason("/alert/info[0]",
-            ReasonType.RESPONSE_TYPE_STRONGLY_RECOMMENDED),
-        new Reason("/alert/info[0]",
-            ReasonType.INSTRUCTION_STRONGLY_RECOMMENDED));
+    assertReasons(alert, RECOMMENDATION,
+        new Reason("/alert[1]", ENGLISH_AND_FRENCH),
+        new Reason("/alert[1]/info[1]", EXPIRES_STRONGLY_RECOMMENDED),
+        new Reason("/alert[1]/info[1]", SENDER_NAME_STRONGLY_RECOMMENDED),
+        new Reason("/alert[1]/info[1]", RESPONSE_TYPE_STRONGLY_RECOMMENDED),
+        new Reason("/alert[1]/info[1]", INSTRUCTION_STRONGLY_RECOMMENDED));
 
     alert = loadAlert("canada.cap").toBuilder();
     Info.Builder info = alert.getInfoBuilder(0);
     for (Area.Builder area : info.getAreaBuilderList()) {
       area.clearPolygon().clearCircle();
     }
-    assertReasons(alert, Reason.Level.RECOMMENDATION,
-        new Reason("/alert/info[0]/area[0]",
-            ReasonType.CIRCLE_POLYGON_ENCOURAGED));
+    assertReasons(alert, RECOMMENDATION,
+        new Reason("/alert[1]/info[1]/area[1]", CIRCLE_POLYGON_ENCOURAGED));
   }
 }

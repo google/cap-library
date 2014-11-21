@@ -64,7 +64,7 @@ public class CapFeedValidatorTest extends TestCase {
     entry.getOtherLinks().clear();
     entry.getAlternateLinks().clear();
     assertReasons(
-        syndFeed, ReasonType.ATOM_ENTRY_MISSING_CAP_LINK, "/feed/entry[0]");
+        syndFeed, ReasonType.ATOM_ENTRY_MISSING_CAP_LINK, "/feed[1]/entry[1]");
 
     Link link = new Link();
     link.setType("text/plain");
@@ -91,7 +91,7 @@ public class CapFeedValidatorTest extends TestCase {
     entry.getOtherLinks().add(link);
     assertEquals(4, entry.getOtherLinks().size());
     assertReasons(
-        syndFeed, ReasonType.ATOM_ENTRY_MISSING_CAP_LINK, "/feed/entry[0]");
+        syndFeed, ReasonType.ATOM_ENTRY_MISSING_CAP_LINK, "/feed[1]/entry[1]");
     
     syndFeed = loadFeed("weather_index.atom", false);
     feed = (Feed) syndFeed.originalWireFeed();
@@ -99,7 +99,7 @@ public class CapFeedValidatorTest extends TestCase {
     Entry entry2 = (Entry) feed.getEntries().get(1);
     entry2.setId(entry1.getId());
     assertReasons(
-        syndFeed, ReasonType.ATOM_ENTRY_NON_UNIQUE_IDS, "/feed/entry[1]");
+        syndFeed, ReasonType.ATOM_ENTRY_NON_UNIQUE_IDS, "/feed[1]/entry[2]");
   }
 
   public void testRssErrors() throws Exception {
@@ -113,9 +113,9 @@ public class CapFeedValidatorTest extends TestCase {
     item.setDescription(null);
     item.setLink(null);
     assertReasons(syndFeed,
-        new Reason("/rss/channel/item[1]",
+        new Reason("/rss[1]/channel[1]/item[2]",
             ReasonType.RSS_ITEM_TITLE_OR_DESCRIPTION_IS_REQUIRED),
-        new Reason("/rss/channel/item[1]",
+        new Reason("/rss[1]/channel[1]/item[2]",
             ReasonType.RSS_ITEM_MISSING_CAP_LINK));
   }
 
@@ -135,8 +135,8 @@ public class CapFeedValidatorTest extends TestCase {
     item.setGuid(null);
 
     assertReasons(syndFeed,
-        new Reason("/rss/channel", ReasonType.RSS_PUBDATE_IS_RECOMMENDED),
-        new Reason("/rss/channel/item[1]",
+        new Reason("/rss[1]/channel[1]", ReasonType.RSS_PUBDATE_IS_RECOMMENDED),
+        new Reason("/rss[1]/channel[1]/item[2]",
             ReasonType.RSS_ITEM_GUID_IS_RECOMMENDED));
   }
 
@@ -145,7 +145,7 @@ public class CapFeedValidatorTest extends TestCase {
     feed.setDateTimeSent("2011-10-17T11:18:00-00:00");
     SyndFeed syndFeed = new SyndFeedImpl(feed, true);
     assertReasons(syndFeed, ReasonType.EDXLDE_CONTENT_OBJECT_IS_REQUIRED,
-        "/EDXLDistribution");
+        "/EDXLDistribution[1]");
   }
 
   public void testEdxldeErrors_invalidXml() throws Exception {
@@ -158,7 +158,7 @@ public class CapFeedValidatorTest extends TestCase {
     feed.addContentObject(content);
     SyndFeed syndFeed = new SyndFeedImpl(feed, true);
     assertReasons(syndFeed, ReasonType.EDXLDE_NO_CAP_IN_CONTENT_OBJECT,
-        "/EDXLDistribution/contentObject[0]/xmlContent");
+        "/EDXLDistribution[1]/contentObject[1]/xmlContent[1]");
   }
 
   public void testEdxldeErrors_validXml() throws Exception {
@@ -195,7 +195,7 @@ public class CapFeedValidatorTest extends TestCase {
     feed.addContentObject(content);
     SyndFeed syndFeed = new SyndFeedImpl(feed, true);
     assertReasons(syndFeed, ReasonType.EDXLDE_NO_CAP_IN_CONTENT_OBJECT,
-        "/EDXLDistribution/contentObject[0]/nonXMLContent");
+        "/EDXLDistribution[1]/contentObject[1]/nonXMLContent[1]");
   }
 
   public void testEdxldeErrors_invalidNonXmlMimeType() throws Exception {
@@ -208,7 +208,7 @@ public class CapFeedValidatorTest extends TestCase {
     feed.addContentObject(content);
     SyndFeed syndFeed = new SyndFeedImpl(feed, true);
     assertReasons(syndFeed, ReasonType.EDXLDE_NO_CAP_IN_CONTENT_OBJECT,
-        "/EDXLDistribution/contentObject[0]/nonXMLContent");
+        "/EDXLDistribution[1]/contentObject[1]/nonXMLContent[1]");
   }
 
   private SyndFeed loadFeed(String file, boolean validate) throws Exception {

@@ -82,6 +82,7 @@
     </fileset>
     <fileset dir="../java/lib">
       <include name="junit.jar"/>
+      <include name="truth.jar"/>
     </fileset>
     <fileset dir="testlib">
       <include name="*.jar"/>

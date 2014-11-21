@@ -17,7 +17,6 @@
 package com.google.publicalerts.cap;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 import com.google.protobuf.Descriptors.Descriptor;
@@ -178,19 +177,6 @@ public class CapUtil {
     }
   }
 
-  /**
-   * @return a flat set of names of repeated CAP fields
-   */
-  public static Set<String> getRepeatedFieldNamesFlatSet() {
-    ImmutableSet.Builder<String> result = ImmutableSet.builder();
-    
-    for (Set<String> set : getRepeatedFieldNames().values()) {
-      result.addAll(set);
-    }
-    
-    return result.build();
-  }
-  
   /**
    * Returns true if the string is null or {@code s.trim()}
    * returns the empty string.

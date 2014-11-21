@@ -30,11 +30,13 @@ import com.google.publicalerts.cap.CapException;
 import com.google.publicalerts.cap.NotCapException;
 import com.google.publicalerts.cap.Reason.Level;
 import com.google.publicalerts.cap.Reasons;
+import com.google.publicalerts.cap.edxl.DistributionFeed;
 import com.google.publicalerts.cap.feed.CapFeedException;
 import com.google.publicalerts.cap.feed.CapFeedParser;
 import com.google.publicalerts.cap.feed.CapFeedValidator;
 import com.google.publicalerts.cap.profile.CapProfile;
 
+import com.sun.syndication.feed.atom.Feed;
 import com.sun.syndication.feed.synd.SyndEntry;
 import com.sun.syndication.feed.synd.SyndFeed;
 import com.sun.syndication.io.FeedException;
@@ -69,7 +71,6 @@ public class CapValidator {
    *   validation; can be empty.
    */
   public ValidationResult validate(String input, Set<CapProfile> profiles) {
-
     ValidationResult result = new ValidationResult(input);
 
     // Is the input a URL?
@@ -115,14 +116,14 @@ public class CapValidator {
         Alert alert = capFeedParser.parseAlert(input, reasonsBuilder);
         result.addValidationMessages(reasonsBuilder.build());
         checkProfiles(
-            alert, result, profiles, -1 /* entryIndex */, null /* linkUrl */);
+            alert, result, profiles, -1 /* entryIndex */, null /* linkUrl */, null);
       } catch (CapException ce) {
         log.info("CAPRequest: Error");
         result.addValidationMessages(ce);
       } catch (NotCapException nce) {
         log.info("InvalidRequest");
         result.addValidationMessage(1, Level.ERROR, "CAP", "The input must be "
-            + "a CAP 1.0, 1.1, or 1.2 message or an RSS or Atom feed of CAP "
+            + "a CAP 1.0, 1.1, or 1.2 message or an RSS, Atom or EDXL-DE feed of CAP "
             + "messages");
         return result;
       }
@@ -133,7 +134,7 @@ public class CapValidator {
       
       if (entries.isEmpty()) {
         result.addValidationMessage(1, Level.ERROR, "CAP", "The input must be "
-            + "a CAP 1.0, 1.1, or 1.2 message or an RSS or Atom feed of CAP "
+            + "a CAP 1.0, 1.1, or 1.2 message or an RSS, Atom or EDXL-DE feed of CAP "
             + "messages");
       }
       
@@ -143,17 +144,18 @@ public class CapValidator {
         try {
           Reasons.Builder reasonsBuilder = Reasons.newBuilder();
           Alert alert = capFeedParser.parseAlert(entry, reasonsBuilder);
+          
           result.addValidationMessages(
-              prefixReasonForContent(reasonsBuilder.build(), i));
-          checkProfiles(alert, result, profiles, i, null);
+              prefixReasonForContent(reasonsBuilder.build(), i, feed));
+          checkProfiles(alert, result, profiles, i, null, feed);
           result.recordTiming("Alert parsing");
         } catch (CapException e) {
           result.addValidationMessages(
-              prefixReasonForContent(e.getReasons(), i));
+              prefixReasonForContent(e.getReasons(), i, feed));
         } catch (NotCapException e) {
           // No CAP in the <content> field, maybe there's a link to an alert?
           Alert alert = handleThinEntry(entry, result);
-          checkProfiles(alert, result, profiles, i, capFeedParser.getCapUrl(entry));
+          checkProfiles(alert, result, profiles, i, capFeedParser.getCapUrl(entry), feed);
           result.recordTiming(
               String.valueOf(capFeedParser.getCapUrl(entry)) + "load/parse");
         }
@@ -166,12 +168,19 @@ public class CapValidator {
     return result;
   }
 
-  private Reasons prefixReasonForContent(Reasons reasons, int entryIndex) {
-    return reasons.prefixWithXpath("/feed/entry[" + entryIndex + "]/content");
+  private Reasons prefixReasonForContent(Reasons reasons, int entryIndex, SyndFeed syndFeed) {
+    if (syndFeed.originalWireFeed() instanceof Feed) {
+      return reasons.prefixWithXpath("/feed[1]/entry[" + (entryIndex + 1) + "]/content[1]");
+    } else if (syndFeed.originalWireFeed() instanceof DistributionFeed) {
+      return reasons.prefixWithXpath("/EDXLDistribution[1]/contentObject[" + (entryIndex + 1)
+          + "]/xmlContent[1]/embeddedXMLContent[1]");
+    }
+
+    throw new IllegalArgumentException();
   }
   
   private void checkProfiles(Alert alert, ValidationResult result,
-      Set<CapProfile> profiles, int entryIndex, String linkUrl) {
+      Set<CapProfile> profiles, int entryIndex, String linkUrl, SyndFeed syndFeed) {
     if (alert == null) {
       return;
     }
@@ -184,7 +193,7 @@ public class CapValidator {
       } else {
         
         if (entryIndex >= 0) {
-          reasons = prefixReasonForContent(reasons, entryIndex);
+          reasons = prefixReasonForContent(reasons, entryIndex, syndFeed);
         }
         result.addValidationMessages(reasons);
       }

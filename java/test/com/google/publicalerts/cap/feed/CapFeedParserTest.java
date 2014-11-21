@@ -102,23 +102,23 @@ public class CapFeedParserTest extends TestCase {
 
   public void testParseInvalidFeed1() throws Exception {
     assertReasons("no_id.atom",
-        new Reason("/feed", ReasonType.ATOM_ID_IS_REQUIRED),
-        new Reason("/feed/entry[0]", ReasonType.ATOM_ENTRY_ID_IS_REQUIRED));
+        new Reason("/feed[1]", ReasonType.ATOM_ID_IS_REQUIRED),
+        new Reason("/feed[1]/entry[1]", ReasonType.ATOM_ENTRY_ID_IS_REQUIRED));
   }
 
   public void testParseInvalidFeed2() throws Exception {
-    assertReasons("no_title.atom", new Reason("/feed/entry[0]",
+    assertReasons("no_title.atom", new Reason("/feed[1]/entry[1]",
         ReasonType.ATOM_ENTRY_TITLE_IS_REQUIRED));
   }
 
   public void testParseInvalidFeed4() throws Exception {
-    assertReasons("no_link.atom", new Reason("/feed/entry[0]",
+    assertReasons("no_link.atom", new Reason("/feed[1]/entry[1]",
         ReasonType.ATOM_ENTRY_MISSING_CAP_LINK));
   }
 
   public void testParseInvalidFeed5() throws Exception {
     assertReasons(
-        "invalid_element.atom", new Reason("/feed", ReasonType.OTHER));
+        "invalid_element.atom", new Reason("/feed[1]", ReasonType.OTHER));
   }
 
   /**
@@ -142,13 +142,13 @@ public class CapFeedParserTest extends TestCase {
   
   public void testParseInvalidRssFeed() throws Exception {
     assertReasons("invalid.rss",
-        new Reason("/rss/channel/item[0]",
+        new Reason("/rss[1]/channel[1]/item[1]",
             ReasonType.RSS_ITEM_MISSING_CAP_LINK),
-        new Reason("/rss/channel/item[0]",
+        new Reason("/rss[1]/channel[1]/item[1]",
             ReasonType.RSS_ITEM_TITLE_OR_DESCRIPTION_IS_REQUIRED),
-        new Reason("/rss/channel/item[0]",
+        new Reason("/rss[1]/channel[1]/item[1]",
             ReasonType.RSS_ITEM_GUID_IS_RECOMMENDED),
-        new Reason("/rss/channel", ReasonType.RSS_PUBDATE_IS_RECOMMENDED));
+        new Reason("/rss[1]/channel[1]", ReasonType.RSS_PUBDATE_IS_RECOMMENDED));
   }
 
   public void testParseIndexFeed() throws Exception {

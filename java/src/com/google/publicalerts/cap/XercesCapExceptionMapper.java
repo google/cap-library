@@ -110,17 +110,17 @@ public class XercesCapExceptionMapper {
           if (matcher.group(1).equals(tag)) {
             type = ReasonType.DUPLICATE_ELEMENT;
             args = new String[] { tag, value };
-            xPath += '/' + tag + "[1]";
+            xPath += '/' + tag + "[2]";
             //TODO(sschiavoni): count actual occurrences
           } else {
             type = ReasonType.INVALID_SEQUENCE;
             args = new String[] { matcher.group(2), matcher.group(1) };
-            xPath += '/' + matcher.group(1);
+            xPath += '/' + matcher.group(1) + "[1]";
           }
         } else {
           type = ReasonType.UNSUPPORTED_ELEMENT;
           args = new String[] { matcher.group(1) };
-          xPath += '/' + matcher.group(1);
+          xPath += '/' + matcher.group(1) + "[1]";
         }
       }
     } else if ("cvc-complex-type.2.4.b".equals(code)) {

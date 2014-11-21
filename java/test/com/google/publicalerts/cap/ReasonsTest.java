@@ -16,8 +16,13 @@
 
 package com.google.publicalerts.cap;
 
-import com.google.common.collect.ImmutableList;
+import static com.google.common.truth.Truth.assertThat;
+import static com.google.publicalerts.cap.Reason.Level.ERROR;
+import static com.google.publicalerts.cap.Reason.Level.RECOMMENDATION;
+import static com.google.publicalerts.cap.Reason.Level.WARNING;
+
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Sets;
 import com.google.publicalerts.cap.Reason.Level;
 
 import junit.framework.TestCase;
@@ -30,25 +35,21 @@ import java.util.Locale;
 * @author sschiavoni@google.com (Stefano Schiavoni)
  */
 public class ReasonsTest extends TestCase {
-  private final Reason errorReason1 =
-      buildMockReason("1", MockReasonType.ERROR_TYPE);
-  private final Reason errorReason2 =
-      buildMockReason("2", MockReasonType.ERROR_TYPE);
-  private final Reason warningReason1 =
-      buildMockReason("3", MockReasonType.WARNING_TYPE);
-  private final Reason warningReason2 =
-      buildMockReason("4", MockReasonType.WARNING_TYPE);
+  private final Reason errorReason1 = new Reason("/e[1]", MockReasonType.ERROR_TYPE);
+  private final Reason errorReason2 = new Reason("/e[2]", MockReasonType.ERROR_TYPE);
+  private final Reason warningReason1 = new Reason("/w[1]", MockReasonType.WARNING_TYPE);
+  private final Reason warningReason2 = new Reason("/w[2]", MockReasonType.WARNING_TYPE);
   private final Reason recommendationReason1 =
-      buildMockReason("5", MockReasonType.RECOMMENDATION_TYPE);
+      new Reason("/r[1]", MockReasonType.RECOMMENDATION_TYPE);
   private final Reason recommendationReason2 =
-      buildMockReason("6", MockReasonType.RECOMMENDATION_TYPE);
+      new Reason("/r[2]", MockReasonType.RECOMMENDATION_TYPE);
   
-  private final ImmutableList<Reason> allErrors =
-      ImmutableList.of(errorReason1, errorReason2);
-  private final ImmutableList<Reason> allWarnings =
-      ImmutableList.of(warningReason1, warningReason2);
-  private final ImmutableList<Reason> allRecommendations =
-      ImmutableList.of(recommendationReason1, recommendationReason2);
+  private final ImmutableSet<Reason> allErrors =
+      ImmutableSet.of(errorReason1, errorReason2);
+  private final ImmutableSet<Reason> allWarnings =
+      ImmutableSet.of(warningReason1, warningReason2);
+  private final ImmutableSet<Reason> allRecommendations =
+      ImmutableSet.of(recommendationReason1, recommendationReason2);
   
   public ReasonsTest(String s) {
     super(s);
@@ -65,37 +66,19 @@ public class ReasonsTest extends TestCase {
     
     Reasons reasons = builder.build();
     
-    assertEquals(
-        ImmutableSet.builder()
-            .addAll(allErrors)
-            .addAll(allWarnings)
-            .addAll(allRecommendations)
-            .build(),
-        ImmutableSet.copyOf(reasons));
-    assertEquals(
-        ImmutableSet.builder()
-            .addAll(allErrors)
-            .addAll(allRecommendations)
-            .addAll(allWarnings)
-            .build(),
-        ImmutableSet.copyOf(
-            reasons.getWithLevelOrHigher(Level.RECOMMENDATION)));
-    assertTrue(reasons.containsWithLevelOrHigher(Level.RECOMMENDATION));
-    assertEquals(
-        ImmutableSet.builder()
-            .addAll(allErrors)
-            .addAll(allWarnings)
-            .build(),
-        ImmutableSet.copyOf(
-            reasons.getWithLevelOrHigher(Level.WARNING)));
-    assertTrue(reasons.containsWithLevelOrHigher(Level.WARNING));
-    assertEquals(
-        ImmutableSet.builder()
-            .addAll(allErrors)
-            .build(),
-        ImmutableSet.copyOf(
-            reasons.getWithLevelOrHigher(Level.ERROR)));
-    assertTrue(reasons.containsWithLevelOrHigher(Level.ERROR));
+    assertThat(reasons).containsExactlyElementsIn(
+        Sets.union(allErrors, Sets.union(allWarnings, allRecommendations)));
+    
+    assertThat(reasons.getWithLevelOrHigher(RECOMMENDATION)).containsExactlyElementsIn(
+        Sets.union(allErrors, Sets.union(allWarnings, allRecommendations)));
+    assertThat(reasons.containsWithLevelOrHigher(RECOMMENDATION)).isTrue();
+
+    assertThat(reasons.getWithLevelOrHigher(WARNING))
+        .containsExactlyElementsIn(Sets.union(allErrors, allWarnings));
+    assertThat(reasons.containsWithLevelOrHigher(WARNING)).isTrue();
+    
+    assertThat(reasons.getWithLevelOrHigher(ERROR)).containsExactlyElementsIn(allErrors);
+    assertThat(reasons.containsWithLevelOrHigher(ERROR)).isTrue();
   }
   
   public void test_someLevelsMissing() {
@@ -107,56 +90,37 @@ public class ReasonsTest extends TestCase {
     
     Reasons reasons = builder.build();
     
-    assertEquals(
-        ImmutableSet.builder()
-            .addAll(allWarnings)
-            .addAll(allRecommendations)
-            .build(),
-        ImmutableSet.copyOf(reasons));
-    assertEquals(
-        ImmutableSet.builder()
-            .addAll(allWarnings)
-            .addAll(allRecommendations)
-            .build(),
-        ImmutableSet.copyOf(
-            reasons.getWithLevelOrHigher(Level.RECOMMENDATION)));
-    assertTrue(reasons.containsWithLevelOrHigher(Level.RECOMMENDATION));
-    assertEquals(
-        ImmutableSet.copyOf(allWarnings),
-        ImmutableSet.copyOf(
-            reasons.getWithLevelOrHigher(Level.WARNING)));
-    assertTrue(reasons.containsWithLevelOrHigher(Level.WARNING));
-    assertEquals(
-        ImmutableSet.of(),
-        ImmutableSet.copyOf(
-            reasons.getWithLevelOrHigher(Level.ERROR)));
-    assertFalse(reasons.containsWithLevelOrHigher(Level.ERROR));
+    assertThat(reasons).containsExactlyElementsIn(Sets.union(allWarnings, allRecommendations));
+    
+    assertThat(reasons.getWithLevelOrHigher(RECOMMENDATION))
+        .containsExactlyElementsIn(Sets.union(allWarnings, allRecommendations));
+    assertThat(reasons.containsWithLevelOrHigher(RECOMMENDATION)).isTrue();
+
+    assertThat(reasons.getWithLevelOrHigher(WARNING)).containsExactlyElementsIn(allWarnings);
+    assertThat(reasons.containsWithLevelOrHigher(WARNING)).isTrue();
+    
+    assertThat(reasons.getWithLevelOrHigher(ERROR)).isEmpty();
+    assertThat(reasons.containsWithLevelOrHigher(ERROR)).isFalse();
   }
   
-  public void prefixWithXpath() {
+  public void testPrefixWithXpath() {
     Reasons reasons = Reasons.of(warningReason1, warningReason2);
 
-    assertEquals(
-        ImmutableList.of(
-            buildMockReason("/prefix3", MockReasonType.WARNING_TYPE),
-            buildMockReason("/prefix4", MockReasonType.WARNING_TYPE)),
-        ImmutableList.copyOf(reasons.prefixWithXpath("/prefix")));
+    assertThat(reasons.prefixWithXpath("/prefix[1]")).containsExactly(
+        new Reason("/prefix[1]/w[1]", MockReasonType.WARNING_TYPE),
+        new Reason("/prefix[1]/w[2]", MockReasonType.WARNING_TYPE));
   }
-  
-  private Reason buildMockReason(String uniqueString, MockReasonType type) {
-    return new Reason(uniqueString, type);
-  }
-  
+
   private enum MockReasonType implements Reason.Type {
-    ERROR_TYPE(Reason.Level.ERROR, "Error"),
-    WARNING_TYPE(Reason.Level.WARNING, "Warning"),
-    RECOMMENDATION_TYPE(Reason.Level.RECOMMENDATION, "Recommendation"),
+    ERROR_TYPE(ERROR, "Error"),
+    WARNING_TYPE(WARNING, "Warning"),
+    RECOMMENDATION_TYPE(RECOMMENDATION, "Recommendation"),
     ;
     
-    private final Reason.Level defaultLevel;
+    private final Level defaultLevel;
     private final String message;
 
-    private MockReasonType(Reason.Level defaultLevel, String message) {
+    private MockReasonType(Level defaultLevel, String message) {
       this.defaultLevel = defaultLevel;
       this.message = message;
     }
@@ -167,7 +131,7 @@ public class ReasonsTest extends TestCase {
     }
 
     @Override
-    public Reason.Level getDefaultLevel() {
+    public Level getDefaultLevel() {
       return defaultLevel;
     }
     

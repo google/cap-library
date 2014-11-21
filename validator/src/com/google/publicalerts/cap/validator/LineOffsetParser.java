@@ -19,7 +19,6 @@ package com.google.publicalerts.cap.validator;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -30,24 +29,16 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
-import com.google.publicalerts.cap.CapUtil;
 import com.google.publicalerts.cap.XPath;
-import com.google.publicalerts.cap.feed.CapFeedParser;
 
 /**
- * Parses a given XML document to maintain mappings from elements to their given
- * line number, which is helpful to know where to display in-line error
- * messages.
+ * Parses a given XML document to maintain mappings from elements to their given line number, which
+ * is helpful to know where to display in-line error messages.
  *
  * @author shakusa@google.com (Steve Hakusa)
  */
 public class LineOffsetParser {
-  private static final Set<String> REPEATED_ELEMENTS =
-      ImmutableSet.<String>builder()
-          .addAll(CapFeedParser.FEED_REPEATED_ELEMENTS)
-          .addAll(CapUtil.getRepeatedFieldNamesFlatSet()).build();
 
   /**
    * Container object for line offsets based on either xPath expressions or
@@ -58,25 +49,9 @@ public class LineOffsetParser {
     private final Map<String, Integer> xpathLineNumbers = Maps.newHashMap();
 
     /**
-     * @param index the 0-based index of the entry in the XML document
-     * @return the line number where the &lt;entry&gt; or &lt;item&gt; tag
-     * starts
-     * 
-     * TODO(sschiavoni): rewrite this method
-     */
-    public int getEntryLineNumber(int index) {
-      int lineNumber = getXPathLineNumber("/feed/entry[" + index + "]");
-      if (lineNumber == 0) {
-        lineNumber = getXPathLineNumber("/rss/channel/item[" + index + "]");
-      }
-      
-      return lineNumber;
-    }
-
-    /**
      * @param xPath the xPath expression to return a line number for
-     * @return the line number of the start of the element referred to by the
-     * xPath, or 0 if the xPath doesn't exist
+     * @return the line number of the start of the element referred to by the xPath, or 0 if the
+     * xPath doesn't exist
      */
     public int getXPathLineNumber(String xPath) {
       Integer lineNumber = xpathLineNumbers.get(xPath);
@@ -85,8 +60,8 @@ public class LineOffsetParser {
 
     /**
      * @param href a link href
-     * @return the line number of the last link element with the href,
-     * or 0 if the xPath doesn't exist
+     * @return the line number of the last link element with the href, or 0 if the xPath doesn't
+     * exist
      */
     public int getLinkLineNumber(String href) {
       Integer lineNumber = linkLineNumbers.get(href);
@@ -95,14 +70,14 @@ public class LineOffsetParser {
   }
 
   /**
-   * Parse the given xml and return an object that allows you to fetch
-   * line numbers of the elements in the document.
-   * @param xml the xml to parse
-   * @return an object that allows you to fetch line numbers of the elements
-   * in the document
+   * Parse the given XML and return an object that allows you to fetch line numbers of the elements
+   * in the document.
+   * 
+   * @param xml the XML to parse
+   * @return an object that allows you to fetch line numbers of the elements in the document
    * @throws IllegalArgumentException if the XML is invalid
    */
-  public LineOffsets parse(String xml) {
+  public LineOffsets parse(String xml) throws IllegalArgumentException {
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setNamespaceAware(true);
     factory.setValidating(true);
@@ -124,7 +99,7 @@ public class LineOffsetParser {
   private static class Handler extends DefaultHandler {
     private Locator locator;
     private LineOffsets lineOffsets = new LineOffsets();
-    private XPath xPath = new XPath(REPEATED_ELEMENTS);
+    private XPath xPath = new XPath();
     private Integer linkLine;
     private String linkHref;
     private StringBuilder characters = new StringBuilder();
@@ -135,11 +110,9 @@ public class LineOffsetParser {
     }
 
     @Override
-    public void startElement(String uri, String localName, String qName,
-        Attributes attributes) {
+    public void startElement(String uri, String localName, String qName, Attributes attributes) {
       xPath.push(localName);
-      lineOffsets.xpathLineNumbers
-          .put(xPath.toString(), locator.getLineNumber());
+      lineOffsets.xpathLineNumbers.put(xPath.toString(), locator.getLineNumber());
       
       characters.setLength(0);
       linkLine = null;

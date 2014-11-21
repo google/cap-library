@@ -16,6 +16,42 @@
 
 package com.google.publicalerts.cap.profile;
 
+import static com.google.publicalerts.cap.Reason.Level.ERROR;
+import static com.google.publicalerts.cap.Reason.Level.INFO;
+import static com.google.publicalerts.cap.Reason.Level.RECOMMENDATION;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.AREA_IS_REQUIRED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.CATEGORIES_MUST_MATCH;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.CERTAINTY_IS_REQUIRED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.CIRCLE_POLYGON_ENCOURAGED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.CIRCLE_POLYGON_OR_GEOCODE_IS_REQUIRED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.CONTACT_IS_RECOMMENDED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.DESCRIPTION_AND_INSTRUCTION_SHOULD_DIFFER;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.DESCRIPTION_IS_REQUIRED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.EFFECTIVE_INCLUDES_UTC_TIMEZONE;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.EFFECTIVE_NOT_AFTER_EXPIRES;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.EMPTY_GEOCODE_FIELD;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.EVENTS_IN_SAME_LANGUAGE_SHOULD_MATCH;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.EVENT_CODES_MUST_MATCH;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.EXPIRES_INCLUDES_UTC_TIMEZONE;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.EXPIRES_IS_REQUIRED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.HEADLINE_AND_DESCRIPTION_SHOULD_DIFFER;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.HEADLINE_TOO_LONG;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.INFO_IS_REQUIRED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.INSTRUCTION_STRONGLY_RECOMMENDED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.NONZERO_CIRCLE_RADIUS_RECOMMENDED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.ONSET_INCLUDES_UTC_TIMEZONE;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.RESPONSE_TYPE_STRONGLY_RECOMMENDED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.SENDER_NAME_STRONGLY_RECOMMENDED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.SENT_INCLUDES_UTC_TIMEZONE;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.SEVERITY_IS_REQUIRED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.TEST_ALERT_DISCOURAGED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.UNKNOWN_CERTAINTY_DISCOURAGED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.UNKNOWN_SEVERITY_DISCOURAGED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.UNKNOWN_URGENCY_DISCOURAGED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.UPDATE_OR_CANCEL_MUST_REFERENCE;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.URGENCY_IS_REQUIRED;
+import static com.google.publicalerts.cap.profile.GoogleProfile.ReasonType.WEB_IS_REQUIRED;
+
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.Alert.MsgType;
 import com.google.publicalerts.cap.Area;
@@ -23,7 +59,6 @@ import com.google.publicalerts.cap.Circle;
 import com.google.publicalerts.cap.Info;
 import com.google.publicalerts.cap.Point;
 import com.google.publicalerts.cap.Reason;
-import com.google.publicalerts.cap.profile.GoogleProfile.ReasonType;
 
 /**
  * Tests for {@link GoogleProfile}.
@@ -47,37 +82,35 @@ public class GoogleProfileTest extends CapProfileTestCase {
 
   public void testValidate_errors() throws Exception {
     Alert.Builder alert = loadAlert("australia.cap").toBuilder();
-    assertNoReasons(alert, Reason.Level.ERROR);
+    assertNoReasons(alert, ERROR);
 
-    alert.setMsgType(MsgType.UPDATE)
-        .clearReferences();
-    assertReasons(alert, Reason.Level.ERROR, new Reason("/alert/msgType",
-        ReasonType.UPDATE_OR_CANCEL_MUST_REFERENCE));
+    alert.setMsgType(MsgType.UPDATE).clearReferences();
+    assertReasons(alert, ERROR,
+        new Reason("/alert[1]/msgType[1]", UPDATE_OR_CANCEL_MUST_REFERENCE));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.clearInfo();
-    assertReasons(alert, Reason.Level.ERROR,
-        new Reason("/alert", ReasonType.INFO_IS_REQUIRED));
+    assertReasons(alert, ERROR, new Reason("/alert[1]", INFO_IS_REQUIRED));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).clearCategory();
-    assertReasons(alert, Reason.Level.ERROR, new Reason(
-        "/alert/info[1]/category", ReasonType.CATEGORIES_MUST_MATCH));
+    assertReasons(alert, ERROR,
+        new Reason("/alert[1]/info[2]/category[1]", CATEGORIES_MUST_MATCH));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1)
         .setEffective("2012-05-08T12:34:56-04:00")
         .setExpires("2012-05-08T12:34:56-04:00");
     alert.getInfoBuilder(1).getEventCodeBuilder(0).setValueName("foo");
-    assertReasons(alert, Reason.Level.ERROR, new Reason(
-        "/alert/info[1]/eventCode", ReasonType.EVENT_CODES_MUST_MATCH));
+    assertReasons(alert, ERROR,
+        new Reason("/alert[1]/info[2]/eventCode[1]", EVENT_CODES_MUST_MATCH));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1)
         .setEffective("2012-05-08T12:34:57-04:00")
         .setExpires("2012-05-08T12:34:56-04:00");
-    assertReasons(alert, Reason.Level.ERROR, new Reason(
-        "/alert/info[1]/effective", ReasonType.EFFECTIVE_NOT_AFTER_EXPIRES));
+    assertReasons(alert, ERROR, 
+        new Reason("/alert[1]/info[2]/effective[1]", EFFECTIVE_NOT_AFTER_EXPIRES));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).clearDescription()
@@ -86,32 +119,30 @@ public class GoogleProfileTest extends CapProfileTestCase {
         .clearUrgency()
         .clearSeverity()
         .clearCertainty();
-    assertReasons(alert, Reason.Level.ERROR,
-        new Reason("/alert/info[1]", ReasonType.DESCRIPTION_IS_REQUIRED),
-        new Reason("/alert/info[1]", ReasonType.WEB_IS_REQUIRED),
-        new Reason("/alert/info[1]", ReasonType.EXPIRES_IS_REQUIRED),
-        new Reason("/alert/info[1]", ReasonType.URGENCY_IS_REQUIRED),
-        new Reason("/alert/info[1]", ReasonType.SEVERITY_IS_REQUIRED),
-        new Reason("/alert/info[1]", ReasonType.CERTAINTY_IS_REQUIRED));
+    assertReasons(alert, ERROR,
+        new Reason("/alert[1]/info[2]", DESCRIPTION_IS_REQUIRED),
+        new Reason("/alert[1]/info[2]", WEB_IS_REQUIRED),
+        new Reason("/alert[1]/info[2]", EXPIRES_IS_REQUIRED),
+        new Reason("/alert[1]/info[2]", URGENCY_IS_REQUIRED),
+        new Reason("/alert[1]/info[2]", SEVERITY_IS_REQUIRED),
+        new Reason("/alert[1]/info[2]", CERTAINTY_IS_REQUIRED));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).clearArea();
-    assertReasons(alert, Reason.Level.ERROR,
-        new Reason("/alert/info[1]", ReasonType.AREA_IS_REQUIRED));
+    assertReasons(alert, ERROR, new Reason("/alert[1]/info[2]", AREA_IS_REQUIRED));
 
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1).getAreaBuilder(0)
         .clearGeocode()
         .clearPolygon()
         .clearCircle();
-    assertReasons(alert, Reason.Level.ERROR,
-        new Reason("/alert/info[1]/area[0]",
-            ReasonType.CIRCLE_POLYGON_OR_GEOCODE_IS_REQUIRED));
+    assertReasons(alert, ERROR,
+        new Reason("/alert[1]/info[2]/area[1]", CIRCLE_POLYGON_OR_GEOCODE_IS_REQUIRED));
   }
 
   public void testValidate_recommendations() throws Exception {
     Alert.Builder alert = loadValidAustraliaCap();
-    assertNoReasons(alert, Reason.Level.RECOMMENDATION);
+    assertNoReasons(alert, RECOMMENDATION);
 
     alert.setSent("2002-01-01T00:00:00+00:00")
         .getInfoBuilder(0)
@@ -119,19 +150,15 @@ public class GoogleProfileTest extends CapProfileTestCase {
         .setEffective("2003-01-01T00:00:00+00:00")
         .setOnset("2004-01-01T00:00:00+00:00")
         .setExpires("2005-01-01T00:00:00+00:00");
-    assertReasons(alert, Reason.Level.INFO,
-        new Reason("/alert/sent", ReasonType.SENT_INCLUDES_UTC_TIMEZONE),
-        new Reason("/alert/info[0]/effective",
-            ReasonType.EFFECTIVE_INCLUDES_UTC_TIMEZONE),
-        new Reason("/alert/info[0]/onset",
-            ReasonType.ONSET_INCLUDES_UTC_TIMEZONE),
-        new Reason("/alert/info[0]/expires",
-            ReasonType.EXPIRES_INCLUDES_UTC_TIMEZONE));
+    assertReasons(alert, INFO,
+        new Reason("/alert[1]/sent[1]", SENT_INCLUDES_UTC_TIMEZONE),
+        new Reason("/alert[1]/info[1]/effective[1]", EFFECTIVE_INCLUDES_UTC_TIMEZONE),
+        new Reason("/alert[1]/info[1]/onset[1]", ONSET_INCLUDES_UTC_TIMEZONE),
+        new Reason("/alert[1]/info[1]/expires[1]", EXPIRES_INCLUDES_UTC_TIMEZONE));
 
     alert = loadAlert("australia.cap").toBuilder();
-    String longHeadline = "This is a headline that is longer than 140 " +
-        "characters; I don't know why anyone would want to make a " +
-        "headline that long. It seems rather absurd.";
+    String longHeadline = "This is a headline that is longer than 140 characters; I don't know "
+        + "why anyone would want to make a headline that long. It seems rather absurd.";
     alert.getInfoBuilder(0)
         .clearSenderName()
         .clearResponseType()
@@ -146,26 +173,17 @@ public class GoogleProfileTest extends CapProfileTestCase {
             .setPoint(Point.newBuilder().setLatitude(0).setLongitude(0))
             .setRadius(0));
     alert.getInfoBuilder(1).setContact("Call 911");
-    assertReasons(alert, Reason.Level.RECOMMENDATION,
-        new Reason("/alert/info[0]",
-            ReasonType.SENDER_NAME_STRONGLY_RECOMMENDED),
-        new Reason("/alert/info[0]",
-            ReasonType.RESPONSE_TYPE_STRONGLY_RECOMMENDED),
-        new Reason("/alert/info[0]",
-            ReasonType.INSTRUCTION_STRONGLY_RECOMMENDED),
-        new Reason("/alert/info[0]/headline",
-            ReasonType.HEADLINE_TOO_LONG),
-        new Reason("/alert/info[0]/headline",
-            ReasonType.HEADLINE_AND_DESCRIPTION_SHOULD_DIFFER),
-        new Reason("/alert/info[0]/urgency",
-            ReasonType.UNKNOWN_URGENCY_DISCOURAGED),
-        new Reason("/alert/info[0]/severity",
-            ReasonType.UNKNOWN_SEVERITY_DISCOURAGED),
-        new Reason("/alert/info[0]/certainty",
-            ReasonType.UNKNOWN_CERTAINTY_DISCOURAGED),
-        new Reason("/alert/info[0]", ReasonType.CONTACT_IS_RECOMMENDED),
-        new Reason("/alert/info[0]/area[0]/circle[1]",
-            ReasonType.NONZERO_CIRCLE_RADIUS_RECOMMENDED));
+    assertReasons(alert, RECOMMENDATION,
+        new Reason("/alert[1]/info[1]", SENDER_NAME_STRONGLY_RECOMMENDED),
+        new Reason("/alert[1]/info[1]", RESPONSE_TYPE_STRONGLY_RECOMMENDED),
+        new Reason("/alert[1]/info[1]", INSTRUCTION_STRONGLY_RECOMMENDED),
+        new Reason("/alert[1]/info[1]/headline[1]", HEADLINE_TOO_LONG),
+        new Reason("/alert[1]/info[1]/headline[1]", HEADLINE_AND_DESCRIPTION_SHOULD_DIFFER),
+        new Reason("/alert[1]/info[1]/urgency[1]", UNKNOWN_URGENCY_DISCOURAGED),
+        new Reason("/alert[1]/info[1]/severity[1]", UNKNOWN_SEVERITY_DISCOURAGED),
+        new Reason("/alert[1]/info[1]/certainty[1]", UNKNOWN_CERTAINTY_DISCOURAGED),
+        new Reason("/alert[1]/info[1]", CONTACT_IS_RECOMMENDED),
+        new Reason("/alert[1]/info[1]/area[1]/circle[2]", NONZERO_CIRCLE_RADIUS_RECOMMENDED));
 
     alert = loadValidAustraliaCap();
     Info.Builder info = alert.getInfoBuilder(0);
@@ -174,44 +192,39 @@ public class GoogleProfileTest extends CapProfileTestCase {
     for (Area.Builder area : info.getAreaBuilderList()) {
       area.clearPolygon().clearCircle();
     }
-    assertReasons(alert, Reason.Level.RECOMMENDATION,
-        new Reason("/alert/info[0]/description",
-            ReasonType.DESCRIPTION_AND_INSTRUCTION_SHOULD_DIFFER),
-        new Reason("/alert/info[0]/area[0]",
-            ReasonType.CIRCLE_POLYGON_ENCOURAGED));
+    assertReasons(alert, RECOMMENDATION,
+        new Reason("/alert[1]/info[1]/description[1]", DESCRIPTION_AND_INSTRUCTION_SHOULD_DIFFER),
+        new Reason("/alert[1]/info[1]/area[1]", CIRCLE_POLYGON_ENCOURAGED));
     
     alert = loadValidAustraliaCap();
     alert.setStatus(Alert.Status.TEST);
-    assertReasons(alert, Reason.Level.RECOMMENDATION,
-        new Reason("/alert/status", ReasonType.TEST_ALERT_DISCOURAGED));
+    assertReasons(alert, RECOMMENDATION,
+        new Reason("/alert[1]/status[1]", TEST_ALERT_DISCOURAGED));
 
     // Empty <valueName> field
     alert = loadValidAustraliaCap();
     alert.getInfoBuilder(1).getAreaBuilder(0).getGeocodeBuilder(0).setValueName("");
-    assertReasons(alert, Reason.Level.RECOMMENDATION,
-        new Reason("/alert/info[1]/area[0]/geocode[0]",
-            ReasonType.EMPTY_GEOCODE_FIELD));
+    assertReasons(alert, RECOMMENDATION,
+        new Reason("/alert[1]/info[2]/area[1]/geocode[1]", EMPTY_GEOCODE_FIELD));
 
     // Empty <value> field
     alert = loadValidAustraliaCap();
     alert.getInfoBuilder(0).getAreaBuilder(0).getGeocodeBuilder(0).setValue("");
-    assertReasons(alert, Reason.Level.RECOMMENDATION,
-        new Reason("/alert/info[0]/area[0]/geocode[0]",
-            ReasonType.EMPTY_GEOCODE_FIELD));
+    assertReasons(alert, RECOMMENDATION,
+        new Reason("/alert[1]/info[1]/area[1]/geocode[1]", EMPTY_GEOCODE_FIELD));
 
     // Different <event> with same <language> in separate <info> blocks
     alert = loadValidAustraliaCap();
     alert.getInfoBuilder(1).setEvent("foo");
-    assertReasons(alert, Reason.Level.RECOMMENDATION,
-        new Reason("/alert/info[1]/event",
-            ReasonType.EVENTS_IN_SAME_LANGUAGE_SHOULD_MATCH));
+    assertReasons(alert, RECOMMENDATION,
+        new Reason("/alert[1]/info[2]/event[1]", EVENTS_IN_SAME_LANGUAGE_SHOULD_MATCH));
   }
 
  /**
-  * Returns an Alert.Builder, based on the australia CAP example, which will not
-  * throw any errors or warnings when checked for validity. Loads the alert in the
-  * australia.cap testdata file and then sets the <contact> field for both <info>
-  * blocks therein in order to avoid triggering a CONTACT_IS_RECOMMENDED warning.
+  * Returns an Alert.Builder, based on the australia CAP example, which will not throw any errors
+  * or warnings when checked for validity. Loads the alert in the australia.cap testdata file and
+  * then sets the {@code <contact>} field for both {@code<info>} blocks therein in order to avoid
+  * triggering a CONTACT_IS_RECOMMENDED warning.
   */
   private Alert.Builder loadValidAustraliaCap() throws Exception {
     Alert.Builder alert = loadAlert("australia.cap").toBuilder();

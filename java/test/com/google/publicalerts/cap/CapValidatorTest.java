@@ -41,23 +41,25 @@ public class CapValidatorTest extends TestCase {
   public void testAlertParseErrors() {
     Alert.Builder alert = CapTestUtil.getValidAlertBuilder();
     alert.setRestriction("restriction");
-    assertReasons(alert, ReasonType.RESTRICTION_SCOPE_MISMATCH, "/alert/restriction");
+    assertReasons(alert,
+        ReasonType.RESTRICTION_SCOPE_MISMATCH, "/alert[1]/restriction[1]");
     
     alert = CapTestUtil.getValidAlertBuilder();
     alert.getReferencesBuilder().addValue(
         "hsas@dhs.gov," + alert.getIdentifier() + ",2003-02-02T14:39:01-05:00");
-    assertReasons(alert, ReasonType.CIRCULAR_REFERENCE, "/alert/references");
+    assertReasons(alert,
+        ReasonType.CIRCULAR_REFERENCE, "/alert[1]/references[1]");
     
     alert = CapTestUtil.getValidAlertBuilder();
     alert.getReferencesBuilder().addValue(
         "hsas@dhs.gov,43b080713722,2023-02-02T14:39:01-05:00");
     assertReasons(
-        alert,  ReasonType.POSTDATED_REFERENCE, "/alert/references");
+        alert,  ReasonType.POSTDATED_REFERENCE, "/alert[1]/references[1]");
     
     alert = CapTestUtil.getValidAlertBuilder();
     alert.getInfoBuilder(0).getAreaBuilder(0).clearCircle();
     alert.getInfoBuilder(0).getAreaBuilder(0).clearAltitude();
-    assertReasons(alert, ReasonType.INVALID_AREA, "/alert/info[0]/area[0]");
+    assertReasons(alert, ReasonType.INVALID_AREA, "/alert[1]/info[1]/area[1]");
   }
 
   public void testInfoParseErrors() {
@@ -77,13 +79,13 @@ public class CapValidatorTest extends TestCase {
     for (String lang : new String[] { "12345", "toolonglang", "en_US", "??"}) {
       info.setLanguage(lang);
       assertReasons
-          (info, ReasonType.INVALID_LANGUAGE, "/alert/info[0]/language");
+          (info, ReasonType.INVALID_LANGUAGE, "/alert[1]/info[1]/language[1]");
     }
     info.clearLanguage();
 
     info.getAreaBuilder(0).clearCircle();
     info.getAreaBuilder(0).clearAltitude();
-    assertReasons(info, ReasonType.INVALID_AREA, "/alert/info[0]/area[0]");
+    assertReasons(info, ReasonType.INVALID_AREA, "/alert[1]/info[1]/area[1]");
   }
 
   public void testParseAreaParseErrors() {
@@ -96,29 +98,29 @@ public class CapValidatorTest extends TestCase {
         .addPoint(Point.newBuilder().setLatitude(5).setLongitude(6).build())
         .addPoint(Point.newBuilder().setLatitude(7).setLongitude(8).build())
         .build());
-    assertReasons(
-        area, ReasonType.INVALID_POLYGON, "/alert/info[0]/area[0]/polygon[0]");
+    assertReasons(area, ReasonType.INVALID_POLYGON,
+        "/alert[1]/info[1]/area[1]/polygon[1]");
 
     area.clearPolygon()
         .clearCircle()
         .clearAltitude();
-    assertReasons(area, ReasonType.INVALID_AREA, "/alert/info[0]/area[0]");
+    assertReasons(area, ReasonType.INVALID_AREA, "/alert[1]/info[1]/area[1]");
 
     area.setAltitude(area.getCeiling() + 1);
     assertReasons(area, ReasonType.INVALID_ALTITUDE_CEILING_RANGE,
-        "/alert/info[0]/area[0]/ceiling");
+        "/alert[1]/info[1]/area[1]/ceiling[1]");
   }
 
   public void testValidateResourceErrors() {
     Resource.Builder resource = CapTestUtil.getValidResourceBuilder();
     resource.setMimeType("foo-type/bar");
-    assertReasons(
-        resource, ReasonType.INVALID_MIME_TYPE, "/alert/resource[0]/mimeType");
+    assertReasons(resource, ReasonType.INVALID_MIME_TYPE,
+        "/alert[1]/resource[1]/mimeType[1]");
     
     resource = CapTestUtil.getValidResourceBuilder();
     resource.setDerefUri("foo");
-    assertReasons(
-        resource, ReasonType.INVALID_DEREF_URI, "/alert/resource[0]/derefUri");
+    assertReasons(resource, ReasonType.INVALID_DEREF_URI,
+        "/alert[1]/resource[1]/derefUri[1]");
   }
   
   public void testGetVersion() {
@@ -138,20 +140,20 @@ public class CapValidatorTest extends TestCase {
 
   private void assertNoReasons(InfoOrBuilder info) {
     CapTestUtil.assertReasons(
-        validator.validateInfo(info, "/alert/info[0]", 12, true));
+        validator.validateInfo(info, "/alert[1]/info[1]", 12, true));
   }
 
   private void assertReasons(
       InfoOrBuilder info, ReasonType reasonType, String xPath) {
     CapTestUtil.assertReasons(
-        validator.validateInfo(info, "/alert/info[0]", 12, true),
+        validator.validateInfo(info, "/alert[1]/info[1]", 12, true),
         new Reason(xPath, reasonType));
   }
   
   private void assertReasons(
       AreaOrBuilder area, ReasonType reasonType, String xPath) {
     CapTestUtil.assertReasons(
-        validator.validateArea(area, "/alert/info[0]/area[0]", 12, true),
+        validator.validateArea(area, "/alert[1]/info[1]/area[1]", 12, true),
         new Reason(xPath, reasonType));
   }
   
@@ -159,7 +161,7 @@ public class CapValidatorTest extends TestCase {
       ResourceOrBuilder resource, ReasonType reasonType, String xPath) {
 
     CapTestUtil.assertReasons(
-        validator.validateResource(resource, "/alert/resource[0]", 12),
+        validator.validateResource(resource, "/alert[1]/resource[1]", 12),
         new Reason(xPath, reasonType));
   }
 }

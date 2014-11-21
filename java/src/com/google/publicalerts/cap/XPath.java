@@ -16,66 +16,45 @@
 
 package com.google.publicalerts.cap;
 
-import com.google.common.collect.ImmutableSet;
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.collect.Maps;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.Stack;
 
 /**
  * A utility class to deal with the current XPath during XML parsing.
- * 
- * <p>Throughout this class we use the term <em>non-predicated XPath</em>. Take
- * the following example XPath:
- * 
- * <pre>
- * /rss/channel/item[1]/link[2]
- * </pre>
- * 
- * <p>A <em>non-predicated XPath</em> is a version that does not enumerate the occurrences
- * of multiple instances of the last repeated tag. The non-predicated XPath
- * corresponding to the previous example is
- * 
- * <pre>
- * /rss/channel/item[1]/link
- * </pre>
- * 
+ *
  * @author sschiavoni@google.com (Stefano Schiavoni)
  */
 public class XPath {
-  private final Set<String> repeatedFields;
   private final Stack<String> elements;
   private Map<String, Integer> indexMap; // Key is a non-predicated XPath
   
-  public XPath(Iterable<String> repeatedFields) {
-    this.repeatedFields = ImmutableSet.copyOf(repeatedFields);
+  public XPath() {
     this.elements = new Stack<String>();
     this.indexMap = Maps.newHashMap();
   }
 
   public void push(String element) {
-    elements.push(element);
-    
-    String currentNonPredicatedXPath = getNonPredicatedXPath();
+    String currentXPath = toString();
+    String currentNonPredicatedXPath = currentXPath
+        + (currentXPath.equals("/") ? "" : "/")
+        + element;
     
     if (indexMap.containsKey(currentNonPredicatedXPath)) {
       indexMap.put(currentNonPredicatedXPath,
           indexMap.get(currentNonPredicatedXPath) + 1);
     } else {
-      indexMap.put(currentNonPredicatedXPath, 0);
+      indexMap.put(currentNonPredicatedXPath, 1); // XPaths are 1-based
     }
+    
+    elements.push(element);
   }
 
   public void pop() {
     elements.pop();
-  }
-
-  String getNonPredicatedXPath() {
-    String xPath = toString();
-    
-    // Strip trailing XML predicate
-    return xPath.replaceFirst("\\[\\d+\\]$", "");
   }
   
   @Override
@@ -91,11 +70,8 @@ public class XPath {
       
       xPath.append(currentElement);
       
-      Integer currentIndex = indexMap.get(xPath.toString());
-      
-      if (currentIndex != null && repeatedFields.contains(currentElement)) {
-        xPath.append("[").append(currentIndex).append("]");
-      } 
+      Integer currentIndex = checkNotNull(indexMap.get(xPath.toString()));
+      xPath.append("[").append(currentIndex).append("]");
     }
     
     return xPath.toString();

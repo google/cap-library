@@ -170,7 +170,8 @@ public class CapValidatorServlet extends HttpServlet {
     HOMELAND_SECURITY_ADVISORY(
         "CAP 1.2 Homeland Security Advisory", "homeland_security.url"),
     EARTHQUAKE_ATOM_FEED("CAP 1.1 Earthquake Atom feed", "earthquake.atom"),
-    AMBER_ALERT_RSS_FEED("CAP 1.1 Amber Alert RSS feed", "amber.rss");
+    AMBER_ALERT_RSS_FEED("CAP 1.1 Amber Alert RSS feed", "amber.rss"),
+    BUSHFIRE_EDXLDE_FEED("CAP 1.2 Rural Fire EDXL-DE feed", "bushfire.edxlde");
     
     private final String description;
     private final String fileName;

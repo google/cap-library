@@ -457,8 +457,8 @@ public class CapXmlParserTest extends TestCase {
     // Comma is not allowed in an identifier
     alertStr = alertStr.replace("</identifier>", ",</identifier>");
     CapXmlParser parser = new CapXmlParser(true);
-    assertReasons(
-        parser, alertStr, ReasonType.INVALID_IDENTIFIER, "/alert/identifier");
+    assertReasons(parser, alertStr,
+        ReasonType.INVALID_IDENTIFIER, "/alert[1]/identifier[1]");
   }
 
   private String getPolygonAlert(String xmlns, String polygon) {
@@ -477,7 +477,7 @@ public class CapXmlParserTest extends TestCase {
       String alertStr = getPolygonAlert(xmlns, "1,2 3,4 1,2");
       CapXmlParser parser = new CapXmlParser(true);
       assertReasons(parser, alertStr, ReasonType.INVALID_POLYGON,
-          "/alert/info[0]/area[0]/polygon[0]");
+          "/alert[1]/info[1]/area[1]/polygon[1]");
     }
   }
 
@@ -486,7 +486,7 @@ public class CapXmlParserTest extends TestCase {
       String alertStr = getPolygonAlert(xmlns, "3,4 a,b 5,6 3,4");
       CapXmlParser parser = new CapXmlParser(true);
       assertReasons(parser, alertStr, ReasonType.INVALID_POLYGON,
-          "/alert/info[0]/area[0]/polygon[0]");
+          "/alert[1]/info[1]/area[1]/polygon[1]");
     }
   }
 
@@ -495,7 +495,7 @@ public class CapXmlParserTest extends TestCase {
       String alertStr = getPolygonAlert(xmlns, "300,200 3,4 5,6 7,8");
       CapXmlParser parser = new CapXmlParser(true);
       assertReasons(parser, alertStr, ReasonType.INVALID_POLYGON,
-          "/alert/info[0]/area[0]/polygon[0]");
+          "/alert[1]/info[1]/area[1]/polygon[1]");
     }
   }
 
@@ -515,7 +515,7 @@ public class CapXmlParserTest extends TestCase {
       String alertStr = getCircleAlert(xmlns, "invalid");
       CapXmlParser parser = new CapXmlParser(true);
       assertReasons(parser, alertStr, ReasonType.INVALID_CIRCLE,
-          "/alert/info[0]/area[0]/circle[0]");
+          "/alert[1]/info[1]/area[1]/circle[1]");
     }
   }
 
@@ -524,7 +524,7 @@ public class CapXmlParserTest extends TestCase {
       String alertStr = getCircleAlert(xmlns, "1,2 -3");
       CapXmlParser parser = new CapXmlParser(true);
       assertReasons(parser, alertStr, ReasonType.INVALID_CIRCLE,
-          "/alert/info[0]/area[0]/circle[0]");
+          "/alert[1]/info[1]/area[1]/circle[1]");
     }
   }
 
@@ -533,7 +533,7 @@ public class CapXmlParserTest extends TestCase {
       String alertStr = getCircleAlert(xmlns, "1, 2 3");
       CapXmlParser parser = new CapXmlParser(true);
       assertReasons(parser, alertStr, ReasonType.INVALID_CIRCLE,
-          "/alert/info[0]/area[0]/circle[0]");
+          "/alert[1]/info[1]/area[1]/circle[1]");
     }
   }
 
@@ -543,19 +543,20 @@ public class CapXmlParserTest extends TestCase {
           "<altitude>-1</altitude></area>");
       CapXmlParser parser = new CapXmlParser(true);
       assertReasons(parser, alertStr, ReasonType.INVALID_VALUE,
-          "/alert/info[0]/area[0]/altitude");
+          "/alert[1]/info[1]/area[1]/altitude[1]");
 
       alertStr = getCircleAlert(xmlns, "1,2 3").replace("</area>",
       "<ceiling>-1</ceiling></area>");
       assertReasons(parser, alertStr,
-          new Reason("/alert/info[0]/area[0]", ReasonType.INVALID_AREA),
-          new Reason("/alert/info[0]/area[0]/ceiling", ReasonType.INVALID_VALUE));
+          new Reason("/alert[1]/info[1]/area[1]", ReasonType.INVALID_AREA),
+          new Reason("/alert[1]/info[1]/area[1]/ceiling[1]",
+              ReasonType.INVALID_VALUE));
 
       alertStr = getCircleAlert(xmlns, "1,2 3").replace("</area>",
       "<altitude>2</altitude><ceiling>1</ceiling></area>");
       assertReasons(parser, alertStr,
           ReasonType.INVALID_ALTITUDE_CEILING_RANGE,
-          "/alert/info[0]/area[0]/ceiling");
+          "/alert[1]/info[1]/area[1]/ceiling[1]");
     }
   }
 
@@ -574,12 +575,12 @@ public class CapXmlParserTest extends TestCase {
         + "</alert>";
     CapXmlParser parser = new CapXmlParser(true);
     assertReasons(parser, alertStr,
-        new Reason("/alert/identifier", ReasonType.INVALID_IDENTIFIER),
-        new Reason("/alert/sender[1]", ReasonType.DUPLICATE_ELEMENT),
-        new Reason("/alert/sent", ReasonType.INVALID_DATE),
-        new Reason("/alert/scope", ReasonType.INVALID_ENUM_VALUE),
-        new Reason("/alert/references", ReasonType.INVALID_REFERENCES),
-        new Reason("/alert", ReasonType.INVALID_CHARACTERS));
+        new Reason("/alert[1]/identifier[1]", ReasonType.INVALID_IDENTIFIER),
+        new Reason("/alert[1]/sender[2]", ReasonType.DUPLICATE_ELEMENT),
+        new Reason("/alert[1]/sent[1]", ReasonType.INVALID_DATE),
+        new Reason("/alert[1]/scope[1]", ReasonType.INVALID_ENUM_VALUE),
+        new Reason("/alert[1]/references[1]", ReasonType.INVALID_REFERENCES),
+        new Reason("/alert[1]", ReasonType.INVALID_CHARACTERS));
   }
 
   public void testParseRequiredElementError() throws Exception {
@@ -593,8 +594,8 @@ public class CapXmlParserTest extends TestCase {
         + "<scoep>Public</scoep>\n"
         + "</alert>";
     CapXmlParser parser = new CapXmlParser(true);
-    assertReasons(
-        parser, alertStr, ReasonType.UNSUPPORTED_ELEMENT, "/alert/scoep");
+    assertReasons(parser, alertStr,
+        ReasonType.UNSUPPORTED_ELEMENT, "/alert[1]/scoep[1]");
   }
 
   public void testParseRequiredElementError2() throws Exception {
@@ -609,7 +610,7 @@ public class CapXmlParserTest extends TestCase {
         + "</alert>";
     CapXmlParser parser = new CapXmlParser(true);
     assertReasons(
-        parser, alertStr, ReasonType.MISSING_REQUIRED_ELEMENT, "/alert");
+        parser, alertStr, ReasonType.MISSING_REQUIRED_ELEMENT, "/alert[1]");
   }
 
   public void testParseOptionalElementError() throws Exception {
@@ -624,8 +625,8 @@ public class CapXmlParserTest extends TestCase {
         + "<address>blah</address>\n" // should be addresses
         + "</alert>";
     CapXmlParser parser = new CapXmlParser(true);
-    assertReasons(
-        parser, alertStr, ReasonType.UNSUPPORTED_ELEMENT, "/alert/address");
+    assertReasons(parser, alertStr,
+        ReasonType.UNSUPPORTED_ELEMENT, "/alert[1]/address[1]");
   }
 
   public void testParseInfoOutOfOrderIsInvalid() throws Exception {
@@ -649,7 +650,7 @@ public class CapXmlParserTest extends TestCase {
 
     CapXmlParser parser = new CapXmlParser(true);
     assertReasons(parser, alertStr, ReasonType.INVALID_SEQUENCE,
-        "/alert/info[0]/audience");
+        "/alert[1]/info[1]/audience[1]");
   }
 
   public void testParseNotCap() throws Exception {

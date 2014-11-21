@@ -16,8 +16,9 @@
 
 package com.google.publicalerts.cap;
 
+import static com.google.common.base.Preconditions.checkNotNull;
+
 import com.google.common.base.Objects;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.publicalerts.cap.feed.CapFeedException;
 
@@ -27,8 +28,8 @@ import java.util.List;
 import java.util.Locale;
 
 /**
- * Diagnostic information about a CAP message. Possibly, a reason behind a
- * {@link CapException} or {@link CapFeedException}.
+ * Diagnostic information about a CAP message. Possibly, a reason behind a {@link CapException} or
+ * {@link CapFeedException}.
  * 
  * <p>This class is immutable and thread-safe.
  * 
@@ -45,11 +46,10 @@ public class Reason {
     INFO, RECOMMENDATION, WARNING, ERROR;
     
     /**
-     * @return the levels higher than {@code this}.
+     * @return the levels higher than {@code this}, in order of ascending severity
      */
     public List<Level> getHigherLevels() {
-      return ImmutableList.copyOf(
-          Arrays.copyOfRange(values(), ordinal() + 1, values().length));
+      return ImmutableList.copyOf(Arrays.copyOfRange(values(), ordinal() + 1, values().length));
     }
   }
   
@@ -66,16 +66,21 @@ public class Reason {
     String getMessage(Locale locale);
     
     /**
-     * @return the default severity for this type
+     * @return the default level for this type
      */
     Level getDefaultLevel();
     
     /**
-     * @return a string describing the source of this type of diagnostic
-     * information, e.g., a profile code
+     * @return a string describing the source of this type of diagnostic information, e.g., a
+     * profile code
      */
     String getSource();
   }
+
+  /**
+   * XPath expression to what the reason refers to.
+   */
+  private final String xPath;
   
   /**
    * Type of the reason.
@@ -83,35 +88,46 @@ public class Reason {
   private final Type type;
 
   /**
-   * XPath expression to the what the reason refers to.
-   */
-  private final String xPath;
-
-  /**
    * Message parameters for the reason.
    */
   private final Object[] messageParams;
 
-  public Reason(String xPath, Type type, Object...messageParams) {
-    this.xPath = Preconditions.checkNotNull(xPath);
-    this.type = Preconditions.checkNotNull(type);
+  /**
+   * Builds a {@link Reason} object.
+   * 
+   * @param xPath the fully-predicated XPath expression to what the reason refers to
+   * (e.g., <pre>/alert[1]/info[1]</pre>)
+   * @param type the type of the reason
+   * @param messageParams message parameters for the reason
+   */
+  public Reason(String xPath, Type type, Object... messageParams) {
+    this.xPath = checkNotNull(xPath);
+    this.type = checkNotNull(type);
     this.messageParams = messageParams;
   }
 
   /**
-   * Builds a copy of this {@link Reason}, with the XPath prefixed with
-   * {@code xPathPrefix}.
+   * Builds a copy of this {@link Reason}, with the XPath prefixed with {@code xPathPrefix}.
    * 
-   * <p>For instance, if the this reason has XPath <code>/alert</code>, and
-   * {@code xPathPrefix} is <code>/feed/entry[1]</code>, the output reason will
-   * have XPath <code>/feed/entry[1]/alert</code>.
+   * <p>For instance, if the this reason has XPath <pre>/alert[1]</pre>, and {@code xPathPrefix}
+   * is <pre>/feed[1]/entry[1]</code>, the output reason will have XPath
+   * <pre>/feed[1]/entry[1]/alert[1]</pre>. The {@code xPathPrefix} is expected to be
+   * fully-predicated.
    * 
-   * <p>This method should be used when an XML file is validated recursively,
-   * and the diagnostic information collected about an XML fragment needs to be
-   * changed so that it references the fragment within the XML file.
+   * <p>This method should be used when an XML file is validated recursively, and the diagnostic
+   * information collected about an XML fragment needs to be changed so that it references the
+   * fragment within the XML file.
    */
   public Reason prefixWithXpath(String xPathPrefix) {
+    checkNotNull(xPathPrefix);
     return new Reason(xPathPrefix + xPath, type, messageParams);
+  }
+  
+  /**
+   * @return the XPath expression to what the reason refers to
+   */
+  public String getXPath() {
+    return xPath;
   }
   
   /**
@@ -122,13 +138,6 @@ public class Reason {
   }
 
   /**
-   * @return the XPath expression tying the error to a CAP message
-   */
-  public String getXPath() {
-    return xPath;
-  }
-
-  /**
    * @return the level of this reason
    */
   public Level getLevel() {
@@ -136,16 +145,14 @@ public class Reason {
   }
 
   /**
-   * @return a string describing the source of this diagnostic information,
-   * e.g., a profile code
+   * @return a string describing the source of this diagnostic information, e.g., a profile code
    */
   public String getSource() {
     return type.getSource();
   }
 
   /**
-   * @return the {@code i}th message param, or null if {@code i} is out of
-   * bounds
+   * @return the {@code i}th message parameter, or {@code null} if {@code i} is out of bounds
    */
   public Object getMessageParam(int i) {
     return (messageParams.length > i) ? messageParams[i] : null;
@@ -162,8 +169,7 @@ public class Reason {
   }
   
   /**
-   * Returns the {@link Type}'s message formatted with the
-   * {@link #messageParams}.
+   * Returns the {@link Type}'s message formatted with the {@link #messageParams}.
    * 
    * @param locale for the requested message
    * @return a human-readable message for this reason

@@ -39,34 +39,33 @@ public abstract class AbstractCapProfile
   }
 
   /**
-   * @param strictXsdValidation if true, perform by-the-spec xsd schema
-   * validation, which does not check a number of properties specified
-   * elsewhere in the spec. If false (the default), attempt to do extra
-   * validation to conform to the text of the spec.
+   * @param strictXsdValidation if {@code true}, perform by-the-spec XSD schema validation, which
+   * does not check a number of properties specified elsewhere in the spec. If {@code false}
+   * (the default), attempt to do extra validation to conform to the text of the spec.
    */
   public AbstractCapProfile(boolean strictXsdValidation) {
     super(true /* validate */, strictXsdValidation);
   }
 
   @Override
-  protected Alert parseFromInternal(CachedSaxInputSource is,
-      Reasons.Builder reasons) throws NotCapException, SAXParseException {
+  protected Alert parseFromInternal(CachedSaxInputSource is, Reasons.Builder reasons)
+      throws NotCapException, SAXParseException {
     Alert alert = super.parseFromInternal(is, reasons);
     reasons.addAll(validate(alert));
     return alert;
   }
 
   /**
-   * Checks if the timezone on the given {@code dateStr} is zero.  If so, adds
-   * a new reason with the given xpath and type to the collection of reasons.
+   * Checks if the timezone on the given {@code dateStr} is zero.  If so, adds a new reason with
+   * the given xpath and type to the collection of reasons.
    *
    * @param reasons collection to add to if timezone is zero
    * @param dateStr date string to check
    * @param xpath xpath of the element
    * @param type type of the error to add if timezone is zero
    */
-  protected void checkZeroTimezone(Reasons.Builder reasons,
-      String dateStr, String xpath, Reason.Type type) {
+  protected void checkZeroTimezone(
+      Reasons.Builder reasons, String dateStr, String xpath, Reason.Type type) {
     if (!CapDateUtil.isValidDate(dateStr)) {
       return;
     }

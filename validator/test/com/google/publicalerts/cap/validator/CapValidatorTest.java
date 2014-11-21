@@ -19,6 +19,7 @@ package com.google.publicalerts.cap.validator;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
+import java.util.logging.Logger;
 
 import junit.framework.TestCase;
 
@@ -101,6 +102,25 @@ public class CapValidatorTest extends TestCase {
     assertEquals(2, result.getValidAlerts().size());
   }
 
+  public void testEdxlde() throws Exception {
+    String cap = TestResources.load("bushfire_valid.edxlde");
+    ValidationResult result = validator.validate(cap, NO_PROFILES);
+    
+    // Expect no errors
+    assertTrue(result.getByLineValidationMessages().isEmpty());
+    assertEquals(7, result.getValidAlerts().size());
+  }
+  
+  public void testEdxldeError() throws Exception {
+    String cap = TestResources.load("bushfire_invalid.edxlde");
+    ValidationResult result = validator.validate(cap, NO_PROFILES);
+    
+    assertEquals(7, result.getValidAlerts().size());
+    assertByLineValidationMessageMap(result, ImmutableListMultimap.of(
+        94, Level.ERROR,
+        115, Level.ERROR));
+  }
+  
   public void testThinAtomFeed() throws Exception {
     String cap = TestResources.load("earthquake_index.atom");
     ValidationResult result = validator.validate(cap, NO_PROFILES);

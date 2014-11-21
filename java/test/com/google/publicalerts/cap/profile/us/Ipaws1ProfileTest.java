@@ -16,13 +16,28 @@
 
 package com.google.publicalerts.cap.profile.us;
 
+import static com.google.publicalerts.cap.Reason.Level.ERROR;
+import static com.google.publicalerts.cap.Reason.Level.RECOMMENDATION;
+import static com.google.publicalerts.cap.profile.us.Ipaws1Profile.ReasonType.AREA_IS_REQUIRED;
+import static com.google.publicalerts.cap.profile.us.Ipaws1Profile.ReasonType.AREA_SAME_GEOCODE_RECOMMENDED;
+import static com.google.publicalerts.cap.profile.us.Ipaws1Profile.ReasonType.CATEGORIES_MUST_MATCH;
+import static com.google.publicalerts.cap.profile.us.Ipaws1Profile.ReasonType.EVENT_CODES_MUST_MATCH;
+import static com.google.publicalerts.cap.profile.us.Ipaws1Profile.ReasonType.EXPIRES_INCLUDE_TIMEZONE_OFFSET;
+import static com.google.publicalerts.cap.profile.us.Ipaws1Profile.ReasonType.EXPIRES_IS_REQUIRED;
+import static com.google.publicalerts.cap.profile.us.Ipaws1Profile.ReasonType.INFO_DESCRIPTION_RECOMMENDED;
+import static com.google.publicalerts.cap.profile.us.Ipaws1Profile.ReasonType.INFO_EFFECTIVE_IS_IGNORED;
+import static com.google.publicalerts.cap.profile.us.Ipaws1Profile.ReasonType.INFO_INSTRUCTION_RECOMMENDED;
+import static com.google.publicalerts.cap.profile.us.Ipaws1Profile.ReasonType.INFO_ONSET_IS_IGNORED;
+import static com.google.publicalerts.cap.profile.us.Ipaws1Profile.ReasonType.SAME_EVENT_CODE_REQUIRED;
+import static com.google.publicalerts.cap.profile.us.Ipaws1Profile.ReasonType.UPDATE_OR_CANCEL_MUST_REFERENCE;
+import static com.google.publicalerts.cap.profile.us.Ipaws1Profile.ReasonType.VERSION_CODE_REQUIRED;
+
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.Alert.MsgType;
 import com.google.publicalerts.cap.Info.Category;
 import com.google.publicalerts.cap.Reason;
 import com.google.publicalerts.cap.ValuePair;
 import com.google.publicalerts.cap.profile.CapProfileTestCase;
-import com.google.publicalerts.cap.profile.us.Ipaws1Profile.ReasonType;
 
 /**
  * Tests for {@link Ipaws1Profile}.
@@ -46,41 +61,40 @@ public class Ipaws1ProfileTest extends CapProfileTestCase {
 
   public void testValidate_errors() throws Exception {
     Alert.Builder alert = loadAlertWithTwoInfos();
-    assertNoReasons(alert, Reason.Level.ERROR);
+    assertNoReasons(alert, ERROR);
 
     alert.clearCode();
-    assertReasons(alert, Reason.Level.ERROR,
-        new Reason("/alert", ReasonType.VERSION_CODE_REQUIRED));
+    assertReasons(alert, ERROR, new Reason("/alert[1]", VERSION_CODE_REQUIRED));
 
     alert = loadAlertWithTwoInfos();
     alert.setMsgType(MsgType.UPDATE);
     alert.clearReferences();
-    assertReasons(alert, Reason.Level.ERROR, new Reason("/alert/msgType",
-        ReasonType.UPDATE_OR_CANCEL_MUST_REFERENCE));
+    assertReasons(alert, ERROR,
+        new Reason("/alert[1]/msgType[1]", UPDATE_OR_CANCEL_MUST_REFERENCE));
 
     alert = loadAlertWithTwoInfos();
     alert.getInfoBuilder(1).getEventCodeBuilder(0).setValue("changed");
     alert.getInfoBuilder(0).addCategory(Category.CBRNE);
-    assertReasons(alert, Reason.Level.ERROR,
-        new Reason("/alert/info[1]", ReasonType.EVENT_CODES_MUST_MATCH),
-        new Reason("/alert/info[1]", ReasonType.CATEGORIES_MUST_MATCH),
-        new Reason("/alert/info[1]", ReasonType.SAME_EVENT_CODE_REQUIRED));
+    assertReasons(alert, ERROR,
+        new Reason("/alert[1]/info[2]", EVENT_CODES_MUST_MATCH),
+        new Reason("/alert[1]/info[2]", CATEGORIES_MUST_MATCH),
+        new Reason("/alert[1]/info[2]", SAME_EVENT_CODE_REQUIRED));
 
     alert = loadAlertWithTwoInfos();
-    alert.getInfoBuilder(0).clearExpires()
+    alert.getInfoBuilder(0)
+        .clearExpires()
         .clearArea()
         .clearEventCode();
-    assertReasons(alert, Reason.Level.ERROR,
-        new Reason("/alert/info[1]", ReasonType.EVENT_CODES_MUST_MATCH),
-        new Reason("/alert/info[0]", ReasonType.EXPIRES_IS_REQUIRED),
-        new Reason("/alert/info[0]", ReasonType.AREA_IS_REQUIRED),
-        new Reason("/alert/info[0]", ReasonType.SAME_EVENT_CODE_REQUIRED));
+    assertReasons(alert, ERROR,
+        new Reason("/alert[1]/info[2]", EVENT_CODES_MUST_MATCH),
+        new Reason("/alert[1]/info[1]", EXPIRES_IS_REQUIRED),
+        new Reason("/alert[1]/info[1]", AREA_IS_REQUIRED),
+        new Reason("/alert[1]/info[1]", SAME_EVENT_CODE_REQUIRED));
 
     alert = loadAlertWithTwoInfos();
     alert.getInfoBuilder(0).setExpires("2002-01-01T00:00:00+00:00");
-    assertReasons(alert, Reason.Level.ERROR, 
-        new Reason("/alert/info[0]/expires",
-            ReasonType.EXPIRES_INCLUDE_TIMEZONE_OFFSET));
+    assertReasons(alert, ERROR, 
+        new Reason("/alert[1]/info[1]/expires[1]", EXPIRES_INCLUDE_TIMEZONE_OFFSET));
   }
 
   public void testValidate_recommendations() throws Exception {
@@ -91,7 +105,7 @@ public class Ipaws1ProfileTest extends CapProfileTestCase {
     alert.getInfoBuilder(1).setInstruction("test")
         .getAreaBuilder(0).addGeocode(
             ValuePair.newBuilder().setValueName("SAME").setValue("AKZ001"));
-    assertNoReasons(alert, Reason.Level.RECOMMENDATION);
+    assertNoReasons(alert, RECOMMENDATION);
 
     alert.getInfoBuilder(0)
         .setEffective("2002-01-01T00:00:00+00:00")
@@ -100,17 +114,12 @@ public class Ipaws1ProfileTest extends CapProfileTestCase {
         .clearInstruction()
         .getAreaBuilder(0)
         .clearGeocode();
-    assertReasons(alert, Reason.Level.RECOMMENDATION,
-        new Reason("/alert/info[0]/effective",
-            ReasonType.INFO_EFFECTIVE_IS_IGNORED),
-        new Reason("/alert/info[0]/onset",
-            ReasonType.INFO_ONSET_IS_IGNORED),
-        new Reason("/alert/info[0]",
-            ReasonType.INFO_DESCRIPTION_RECOMMENDED),
-        new Reason("/alert/info[0]",
-            ReasonType.INFO_INSTRUCTION_RECOMMENDED),
-        new Reason("/alert/info[0]/area[0]",
-            ReasonType.AREA_SAME_GEOCODE_RECOMMENDED));
+    assertReasons(alert, RECOMMENDATION,
+        new Reason("/alert[1]/info[1]/effective[1]", INFO_EFFECTIVE_IS_IGNORED),
+        new Reason("/alert[1]/info[1]/onset[1]", INFO_ONSET_IS_IGNORED),
+        new Reason("/alert[1]/info[1]", INFO_DESCRIPTION_RECOMMENDED),
+        new Reason("/alert[1]/info[1]", INFO_INSTRUCTION_RECOMMENDED),
+        new Reason("/alert[1]/info[1]/area[1]", AREA_SAME_GEOCODE_RECOMMENDED));
   }
 
   private Alert.Builder loadAlertWithTwoInfos() throws Exception {

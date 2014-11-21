@@ -16,7 +16,7 @@
 
 package com.google.publicalerts.cap;
 
-import com.google.common.collect.ImmutableSet;
+import static com.google.common.truth.Truth.assertThat;
 
 import junit.framework.TestCase;
 
@@ -27,177 +27,138 @@ import junit.framework.TestCase;
  */
 public class XPathTest extends TestCase {
 
-  public void testGetXPath() {
-    XPath xpath = new XPath(ImmutableSet.of("A", "B"));
-    assertEquals("/", xpath.toString());
-    assertEquals("/", xpath.getNonPredicatedXPath());
+  public void testToString() {
+    XPath xPath = new XPath();
+    assertThat(xPath.toString()).isEqualTo("/");
 
-    xpath.push("a");
-    assertEquals("/a", xpath.toString());
-    assertEquals("/a", xpath.getNonPredicatedXPath());
+    xPath.push("a");
+    assertThat(xPath.toString()).isEqualTo("/a[1]");
     
-    xpath.push("b");
-    assertEquals("/a/b", xpath.toString());
-    assertEquals("/a/b", xpath.getNonPredicatedXPath());
+    xPath.push("b");
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]");
     
-    xpath.push("A");
-    assertEquals("/a/b/A[0]", xpath.toString());
-    assertEquals("/a/b/A", xpath.getNonPredicatedXPath());
+    xPath.push("c");
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]/c[1]");
     
-    xpath.pop();
-    assertEquals("/a/b", xpath.toString());
-    assertEquals("/a/b", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]");
     
-    xpath.push("A");
-    assertEquals("/a/b/A[1]", xpath.toString());
-    assertEquals("/a/b/A", xpath.getNonPredicatedXPath());
+    xPath.push("c");
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]/c[2]");
     
-    xpath.pop();
-    xpath.push("A");
-    assertEquals("/a/b/A[2]", xpath.toString());
-    assertEquals("/a/b/A", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]");
     
-    xpath.push("c");
-    assertEquals("/a/b/A[2]/c", xpath.toString());
-    assertEquals("/a/b/A[2]/c", xpath.getNonPredicatedXPath());
+    xPath.push("c");
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]/c[3]");
     
-    xpath.pop();
-    assertEquals("/a/b/A[2]", xpath.toString());
-    assertEquals("/a/b/A", xpath.getNonPredicatedXPath());
+    xPath.push("d");
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]/c[3]/d[1]");
     
-    xpath.pop();
-    assertEquals("/a/b", xpath.toString());
-    assertEquals("/a/b", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]/c[3]");
     
-    xpath.push("A");
-    assertEquals("/a/b/A[3]", xpath.toString());
-    assertEquals("/a/b/A", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]");
     
-    xpath.push("c");
-    assertEquals("/a/b/A[3]/c", xpath.toString());
-    assertEquals("/a/b/A[3]/c", xpath.getNonPredicatedXPath());
+    xPath.push("c");
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]/c[4]");
     
-    xpath.pop();
-    assertEquals("/a/b/A[3]", xpath.toString());
-    assertEquals("/a/b/A", xpath.getNonPredicatedXPath());
+    xPath.push("e");
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]/c[4]/e[1]");
     
-    xpath.push("B");
-    assertEquals("/a/b/A[3]/B[0]", xpath.toString());
-    assertEquals("/a/b/A[3]/B", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]/c[4]");
     
-    xpath.pop();
-    assertEquals("/a/b/A[3]", xpath.toString());
-    assertEquals("/a/b/A", xpath.getNonPredicatedXPath());
+    xPath.push("f");
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]/c[4]/f[1]");
     
-    xpath.push("B");
-    assertEquals("/a/b/A[3]/B[1]", xpath.toString());
-    assertEquals("/a/b/A[3]/B", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]/c[4]");
     
-    xpath.pop();
-    assertEquals("/a/b/A[3]", xpath.toString());
-    assertEquals("/a/b/A", xpath.getNonPredicatedXPath());
+    xPath.push("f");
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]/c[4]/f[2]");
     
-    xpath.push("d");
-    assertEquals("/a/b/A[3]/d", xpath.toString());
-    assertEquals("/a/b/A[3]/d", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]/c[4]");
     
-    xpath.pop();
-    assertEquals("/a/b/A[3]", xpath.toString());
-    assertEquals("/a/b/A", xpath.getNonPredicatedXPath());
+    xPath.push("g");
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]/c[4]/g[1]");
     
-    xpath.pop();
-    assertEquals("/a/b", xpath.toString());
-    assertEquals("/a/b", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]/c[4]");
     
-    xpath.push("A");
-    assertEquals("/a/b/A[4]", xpath.toString());
-    assertEquals("/a/b/A", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]");
     
-    xpath.pop();
-    assertEquals("/a/b", xpath.toString());
-    assertEquals("/a/b", xpath.getNonPredicatedXPath());
+    xPath.push("c");
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]/c[5]");
     
-    xpath.pop();
-    assertEquals("/a", xpath.toString());
-    assertEquals("/a", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/a[1]/b[1]");
     
-    xpath.pop();
-    assertEquals("/", xpath.toString());
-    assertEquals("/", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/a[1]");
+    
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/");
   }
   
   /**
-   * Tests the case of an XML document that allows multiple repeated fields
-   * with the same name in different parts of the document.
+   * Tests the case of an XML document that allows multiple repeated fields with the same name in
+   * different parts of the document.
    */
-  public void testGetXPath_multipleRepeatedFieldsWithSameName() {
-    XPath xpath = new XPath(ImmutableSet.of("link", "item"));
-    assertEquals("/", xpath.toString());
-    assertEquals("/", xpath.getNonPredicatedXPath());
+  public void testToString_multipleRepeatedFieldsWithSameName() {
+    XPath xPath = new XPath();
+    assertThat(xPath.toString()).isEqualTo("/");
 
-    xpath.push("rss");
-    assertEquals("/rss", xpath.toString());
-    assertEquals("/rss", xpath.getNonPredicatedXPath());
+    xPath.push("rss");
+    assertThat(xPath.toString()).isEqualTo("/rss[1]");
 
-    xpath.push("channel");
-    assertEquals("/rss/channel", xpath.toString());
-    assertEquals("/rss/channel", xpath.getNonPredicatedXPath());
+    xPath.push("channel");
+    assertThat(xPath.toString()).isEqualTo("/rss[1]/channel[1]");
 
-    xpath.push("link");
-    assertEquals("/rss/channel/link[0]", xpath.toString());
-    assertEquals("/rss/channel/link", xpath.getNonPredicatedXPath());
+    xPath.push("link");
+    assertThat(xPath.toString()).isEqualTo("/rss[1]/channel[1]/link[1]");
 
-    xpath.pop();
-    assertEquals("/rss/channel", xpath.toString());
-    assertEquals("/rss/channel", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/rss[1]/channel[1]");
 
-    xpath.push("link");
-    assertEquals("/rss/channel/link[1]", xpath.toString());
-    assertEquals("/rss/channel/link", xpath.getNonPredicatedXPath());
+    xPath.push("link");
+    assertThat(xPath.toString()).isEqualTo("/rss[1]/channel[1]/link[2]");
 
-    xpath.pop();
-    assertEquals("/rss/channel", xpath.toString());
-    assertEquals("/rss/channel", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/rss[1]/channel[1]");
 
-    xpath.push("item");
-    assertEquals("/rss/channel/item[0]", xpath.toString());
-    assertEquals("/rss/channel/item", xpath.getNonPredicatedXPath());
+    xPath.push("item");
+    assertThat(xPath.toString()).isEqualTo("/rss[1]/channel[1]/item[1]");
     
-    xpath.push("link");
-    assertEquals("/rss/channel/item[0]/link[0]", xpath.toString());
-    assertEquals("/rss/channel/item[0]/link", xpath.getNonPredicatedXPath());
+    xPath.push("link");
+    assertThat(xPath.toString()).isEqualTo("/rss[1]/channel[1]/item[1]/link[1]");
     
-    xpath.pop();
-    assertEquals("/rss/channel/item[0]", xpath.toString());
-    assertEquals("/rss/channel/item", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/rss[1]/channel[1]/item[1]");
 
-    xpath.push("link");
-    assertEquals("/rss/channel/item[0]/link[1]", xpath.toString());
-    assertEquals("/rss/channel/item[0]/link", xpath.getNonPredicatedXPath());
+    xPath.push("link");
+    assertThat(xPath.toString()).isEqualTo("/rss[1]/channel[1]/item[1]/link[2]");
     
-    xpath.pop();
-    assertEquals("/rss/channel/item[0]", xpath.toString());
-    assertEquals("/rss/channel/item", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/rss[1]/channel[1]/item[1]");
 
-    xpath.pop();
-    assertEquals("/rss/channel", xpath.toString());
-    assertEquals("/rss/channel", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/rss[1]/channel[1]");
 
-    xpath.push("item");
-    assertEquals("/rss/channel/item[1]", xpath.toString());
-    assertEquals("/rss/channel/item", xpath.getNonPredicatedXPath());
+    xPath.push("item");
+    assertThat(xPath.toString()).isEqualTo("/rss[1]/channel[1]/item[2]");
     
-    xpath.push("link");
-    assertEquals("/rss/channel/item[1]/link[0]", xpath.toString());
-    assertEquals("/rss/channel/item[1]/link", xpath.getNonPredicatedXPath());
+    xPath.push("link");
+    assertThat(xPath.toString()).isEqualTo("/rss[1]/channel[1]/item[2]/link[1]");
     
-    xpath.pop();
-    assertEquals("/rss/channel/item[1]", xpath.toString());
-    assertEquals("/rss/channel/item", xpath.getNonPredicatedXPath());
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/rss[1]/channel[1]/item[2]");
 
-    xpath.push("link");
-    assertEquals("/rss/channel/item[1]/link[1]", xpath.toString());
-    assertEquals("/rss/channel/item[1]/link", xpath.getNonPredicatedXPath());
+    xPath.push("link");
+    assertThat(xPath.toString()).isEqualTo("/rss[1]/channel[1]/item[2]/link[2]");
   }
   
   /**
@@ -209,13 +170,21 @@ public class XPathTest extends TestCase {
    *  </feed>
    *  </pre>
    */
-  public void testPushPop_nestedElementsWithSameName() {
-    XPath xpath = new XPath(ImmutableSet.<String>of());
+  public void testToString_nestedElementsWithSameName() {
+    XPath xPath = new XPath();
 
-    xpath.push("feed");
-    xpath.push("feed");
-
-    xpath.pop();
-    xpath.pop();
+    assertThat(xPath.toString()).isEqualTo("/");
+    
+    xPath.push("feed");
+    assertThat(xPath.toString()).isEqualTo("/feed[1]");
+    
+    xPath.push("feed");
+    assertThat(xPath.toString()).isEqualTo("/feed[1]/feed[1]");
+    
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/feed[1]");
+    
+    xPath.pop();
+    assertThat(xPath.toString()).isEqualTo("/");
   }
 }

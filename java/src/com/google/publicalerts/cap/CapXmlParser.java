@@ -411,10 +411,10 @@ public class CapXmlParser {
     private final Stack<Builder> builderStack;
     private final Stack<String> builderNameStack;
     private final Reasons.Builder reasons;
+    private final XPath xPath;
     private boolean inSignature;
     private Alert.Builder alertBuilder;
     private Alert alert;
-    private XPath xPath;
 
     private String localName;
 
@@ -424,7 +424,7 @@ public class CapXmlParser {
       this.builderStack = new Stack<Builder>();
       this.builderNameStack = new Stack<String>();
       this.reasons = Reasons.newBuilder();
-      this.xPath = new XPath(CapUtil.getRepeatedFieldNamesFlatSet());
+      this.xPath = new XPath();
     }
 
     public Alert getAlert() {

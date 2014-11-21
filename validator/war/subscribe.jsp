@@ -19,11 +19,11 @@
 Subscribe to automatically validate your CAP alerts.
 
 <ol>
-<li>Enter the URL of your Atom or RSS CAP feed
-<li>Enter an email address
-<li>Optionally choose CAP profiles to validate against
+<li>Enter the URL of your Atom, RSS or and EDXL-DE CAP feed.
+<li>Enter an email address.
+<li>Optionally choose CAP profiles to validate against.
 <li>Subscribe
-<li>You receive an email any time there is an error in your feed of CAP alerts
+<li>You receive an email any time there is an error in your feed of CAP alerts.
 </ol>
 </div><%
 
@@ -74,7 +74,7 @@ if (msg != null) {%>
 </form>
 
 <div class=footer>
-  <p class="homeabout">&#xa9;2011 Google - <a href="http://www.google.com/accounts/TOS">Terms of Service</a> - <a href="http://code.google.com/p/cap-library">About the Common Alerting Protocol Validator</a> - <a href="http://www.google.com/intl/en/privacy.html">Privacy Policy</a></p>
+  <p class="homeabout">&#xa9;2011 Google - <a href="http://www.google.com/accounts/TOS">Terms of Service</a> - <a href="https://github.com/google/cap-library">About the Common Alerting Protocol Validator</a> - <a href="http://www.google.com/intl/en/privacy.html">Privacy Policy</a></p>
   <img src="http://code.google.com/appengine/images/appengine-silver-120x30.gif" alt="Powered by Google App Engine" height="30" width="120"/>
 </div>
 
