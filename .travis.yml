@@ -6,7 +6,7 @@ jdk:
   
 install:
   - wget https://storage.googleapis.com/appengine-sdks/featured/appengine-java-sdk-1.9.15.zip -nv
-  - unzip -q appengine-java-sdk-1.9.14.zip
+  - unzip -q appengine-java-sdk-1.9.15.zip
   
 script:
-  - APPENGINE_JAVA_SDK=../appengine-java-sdk-1.9.14 ant test
+  - APPENGINE_JAVA_SDK=../appengine-java-sdk-1.9.15 ant test
