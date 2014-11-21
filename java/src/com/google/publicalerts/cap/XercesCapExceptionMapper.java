@@ -52,6 +52,17 @@ public class XercesCapExceptionMapper {
   private static final Set<String> DATE_TAGS =
       ImmutableSet.of("sent", "effective", "onset", "expires");
 
+  static String stripTagNamespace(String tag) {
+    int index = tag.indexOf(':');
+    
+    if (index < 0) {
+      // The tag does not have a namespace specified
+      return tag;
+    }
+    
+    return tag.substring(index + 1, tag.length());
+  }
+  
   /**
    * @see #map(Reasons)
    *
@@ -106,21 +117,21 @@ public class XercesCapExceptionMapper {
     if ("cvc-complex-type.2.4.a".equals(code)) {
       Matcher matcher = XERCES_TWO_PARAM_PATTERN.matcher(message);
       if (matcher.matches()) {
-        if (VALID_TAGS.contains(matcher.group(1))) {
+        if (VALID_TAGS.contains(stripTagNamespace(matcher.group(1)))) {
           if (matcher.group(1).equals(tag)) {
             type = ReasonType.DUPLICATE_ELEMENT;
             args = new String[] { tag, value };
-            xPath += '/' + tag + "[2]";
+            xPath += '/' + stripTagNamespace(tag) + "[2]";
             //TODO(sschiavoni): count actual occurrences
           } else {
             type = ReasonType.INVALID_SEQUENCE;
             args = new String[] { matcher.group(2), matcher.group(1) };
-            xPath += '/' + matcher.group(1) + "[1]";
+            xPath += '/' + stripTagNamespace(matcher.group(1)) + "[1]";
           }
         } else {
           type = ReasonType.UNSUPPORTED_ELEMENT;
           args = new String[] { matcher.group(1) };
-          xPath += '/' + matcher.group(1) + "[1]";
+          xPath += '/' + stripTagNamespace(matcher.group(1)) + "[1]";
         }
       }
     } else if ("cvc-complex-type.2.4.b".equals(code)) {
