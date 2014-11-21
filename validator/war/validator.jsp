@@ -19,7 +19,7 @@
 <div class=desc>The 
 <a target=_blank href="http://en.wikipedia.org/wiki/Common_Alerting_Protocol">Common Alerting Protocol</a>
 validator is a free service that checks the syntax of CAP XML messages and
-Atom and RSS feeds of CAP messages.  It supports CAP v1.0, v1.1 and v1.2.
+Atom, RSS and EDXL-DE feeds of CAP messages.  It supports CAP v1.0, v1.1 and v1.2.
 </div>
 <form id=inputform action="/validate#r" method=post enctype="multipart/form-data">
 <table cellpadding=0 cellspacing=0><tr><td>
