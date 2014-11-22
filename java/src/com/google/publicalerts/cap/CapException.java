@@ -137,7 +137,7 @@ public class CapException extends Exception {
             + "restricted characters (< and &)."),
     INVALID_SEQUENCE(
         Reason.Level.ERROR,
-            "Elements are not in the correct sequence order."
+            "Elements are not in the correct sequence order. "
             + "One of {0} expected instead of \"{1}\"."),
     INVALID_VALUE(
         Reason.Level.ERROR,

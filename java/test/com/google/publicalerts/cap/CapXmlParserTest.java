@@ -598,6 +598,21 @@ public class CapXmlParserTest extends TestCase {
         ReasonType.UNSUPPORTED_ELEMENT, "/alert[1]/scoep[1]");
   }
 
+  public void testParseRequiredElementErrorWithNamespace() throws Exception {
+    String alertStr = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
+        + "<cap:alert xmlns:cap=\"" + CapValidator.CAP_LATEST_XMLNS + "\">"
+        + "<cap:identifier>43b080713727</cap:identifier>\n"
+        + "<cap:sender>hsas@dhs.gov</cap:sender>\n"
+        + "<cap:sent>2003-04-02T14:39:01-05:00</cap:sent>\n"
+        + "<cap:status>Actual</cap:status>\n"
+        + "<cap:msgType>Alert</cap:msgType>\n"
+        + "<cap:scoep>Public</cap:scoep>\n"
+        + "</cap:alert>";
+    CapXmlParser parser = new CapXmlParser(true);
+    assertReasons(parser, alertStr,
+        ReasonType.UNSUPPORTED_ELEMENT, "/alert[1]/scoep[1]");
+  }
+  
   public void testParseRequiredElementError2() throws Exception {
     String alertStr = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?>"
         + "<alert xmlns=\"" + CapValidator.CAP_LATEST_XMLNS + "\">"

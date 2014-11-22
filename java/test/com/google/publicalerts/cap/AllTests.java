@@ -69,6 +69,7 @@ public class AllTests {
     suite.addTestSuite(ReasonTest.class);
     suite.addTestSuite(ReasonsTest.class);
     suite.addTestSuite(XPathTest.class);
+    suite.addTestSuite(XercesCapExceptionMapperTest.class);
 
     suite.addTestSuite(CapFeedParserTest.class);
     suite.addTestSuite(CapFeedValidatorTest.class);
