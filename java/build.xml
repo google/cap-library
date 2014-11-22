@@ -17,7 +17,7 @@
 <project basedir="." default="all">
   <property name="vendor" value="Google"/>
   <property name="title" value="cap-library"/>
-  <property name="version" value="10"/>
+  <property name="version" value="11"/>
 
   <property name="build" value="build"/>
   <property name="build.src" value="${build}/java"/>
