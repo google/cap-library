@@ -72,16 +72,16 @@ public class CapUtilTest extends TestCase {
         CapUtil.stripXmlPreamble("<?xml encoding='UTF-8'>foobar"));
   }
   
-  public void testIsBased64() {
-    assertTrue(CapUtil.isBased64(""));
-    assertTrue(CapUtil.isBased64("cGxlYXN1cmUu"));
-    assertTrue(CapUtil.isBased64("ZWFzdXJlLg=="));
-    assertTrue(CapUtil.isBased64("ZW\nFzdXJlLg=="));
+  public void testIsBase64() {
+    assertTrue(CapUtil.isBase64(""));
+    assertTrue(CapUtil.isBase64("cGxlYXN1cmUu"));
+    assertTrue(CapUtil.isBase64("ZWFzdXJlLg=="));
+    assertTrue(CapUtil.isBase64("ZW\nFzdXJlLg=="));
     
-    assertFalse(CapUtil.isBased64("a"));
-    assertFalse(CapUtil.isBased64("cGxlYXN1%mUu"));
-    assertFalse(CapUtil.isBased64("ZWFzdXJlLg="));
-    assertFalse(CapUtil.isBased64("ZW\nFzdXJlLg =="));
+    assertFalse(CapUtil.isBase64("a"));
+    assertFalse(CapUtil.isBase64("cGxlYXN1%mUu"));
+    assertFalse(CapUtil.isBase64("ZWFzdXJlLg="));
+    assertFalse(CapUtil.isBase64("ZW\nFzdXJlLg =="));
   }
   
   public void testParseReferenceIdentifier() {
@@ -110,5 +110,29 @@ public class CapUtilTest extends TestCase {
     assertNull(CapUtil.parseReferenceSent("foobar"));
     assertNull(
         CapUtil.parseReferenceSent("hsas@dhs.gov,123,2003-99-02T14:39:01-05:00"));
+  }
+  
+  public void testParseUri() {
+    assertNotNull(CapUtil.parseUri("http://google.com"));
+    assertNotNull(CapUtil.parseUri("mailto:nobody@google.com"));
+    assertNull(CapUtil.parseUri("some other string"));
+  }
+  
+  public void testContainsHtmlEntities() {
+    assertFalse(CapUtil.containsHtmlEntities("a string"));
+    assertTrue(CapUtil.containsHtmlEntities("a&nbsp;string"));
+    assertTrue(CapUtil.containsHtmlEntities("a&#160;string"));
+    
+    // Invalid HTML entity
+    assertFalse(CapUtil.containsHtmlEntities("a&zzzzzzz;string"));
+  }
+  
+  public void testContainsHtmlTags() {
+    assertFalse(CapUtil.containsHtmlTags("a string"));
+    
+    assertTrue(CapUtil.containsHtmlTags("a <strong>string</strong>"));
+    assertTrue(CapUtil.containsHtmlTags("a <strong>string"));
+    assertTrue(CapUtil.containsHtmlTags("a string</strong>"));
+    assertTrue(CapUtil.containsHtmlTags("a <a href=\"foobar\">string</a>"));
   }
 }

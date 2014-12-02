@@ -53,9 +53,16 @@ jar: guava.jar
      License: Apache 2.0
      Local Modifications: None.
      Download date: 2014-10-09
+
 jar: truth.jar
      URL: http://search.maven.org/remotecontent?filepath=com/google/truth/truth/0.24/truth-0.24.jar
      Version: 0.24
      License: Apache 2.0
      Local Modifications: None.
      Download date: 2014-11-18
+
+jar: commons-lang.jar
+     URL: http://mirrors.koehn.com/apache//commons/lang/binaries/commons-lang3-3.3.2-bin.tar.gz
+     Version: 3.3.2
+     Local Modifications: None.
+     Dowload date: 2014-12-02

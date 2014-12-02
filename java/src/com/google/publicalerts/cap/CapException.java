@@ -142,6 +142,9 @@ public class CapException extends Exception {
     INVALID_VALUE(
         Reason.Level.ERROR,
         "Unsupported value <{0}> = \"{1}\"."),
+    INVALID_URI(
+        Reason.Level.ERROR,
+        "Invalid <uri>: \"{0}\". Must be a full absolute or relative URI."),
     INVALID_WEB(
         Reason.Level.ERROR,
         "Invalid <web>: \"{0}\". Must be a full absolute URI."),
@@ -154,6 +157,9 @@ public class CapException extends Exception {
     PASSWORD_DEPRECATED(
         Reason.Level.ERROR,
         "<password> has been deprecated."),
+    RELATIVE_URI_MISSING_DEREF_URI(
+        Reason.Level.ERROR,
+        "Relative <uri> must reference the content of <derefUri>"),
     RESTRICTION_SCOPE_MISMATCH(
         Reason.Level.ERROR,
         "<restriction> should be used only when <scope> is Restricted."),
@@ -162,6 +168,13 @@ public class CapException extends Exception {
         "Unsupported element <{0}>."),
         
     // Warnings
+    TEXT_CONTAINS_HTML_ENTITIES (
+        Reason.Level.WARNING,
+        "<{0}> contains HTML entities, which is discouraged as per section "
+            + "3.3.3 of the CAP 1.2 specification."),
+    TEXT_CONTAINS_HTML_TAGS (
+        Reason.Level.WARNING,
+        "<{0}> contains HTML tags, which is discouraged."),
     POSTDATED_REFERENCE(
         Reason.Level.WARNING,
         "Invalid <references>: \"{0}\". Alert should not have have post-dated "
