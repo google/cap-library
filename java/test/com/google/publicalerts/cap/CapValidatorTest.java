@@ -25,6 +25,7 @@ import static com.google.publicalerts.cap.CapException.ReasonType.INVALID_MIME_T
 import static com.google.publicalerts.cap.CapException.ReasonType.INVALID_POLYGON;
 import static com.google.publicalerts.cap.CapException.ReasonType.POSTDATED_REFERENCE;
 import static com.google.publicalerts.cap.CapException.ReasonType.RESTRICTION_SCOPE_MISMATCH;
+import static com.google.publicalerts.cap.CapException.ReasonType.SAME_TEXT_DIFFERENT_LANGUAGE;
 import static com.google.publicalerts.cap.CapException.ReasonType.TEXT_CONTAINS_HTML_ENTITIES;
 import static com.google.publicalerts.cap.CapException.ReasonType.TEXT_CONTAINS_HTML_TAGS;
 
@@ -40,14 +41,12 @@ import junit.framework.TestCase;
  */
 public class CapValidatorTest extends TestCase {
 
-  private CapValidator validator = new CapValidator();
-
   public CapValidatorTest(String s) {
     super(s);
   }
 
   public void testAlertValidatesOk() throws Exception {
-    validator.validateAlert(CapTestUtil.getValidAlertBuilder().build());
+    new CapValidator().validateAlert(CapTestUtil.getValidAlertBuilder().build());
   }
 
   public void testAlertParseErrors() {
@@ -68,6 +67,17 @@ public class CapValidatorTest extends TestCase {
     alert.getInfoBuilder(0).getAreaBuilder(0).clearCircle();
     alert.getInfoBuilder(0).getAreaBuilder(0).clearAltitude();
     assertReasons(alert, INVALID_AREA, "/alert[1]/info[1]/area[1]");
+    
+    alert = CapTestUtil.getValidAlertBuilder();
+    alert.addInfo(alert.getInfoBuilder(0));
+    alert.getInfoBuilder(0).setLanguage("en-US");
+    alert.getInfoBuilder(1)
+        .setLanguage("fr-CA")
+        .setHeadline("toFrench(" + alert.getInfoBuilder(0).getHeadline() + ")")
+        .setDescription("toFrench(" + alert.getInfoBuilder(0).getDescription() + ")")
+        .setEvent("toFrench(" + alert.getInfoBuilder(0).getEvent() + ")");
+    
+    assertReasons(alert, SAME_TEXT_DIFFERENT_LANGUAGE, "/alert[1]/info[2]/instruction[1]");
   }
 
   public void testInfoParseErrors() {
@@ -172,17 +182,18 @@ public class CapValidatorTest extends TestCase {
   }
   
   public void testGetVersion() {
-    assertEquals(10, validator.getValidateVersion(CapValidator.CAP10_XMLNS));
-    assertEquals(11, validator.getValidateVersion(CapValidator.CAP11_XMLNS));
-    assertEquals(12, validator.getValidateVersion(CapValidator.CAP12_XMLNS));
-    assertEquals(12, validator.getValidateVersion(null));
-    assertEquals(12, validator.getValidateVersion("foo"));
+    assertEquals(10, new CapValidator().getValidateVersion(CapValidator.CAP10_XMLNS));
+    assertEquals(11, new CapValidator().getValidateVersion(CapValidator.CAP11_XMLNS));
+    assertEquals(12, new CapValidator().getValidateVersion(CapValidator.CAP12_XMLNS));
+    assertEquals(12, new CapValidator().getValidateVersion(null));
+    assertEquals(12, new CapValidator().getValidateVersion("foo"));
   }
 
   private void assertReasons(
       AlertOrBuilder alert, ReasonType expectedReasonType, String expectedXPath) {
+    
     CapTestUtil.assertReasons(
-        validator.validateAlert(alert),
+        new CapValidator().validateAlert(alert),
         new Reason(expectedXPath, expectedReasonType));
   }
 
@@ -190,7 +201,7 @@ public class CapValidatorTest extends TestCase {
     XPath xPath = new XPath();
     xPath.push("alert");
     
-    CapTestUtil.assertReasons(validator.validateInfo(info, xPath));
+    CapTestUtil.assertReasons(new CapValidator().validateInfo(info, xPath));
   }
   
   private void assertNoReasons(ResourceOrBuilder resource) {
@@ -198,7 +209,7 @@ public class CapValidatorTest extends TestCase {
     xPath.push("alert");
     xPath.push("info");
     
-    CapTestUtil.assertReasons(validator.validateResource(resource, xPath));
+    CapTestUtil.assertReasons(new CapValidator().validateResource(resource, xPath));
   }
 
   private void assertReasons(
@@ -207,7 +218,7 @@ public class CapValidatorTest extends TestCase {
     xPath.push("alert");
     
     CapTestUtil.assertReasons(
-        validator.validateInfo(info, xPath),
+        new CapValidator().validateInfo(info, xPath),
         new Reason(expectedXPath, expectedReasonType));
   }
   
@@ -218,7 +229,7 @@ public class CapValidatorTest extends TestCase {
     xPath.push("info");
     
     CapTestUtil.assertReasons(
-        validator.validateArea(area, xPath),
+        new CapValidator().validateArea(area, xPath),
         new Reason(expectedXPath, expectedReasonType));
   }
   
@@ -229,7 +240,7 @@ public class CapValidatorTest extends TestCase {
     xPath.push("info");
     
     CapTestUtil.assertReasons(
-        validator.validateResource(resource, xPath),
+        new CapValidator().validateResource(resource, xPath),
         new Reason(expectedXPath, expectedReasonType));
   }
 }

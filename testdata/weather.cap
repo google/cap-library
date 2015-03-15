@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <alert xmlns = 'urn:oasis:names:tc:emergency:cap:1.1'>
-<!-- http-date = Mon, 30 Aug 2010 10:07:00 GMT -->
-<identifier>NOAA-NWS-ALERTS-MT20100830100700TFXFlashFloodWatchTFX20100830180000MT</identifier>
+<!-- http-date = Mon, 30 Aug 2012 10:07:00 GMT -->
+<identifier>NOAA-NWS-ALERTS-MT20120830100700TFXFlashFloodWatchTFX20120830180000MT</identifier>
 <sender>w-nws.webmaster@noaa.gov</sender>
-<sent>2010-08-30T04:07:00-06:00</sent>
+<sent>2012-08-30T04:07:00-06:00</sent>
 <status>Actual</status>
 <msgType>Alert</msgType>
 <scope>Public</scope>
@@ -18,8 +18,8 @@
 <valueName>SAME</valueName>
 <value>FFA</value>
 </eventCode>
-<effective>2010-08-30T04:07:00-06:00</effective>
-<expires>2010-08-30T12:00:00-06:00</expires>
+<effective>2012-08-30T04:07:00-06:00</effective>
+<expires>2012-08-30T12:00:00-06:00</expires>
 <senderName>NWS GreatFalls (Central Montana)</senderName>
 <headline>Flash Flood Watch issued August 30 at 4:07AM MDT expiring August 30 at 12:00PM MDT by NWS GreatFalls</headline>
 <description>...FLASH FLOOD WATCH REMAINS IN EFFECT UNTIL NOON MDT TODAY...

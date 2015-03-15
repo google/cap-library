@@ -75,7 +75,7 @@ public class CapFeedException extends CapException {
         "Items must have a non-empty <title> or <description>."),
     RSS_ITEM_MISSING_CAP_LINK(
         Reason.Level.ERROR,
-        "Item ust contain a link to a CAP document."),
+        "Item must contain a link to a CAP document."),
     EDXLDE_CONTENT_OBJECT_IS_REQUIRED(
         Reason.Level.ERROR,
         "Feeds must have a non-empty <contentObject> element."),
@@ -86,7 +86,7 @@ public class CapFeedException extends CapException {
     OTHER(
         Reason.Level.ERROR,
         "{0}"),
-    
+
     // Recommendations
     RSS_PUBDATE_IS_RECOMMENDED(
         Reason.Level.RECOMMENDATION,
@@ -108,12 +108,12 @@ public class CapFeedException extends CapException {
     public String getMessage(Locale locale) {
       return message;
     }
-    
+
     @Override
     public Reason.Level getDefaultLevel() {
       return defaultLevel;
     }
-    
+
     @Override
     public String getSource() {
       return "Feed";

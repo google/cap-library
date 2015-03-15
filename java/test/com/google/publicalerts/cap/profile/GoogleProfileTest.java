@@ -98,13 +98,15 @@ public class GoogleProfileTest extends CapProfileTestCase {
         new Reason("/alert[1]/info[2]/category[1]", CATEGORIES_MUST_MATCH));
 
     alert = loadAlert("australia.cap").toBuilder();
-    alert.getInfoBuilder(1)
-        .setEffective("2012-05-08T12:34:56-04:00")
-        .setExpires("2012-05-08T12:34:56-04:00");
     alert.getInfoBuilder(1).getEventCodeBuilder(0).setValueName("foo");
     assertReasons(alert, ERROR,
         new Reason("/alert[1]/info[2]/eventCode[1]", EVENT_CODES_MUST_MATCH));
 
+    //  If a date is not parsable, no further validation should be run
+    alert = loadAlert("australia.cap").toBuilder();
+    alert.getInfoBuilder(1).setEffective("not-a-date");
+    assertReasons(alert, ERROR);
+    
     alert = loadAlert("australia.cap").toBuilder();
     alert.getInfoBuilder(1)
         .setEffective("2012-05-08T12:34:57-04:00")

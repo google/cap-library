@@ -179,6 +179,11 @@ public class CapException extends Exception {
         Reason.Level.WARNING,
         "Invalid <references>: \"{0}\". Alert should not have have post-dated "
             + "references."),
+    SAME_TEXT_DIFFERENT_LANGUAGE(
+        Reason.Level.WARNING,
+        "Text in <{0}> appears in multiple <info> blocks but each specifies a different "
+            + "<language> field. Human-readable content in an <info> should be written in the "
+            + "same language as specified in the <language> field."),
     ;
 
     private final Reason.Level defaultLevel;

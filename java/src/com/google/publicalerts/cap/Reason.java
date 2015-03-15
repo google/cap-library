@@ -202,6 +202,6 @@ public class Reason {
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(type, xPath, getLevel(), messageParams);
+    return Objects.hashCode(type, xPath, getLevel(), Arrays.hashCode(messageParams));
   }
 }

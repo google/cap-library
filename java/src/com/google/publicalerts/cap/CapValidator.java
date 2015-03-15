@@ -28,10 +28,13 @@ import static com.google.publicalerts.cap.CapException.ReasonType.INVALID_WEB;
 import static com.google.publicalerts.cap.CapException.ReasonType.POSTDATED_REFERENCE;
 import static com.google.publicalerts.cap.CapException.ReasonType.RELATIVE_URI_MISSING_DEREF_URI;
 import static com.google.publicalerts.cap.CapException.ReasonType.RESTRICTION_SCOPE_MISMATCH;
+import static com.google.publicalerts.cap.CapException.ReasonType.SAME_TEXT_DIFFERENT_LANGUAGE;
 import static com.google.publicalerts.cap.CapException.ReasonType.TEXT_CONTAINS_HTML_ENTITIES;
 import static com.google.publicalerts.cap.CapException.ReasonType.TEXT_CONTAINS_HTML_TAGS;
 
+import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Table;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Message;
 import com.google.protobuf.MessageOrBuilder;
@@ -39,6 +42,7 @@ import com.google.protobuf.MessageOrBuilder;
 import java.net.URI;
 import java.util.Date;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
@@ -59,12 +63,32 @@ public class CapValidator {
 
   /** See http://www.ietf.org/rfc/rfc3066.txt */
   private static final Pattern RFC_3066_LANGUAGE =
-      Pattern.compile("^[a-zA-Z]{1,8}(-[a-zA-Z0-9]{1,8})*$");
+      Pattern.compile("^([a-zA-Z]{1,8})(-[a-zA-Z0-9]{1,8})*$");
 
   /** See http://www.iana.org/assignments/media-types/media-types.xhtml */
   private static final Set<String> VALID_CONTENT_TYPES = ImmutableSet.of(
       "application", "audio", "image", "message", "model", "multipart", "text", "video");
-      
+  
+  /**
+   * The fields of {@code <info>} that contain human-readable content, for which we want to verify
+   * language consistency (i.e., no two fields have the same exact content if they are defined in
+   * different {@code <info>} with different {@code <language>}).
+   * 
+   * <p>Human-readable fields of {@code <info>} that are likely to contain the same content across
+   * different languages (e.g., {@code <senderName>}) are omitted from this set.
+   */
+  private static final Set<FieldDescriptor> HUMAN_READABLE_CONTENT_INFO_FIELDS = ImmutableSet.of(
+      Info.getDescriptor().findFieldByNumber(Info.DESCRIPTION_FIELD_NUMBER),
+      Info.getDescriptor().findFieldByNumber(Info.HEADLINE_FIELD_NUMBER),
+      Info.getDescriptor().findFieldByNumber(Info.INSTRUCTION_FIELD_NUMBER),
+      Info.getDescriptor().findFieldByNumber(Info.EVENT_FIELD_NUMBER));
+  
+  /**
+   * The row of the table is the field where the text was seen, the column is the text itself,
+   * the cell value is the primary subtag of the language in which the text was written.
+   */
+  private Table<FieldDescriptor, String, String> humanReadableText = HashBasedTable.create();
+  
   /**
    * Validates a CAP alert.
    *
@@ -147,7 +171,17 @@ public class CapValidator {
 
     // Validate language
     if (info.hasLanguage()) {
-      reasons.addAll(validateLanguage(info.getLanguage(), xPath));
+      String language = info.getLanguage().trim();
+      Matcher matcher =  RFC_3066_LANGUAGE.matcher(language);
+      
+      if (!CapUtil.isEmptyOrWhitespace(language) && !matcher.matches()) {
+        xPath.push("language");
+        reasons.add(xPath.toString(), INVALID_LANGUAGE, language);
+        xPath.pop();
+      } else {
+        reasons.addAll(
+            validateHumanReadableContent(info, matcher.group(0), xPath));
+      } 
     }
 
     // Validate areas
@@ -168,21 +202,39 @@ public class CapValidator {
     xPath.pop();
     return reasons.build();
   }
-
-  private Reasons validateLanguage(String language, XPath xPath) {
+  
+  /**
+   * Within this method, {@code language} refers to a  RFC 3066 primary-subtag, as we don't want to
+   * distinguish between languages with a large overlap (e.g., en-US and en-GB).
+   */
+  private Reasons validateHumanReadableContent(InfoOrBuilder info, String language, XPath xPath) {
     Reasons.Builder reasons = Reasons.newBuilder();
-    language = language.trim();
-    xPath.push("language");
     
-    if (!CapUtil.isEmptyOrWhitespace(language)
-        && !RFC_3066_LANGUAGE.matcher(language).matches()) {
-      reasons.add(xPath.toString(), INVALID_LANGUAGE, language);
-    } 
-
-    xPath.pop();
+    for (FieldDescriptor humanReadableField : HUMAN_READABLE_CONTENT_INFO_FIELDS) {
+      if (!info.hasField(humanReadableField)) {
+        continue;
+      }
+      String fieldName = humanReadableField.getName();
+      
+      String fieldValue = (String) info.getField(humanReadableField);
+      xPath.push(fieldName);
+      
+      String previousLanguage = humanReadableText.get(humanReadableField, fieldValue);
+ 
+      if (previousLanguage != null) {
+        if (!language.equals(previousLanguage)) {
+          reasons.add(xPath.toString(), SAME_TEXT_DIFFERENT_LANGUAGE, fieldName);
+        }
+      } else {
+        humanReadableText.put(humanReadableField, fieldValue, fieldName);
+      }
+      
+      xPath.pop();
+    }
+    
     return reasons.build();
   }
-
+  
   Reasons validateArea(AreaOrBuilder area, XPath xPath) {
     Reasons.Builder reasons = Reasons.newBuilder();
     xPath.push("area");

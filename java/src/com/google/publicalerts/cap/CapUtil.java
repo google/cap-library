@@ -26,7 +26,7 @@ import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Message.Builder;
 import com.google.protobuf.ProtocolMessageEnum;
 
-import org.apache.commons.lang3.StringEscapeUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -297,7 +297,7 @@ public class CapUtil {
    * otherwise
    */
   public static boolean containsHtmlEntities(String s) {
-    return !StringEscapeUtils.unescapeHtml4(s).equals(s);
+    return !StringEscapeUtils.unescapeHtml(s).equals(s);
   }
   
   /**
