@@ -5,8 +5,8 @@ jdk:
   - openjdk7
   
 install:
-  - wget https://storage.googleapis.com/appengine-sdks/featured/appengine-java-sdk-1.9.15.zip -nv
-  - unzip -q appengine-java-sdk-1.9.15.zip
+  - wget https://storage.googleapis.com/appengine-sdks/featured/appengine-java-sdk-1.9.18.zip -nv
+  - unzip -q appengine-java-sdk-1.9.18.zip
   
 script:
-  - APPENGINE_JAVA_SDK=../appengine-java-sdk-1.9.15 ant test
+  - APPENGINE_JAVA_SDK=../appengine-java-sdk-1.9.18 ant test
