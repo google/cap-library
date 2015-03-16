@@ -93,6 +93,8 @@
       <zipfileset src="lib/json.jar"/>
       <zipfileset src="lib/protobuf-java.jar"/>
       <zipfileset src="lib/rome.jar"/>
+      <zipfileset src="lib/commons-lang.jar"/>
+      <zipfileset src="lib/guava.jar"/>
       <manifest>
         <attribute name="Built-By" value="${user.name}"/>
         <attribute name="Implementation-Vendor" value="${vendor}"/>

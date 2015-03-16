@@ -19,7 +19,6 @@ package com.google.publicalerts.cap.validator;
 import java.io.IOException;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import junit.framework.TestCase;
 
@@ -87,10 +86,9 @@ public class CapValidatorTest extends TestCase {
     cap = cap.replaceAll("author", "authors");
     
     // Expect an error on line 7 (where <author> was in the alert)    
-    // TODO(sschiavoni): fix this regression
     assertByLineValidationMessageMap(
         validator.validate(cap, NO_PROFILES),
-        ImmutableListMultimap.of(1, Level.ERROR));
+        ImmutableListMultimap.of(7, Level.ERROR));
   }
 
   public void testRssFeed() throws Exception {
@@ -106,19 +104,39 @@ public class CapValidatorTest extends TestCase {
     String cap = TestResources.load("bushfire_valid.edxlde");
     ValidationResult result = validator.validate(cap, NO_PROFILES);
     
-    // Expect no errors
-    assertTrue(result.getByLineValidationMessages().isEmpty());
+    ImmutableListMultimap<Integer, Level> expected =
+        ImmutableListMultimap.<Integer, Level>builder()
+            .put(39, Level.WARNING)  // HTML entity
+            .put(115, Level.WARNING) // HTML entity
+            .put(189, Level.WARNING) // HTML entity
+            .put(263, Level.WARNING) // HTML entity
+            .put(337, Level.WARNING) // HTML entity
+            .put(411, Level.WARNING) // HTML entity
+            .put(485, Level.WARNING) // HTML entity
+            .build();
+    
     assertEquals(7, result.getValidAlerts().size());
+    assertByLineValidationMessageMap(result, expected);
   }
   
   public void testEdxldeError() throws Exception {
     String cap = TestResources.load("bushfire_invalid.edxlde");
     ValidationResult result = validator.validate(cap, NO_PROFILES);
     
+    ImmutableListMultimap<Integer, Level> expected =
+        ImmutableListMultimap.<Integer, Level>builder()
+            .put(39, Level.WARNING)  // HTML entity
+            .put(94, Level.ERROR)
+            .put(115, Level.ERROR)
+            .put(125, Level.WARNING) // HTML entity
+            .put(199, Level.WARNING) // HTML entity
+            .put(273, Level.WARNING) // HTML entity
+            .put(347, Level.WARNING) // HTML entity
+            .put(421, Level.WARNING) // HTML entity
+            .build();
+    
     assertEquals(7, result.getValidAlerts().size());
-    assertByLineValidationMessageMap(result, ImmutableListMultimap.of(
-        94, Level.ERROR,
-        115, Level.ERROR));
+    assertByLineValidationMessageMap(result, expected);
   }
   
   public void testThinAtomFeed() throws Exception {
@@ -144,15 +162,14 @@ public class CapValidatorTest extends TestCase {
     String cap = TestResources.load("amber.atom");
     ValidationResult result = validator.validate(cap, NO_PROFILES);
 
-    // Expect no errors
-    assertTrue(result.getByLineValidationMessages().isEmpty());
     assertEquals(1, result.getValidAlerts().size());
+    assertByLineValidationMessageMap(result, ImmutableListMultimap.of(34, Level.WARNING));
   }
 
   public void testFatAtomFeedNoEntries() throws Exception {
     String feed = TestResources.load("no_entries.atom");
 
-    // Expect an error on the first
+    // Expect an error on the first line
     assertByLineValidationMessageMap(
         validator.validate(feed, NO_PROFILES),
         ImmutableListMultimap.of(1, Level.ERROR));
@@ -192,6 +209,7 @@ public class CapValidatorTest extends TestCase {
             16, Level.ERROR,
             24, Level.ERROR,
             24, Level.RECOMMENDATION,
+            34, Level.WARNING,
             41, Level.RECOMMENDATION));
   }
 
@@ -218,9 +236,9 @@ public class CapValidatorTest extends TestCase {
     }
     
     for (Integer key : actualMap.keySet()) {
-      assertEquals(
-          ImmutableMultiset.copyOf(actualMap.get(key)),
-          ImmutableMultiset.copyOf(expected.get(key)));
+      assertEquals(actualMap.toString(),
+          ImmutableMultiset.copyOf(expected.get(key)),
+          ImmutableMultiset.copyOf(actualMap.get(key)));
     }
     
     assertEquals(expected.size(), actualMap.size());
