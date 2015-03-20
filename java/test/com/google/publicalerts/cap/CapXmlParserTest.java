@@ -739,7 +739,7 @@ public class CapXmlParserTest extends TestCase {
   }
 
   public void testSetOrAdd() {
-    CapXmlHandler handler = new CapXmlHandler(true);
+    CapXmlHandler handler = new CapXmlHandler();
     Alert.Builder alert = Alert.newBuilder();
 
     // Single field
@@ -757,7 +757,7 @@ public class CapXmlParserTest extends TestCase {
     assertEquals("foo", alert.getXmlns());
 
     // Repeated field
-    handler = new CapXmlHandler(true);
+    handler = new CapXmlHandler();
     fd = alert.getDescriptorForType().findFieldByName("code");
     assertTrue(fd.isRepeated());
     handler.setOrAdd(alert, fd, "foo");
@@ -770,7 +770,7 @@ public class CapXmlParserTest extends TestCase {
   }
 
   public void testGetPrimitiveValue() {
-    CapXmlHandler handler = new CapXmlHandler(true);
+    CapXmlHandler handler = new CapXmlHandler();
     Alert.Builder alert = Alert.newBuilder();
     Resource.Builder resource = Resource.newBuilder();
     Point.Builder point = Point.newBuilder();
@@ -795,7 +795,7 @@ public class CapXmlParserTest extends TestCase {
   }
 
   public void testGetPrimitiveValueErrors() {
-    CapXmlHandler handler = new CapXmlHandler(true);
+    CapXmlHandler handler = new CapXmlHandler();
     Alert.Builder alert = Alert.newBuilder();
     Resource.Builder resource = Resource.newBuilder();
     Point.Builder point = Point.newBuilder();
@@ -820,7 +820,7 @@ public class CapXmlParserTest extends TestCase {
   }
 
   public void testGetComplexValue() {
-    CapXmlHandler handler = new CapXmlHandler(true);
+    CapXmlHandler handler = new CapXmlHandler();
     Point point = Point.newBuilder().setLatitude(1.5).setLongitude(2.5).build();
     Point point2 = Point.newBuilder().setLatitude(-2).setLongitude(-3).build();
     Point point3 = Point.newBuilder().setLatitude(3).setLongitude(4).build();
@@ -903,7 +903,7 @@ public class CapXmlParserTest extends TestCase {
   }
 
   public void testToGroup() {
-    CapXmlHandler handler = new CapXmlHandler(true);
+    CapXmlHandler handler = new CapXmlHandler();
     assertEquals(Group.newBuilder().addValue("a").addValue("b").build(),
         handler.toGroup("a b"));
     assertEquals(Group.newBuilder().addValue("a").addValue("b").build(),

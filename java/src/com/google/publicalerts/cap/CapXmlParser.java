@@ -332,7 +332,7 @@ public class CapXmlParser {
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setNamespaceAware(true);
 
-    CapXmlHandler handler = new CapXmlHandler(schemaMap != STRICT_SCHEMA_MAP);
+    CapXmlHandler handler = new CapXmlHandler();
     try {
       String xmlns = getXmlns(is);
       if (!schemaMap.containsKey(xmlns)) {
@@ -355,7 +355,14 @@ public class CapXmlParser {
       throw new RuntimeException(e);
     }
     reasons.addAll(handler.getReasons());
-    return handler.getAlert();
+    
+    Alert alert = handler.getAlert();
+    
+    if (schemaMap != STRICT_SCHEMA_MAP) {
+      reasons.addAll(new CapValidator().validateAlert(alert));
+    }
+    
+    return alert;
   }
 
   private String getXmlns(CachedSaxInputSource is)
@@ -406,7 +413,6 @@ public class CapXmlParser {
    * SAX handler for parsing CAP XML.
    */
   static class CapXmlHandler extends DefaultHandler {
-    private final CapValidator validator;
     private final StringBuilder characters;
     private final Stack<Builder> builderStack;
     private final Stack<String> builderNameStack;
@@ -418,8 +424,7 @@ public class CapXmlParser {
 
     private String localName;
 
-    public CapXmlHandler(boolean useCapValidator) {
-      this.validator = useCapValidator ? new CapValidator() : null;
+    public CapXmlHandler() {
       this.characters = new StringBuilder();
       this.builderStack = new Stack<Builder>();
       this.builderNameStack = new Stack<String>();
@@ -513,11 +518,6 @@ public class CapXmlParser {
             Builder builder = builderStack.pop();
             if (builder != null) {
               alert = (Alert) builder.buildPartial();
-              if (validator != null) {
-                Reasons validationReasons = validator.validate(
-                    alert, alert.getXmlns(), xPath.toString(), false);
-                reasons.addAll(validationReasons);
-              }
             }
           } else {
             // Must be the end of a complex child element
@@ -670,14 +670,6 @@ public class CapXmlParser {
         message = toCap10ValuePair(str);
       } else {
         message = builder.buildPartial();
-      }
-      if (message != null && validator != null) {
-        Reasons validationReasons = validator.validate(
-            message,
-            (alertBuilder == null) ? null : alertBuilder.getXmlns(),
-            xPath.toString(),
-            false /* Do not visit children */);
-        reasons.addAll(validationReasons);        
       }
       return message;
     }

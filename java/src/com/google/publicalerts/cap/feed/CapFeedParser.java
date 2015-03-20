@@ -17,6 +17,7 @@
 package com.google.publicalerts.cap.feed;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.publicalerts.cap.Alert;
 import com.google.publicalerts.cap.CapException;
@@ -61,8 +62,11 @@ import java.nio.charset.Charset;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.xml.XMLConstants;
 import javax.xml.parsers.ParserConfigurationException;
@@ -526,6 +530,16 @@ public class CapFeedParser {
   }
 
   private static class FeedHandler extends DefaultHandler {
+    private static final Pattern ATOM_UNEXPECTED_ELEMENT_PATTERN =
+        Pattern.compile("^element \"(.*)\" not allowed here;.*");
+    private static final Pattern EDXL_RSS_UNEXPECTED_ELEMENT_PATTERN =
+        Pattern.compile("^cvc-complex-type\\.2\\.4\\.a: Invalid content was found "
+            + "starting with element '(.*)'\\..*");
+    private static final Set<Pattern> UNEXPECTED_ELEMENT_PATTERNS =
+        ImmutableSet.of(
+            ATOM_UNEXPECTED_ELEMENT_PATTERN,
+            EDXL_RSS_UNEXPECTED_ELEMENT_PATTERN);
+    
     private XPath xPath = new XPath();
     private Reasons.Builder reasons;
 
@@ -565,12 +579,31 @@ public class CapFeedParser {
             .build();
 
     private Reason translate(SAXParseException e) {
+      String xPathString = xPath.toString();
+      
       ReasonType type = REASON_MAP.get(e.getMessage());
       if (type == null) {
         type = ReasonType.OTHER;
+        
+        // Try matching the exception message for "unexpected elements"
+        for (Pattern pattern : UNEXPECTED_ELEMENT_PATTERNS) {
+          Matcher unexpectedElementMatcher = pattern.matcher(e.getMessage());
+          
+          if (unexpectedElementMatcher.matches()) {
+            // It is unspecified whether error/warning/fatalError methods are
+            // called before or after startElement, so the xPath might be
+            // updated already.
+            String unexpectedElement = unexpectedElementMatcher.group(1);
+            String xPathPostfix = "/" + unexpectedElement + "[1]";
+            
+            if (!xPathString.endsWith(xPathPostfix)) {
+              xPathString += xPathPostfix;
+            }
+          }          
+        }
       }
       
-      return new Reason(xPath.toString(), type, e.getMessage());
+      return new Reason(xPathString, type, e.getMessage());
     }
 
     @Override

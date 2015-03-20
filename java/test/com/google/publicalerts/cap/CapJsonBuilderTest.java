@@ -16,6 +16,8 @@
 
 package com.google.publicalerts.cap;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import junit.framework.TestCase;
 
 import org.json.JSONArray;
@@ -328,21 +330,29 @@ public class CapJsonBuilderTest extends TestCase {
         .addInfo(info)
         .buildPartial();
 
-    assertEquals("{\n"
-        + "  \"sender\": \"sender\",\n"
-        + "  \"info\": [{\n"
-        + "    \"headline\": \"headline\",\n"
-        + "    \"event\": \"event\"\n"
-        + "  }]\n"
-        + "}",
-        builder.toJson(alert));
+
+    String json = builder.toJson(alert);
+    // JSON dict fields can appear in any order
+    assertThat(json).contains("{\n");
+    assertThat(json).contains("\n  \"sender\": \"sender\"");
+    assertThat(json).contains("\n  \"info\": [{");
+    assertThat(json).contains("\n    \"headline\": \"headline\"");
+    assertThat(json).contains("\n    \"event\": \"event\"");
+    assertThat(json).contains("\n  }]");
+    assertThat(json).contains("\n}");
 
     builder = new CapJsonBuilder(0);
 
-    assertEquals(
-        "{\"sender\":\"sender\",\"info\":[{\"headline\":\"headline\","
-            + "\"event\":\"event\"}]}",
-        builder.toJson(alert));
+    json = builder.toJson(alert);
+    // JSON dict fields can appear in any order
+    assertThat(json).doesNotContain("\n");
+    assertThat(json).doesNotContain(" ");
+    assertThat(json).contains("{\"");
+    assertThat(json).contains("\"sender\":\"sender\"");
+    assertThat(json).contains("\"info\":[{");
+    assertThat(json).contains("\"headline\":\"headline\"");
+    assertThat(json).contains("\"event\":\"event\"");
+    assertThat(json).contains("}]");
   }
 
   public void testEscaping() {

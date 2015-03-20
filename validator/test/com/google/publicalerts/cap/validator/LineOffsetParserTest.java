@@ -67,8 +67,8 @@ public class LineOffsetParserTest extends TestCase {
     
     // getLinkLineNumber
     assertThat(offsets.getLinkLineNumber("http://www.weather.gov/alerts-beta/")).isEqualTo(16);
-    assertThat(offsets.getLinkLineNumber("http://www.weather.gov/alerts-beta/wwacapget.php?"
-        + "x=DC20100829202900LWXAirQualityAlertLWX20100831040000DC")).isEqualTo(25);
+    assertThat(offsets.getLinkLineNumber("http://www.weather.gov/alerts-beta/wwacapget.php"
+        + "?x=DC20120829202900LWXAirQualityAlertLWX20120831040000DC")).isEqualTo(25);
   }
   
   public void testLineOffsets_atomFeedFullyQualifiedTags() throws Exception {

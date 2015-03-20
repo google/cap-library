@@ -141,10 +141,13 @@ public class GoogleProfile extends AbstractCapProfile {
       // <effective> should be before <expires>
       if (info.hasExpires()) {
         String effective = info.hasEffective() ? info.getEffective() : alert.getSent();
+        
+        // The following variables are nullable, as their corresponding dates could be not parsable.
+        // If this happens, an error has already been thrown.
         Date effectiveDate = CapDateUtil.toJavaDate(effective);
         Date expiresDate = CapDateUtil.toJavaDate(info.getExpires());
 
-        if (effectiveDate.after(expiresDate)) {
+        if (effectiveDate != null && expiresDate != null && effectiveDate.after(expiresDate)) {
           reasons.add(xpath + "/effective[1]", ReasonType.EFFECTIVE_NOT_AFTER_EXPIRES);
         }
       }

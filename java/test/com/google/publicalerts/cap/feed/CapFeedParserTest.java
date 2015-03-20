@@ -117,8 +117,8 @@ public class CapFeedParserTest extends TestCase {
   }
 
   public void testParseInvalidFeed5() throws Exception {
-    assertReasons(
-        "invalid_element.atom", new Reason("/feed[1]", ReasonType.OTHER));
+    assertReasons("invalid_element.atom", new Reason("/feed[1]/foo[1]",
+        ReasonType.OTHER));
   }
 
   /**

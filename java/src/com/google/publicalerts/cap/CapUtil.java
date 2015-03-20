@@ -16,6 +16,7 @@
 
 package com.google.publicalerts.cap;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -25,6 +26,10 @@ import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Message.Builder;
 import com.google.protobuf.ProtocolMessageEnum;
 
+import org.apache.commons.lang3.StringEscapeUtils;
+
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Map;
@@ -49,6 +54,11 @@ public class CapUtil {
 
   private static final Pattern BASE_64_PATTERN = Pattern.compile(
       "^([A-Za-z0-9+/]{4})*([A-Za-z0-9+/]{3}=|[A-Za-z0-9+/]{2}==)?$");
+  
+  // First group matches greedily, second reluctantly, so that we can match
+  // multiple tags one after the other
+  private static final Pattern HTML_TAG_PATTERN =
+      Pattern.compile("<([^\\s>]+)(.*?)>");
   
   /**
    * Returns a CAP field value for an enum field.
@@ -185,7 +195,7 @@ public class CapUtil {
    * @return true if the string is empty or whitespace
    */
   public static boolean isEmptyOrWhitespace(String s) {
-    return s == null || "".equals(s.trim());
+    return Strings.nullToEmpty(s).trim().isEmpty();
   }
   
   /**
@@ -197,7 +207,7 @@ public class CapUtil {
    * 
    * <p>The new-line character '\n' is stripped.
    */
-  public static boolean isBased64(String s) {
+  public static boolean isBase64(String s) {
     return BASE_64_PATTERN.matcher(s.replace("\n", "")).find();
   }
   
@@ -255,6 +265,19 @@ public class CapUtil {
   }
   
   /**
+   * Parses a string into a URI, as defined by RFC 2396.
+   * 
+   * <p>{@code null} is returned if the string does not match the spec.
+   */
+  public static URI parseUri(String s) {
+    try {
+      return new URI(s);
+    } catch (URISyntaxException e) {
+      return null;
+    }
+  }
+  
+  /**
    * Strips the XML preamble, if any, from the start of the given string.
    *
    * @param xmlDocument document to check for {@literal <?xml ..>} preamble.
@@ -269,5 +292,21 @@ public class CapUtil {
     return xmlDocument;
   }
 
+  /**
+   * @return {@true} if the input string contains HTML entities, {@code false}
+   * otherwise
+   */
+  public static boolean containsHtmlEntities(String s) {
+    return !StringEscapeUtils.unescapeHtml4(s).equals(s);
+  }
+  
+  /**
+   * @return {@true} if the input string contains HTML tags, {@code false}
+   * otherwise
+   */
+  public static boolean containsHtmlTags(String s) {
+    return HTML_TAG_PATTERN.matcher(s).find();
+  }
+  
   private CapUtil() {}
 }
