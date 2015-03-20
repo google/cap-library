@@ -16,6 +16,7 @@
 
 package com.google.publicalerts.cap;
 
+import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
@@ -194,7 +195,7 @@ public class CapUtil {
    * @return true if the string is empty or whitespace
    */
   public static boolean isEmptyOrWhitespace(String s) {
-    return s == null || "".equals(s.trim());
+    return Strings.nullToEmpty(s).trim().isEmpty();
   }
   
   /**
