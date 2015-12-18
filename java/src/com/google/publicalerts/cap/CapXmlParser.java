@@ -52,7 +52,6 @@ import javax.xml.validation.SchemaFactory;
  * Ignores enveloped digital signature.  To validate the signature, use
  * {@link XmlSignatureValidator}.
  *
- * <p>TODO(shakusa) Explicit XEE prevention here like Rome's WireFeedInput?
  * <p>TODO(shakusa) Support input from javax.xml.transform.Source ?
  *
  * @author shakusa@google.com (Steve Hakusa)
@@ -340,7 +339,7 @@ public class CapXmlParser {
       }
       is.reset(); // Reset input streams so we can now parse entire document.
       factory.setSchema(schemaMap.get(xmlns));
-      XMLReader reader = factory.newSAXParser().getXMLReader();
+      XMLReader reader = XmlUtil.getXMLReader(factory);
       reader.setContentHandler(handler);
       reader.setErrorHandler(handler);
       reader.parse(is);
@@ -369,9 +368,10 @@ public class CapXmlParser {
       throws ParserConfigurationException, SAXException, IOException {
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setNamespaceAware(true);
-    XmlnsHandler handler = new XmlnsHandler();
+    XMLReader reader = XmlUtil.getXMLReader(factory);
+    reader.setContentHandler(new XmlnsHandler());
     try {
-      factory.newSAXParser().parse(is, handler);
+      reader.parse(is);
     } catch (AbortXmlnsParseException e) {
       return e.xmlns;
     }

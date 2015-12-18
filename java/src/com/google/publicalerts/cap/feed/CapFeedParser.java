@@ -28,6 +28,7 @@ import com.google.publicalerts.cap.Reason;
 import com.google.publicalerts.cap.Reasons;
 import com.google.publicalerts.cap.XPath;
 import com.google.publicalerts.cap.XmlSignatureValidator;
+import com.google.publicalerts.cap.XmlUtil;
 import com.google.publicalerts.cap.edxl.DistributionFeed;
 import com.google.publicalerts.cap.feed.CapFeedException.ReasonType;
 
@@ -254,11 +255,11 @@ public class CapFeedParser {
     if (validate) {
       CapFeedValidator validator = new CapFeedValidator();
       Reasons reasons = validator.validate(syndFeed);
-      
+
       if (reasons.containsWithLevelOrHigher(Reason.Level.ERROR)) {
         throw new CapFeedException(reasons);
       }
-      
+
       if (validateSchema) {
         if (syndFeed.originalWireFeed() instanceof Feed) {
           validate(ATOM_RELAX_NG_SCHEMA, new JDOMSource(doc).getInputSource());
@@ -279,19 +280,18 @@ public class CapFeedParser {
     }
 
     FeedHandler handler = null;
-    
+
     try {
       handler = new FeedHandler();
       SAXParserFactory factory = SAXParserFactory.newInstance();
       factory.setSchema(schema);
       factory.setNamespaceAware(true);
-      factory.setValidating(true);
       factory.setFeature(
           "http://apache.org/xml/features/validation/dynamic", true);
-      XMLReader reader = factory.newSAXParser().getXMLReader();
+      XMLReader reader = XmlUtil.getXMLReader(factory);
       reader.setContentHandler(handler);
       reader.setErrorHandler(handler);
-      
+
       reader.parse(inputSource);
     } catch (SAXException e) {
       // Shouldn't happen; Rome parsing should have already caught this
@@ -539,7 +539,7 @@ public class CapFeedParser {
         ImmutableSet.of(
             ATOM_UNEXPECTED_ELEMENT_PATTERN,
             EDXL_RSS_UNEXPECTED_ELEMENT_PATTERN);
-    
+
     private XPath xPath = new XPath();
     private Reasons.Builder reasons;
 
@@ -580,29 +580,29 @@ public class CapFeedParser {
 
     private Reason translate(SAXParseException e) {
       String xPathString = xPath.toString();
-      
+
       ReasonType type = REASON_MAP.get(e.getMessage());
       if (type == null) {
         type = ReasonType.OTHER;
-        
+
         // Try matching the exception message for "unexpected elements"
         for (Pattern pattern : UNEXPECTED_ELEMENT_PATTERNS) {
           Matcher unexpectedElementMatcher = pattern.matcher(e.getMessage());
-          
+
           if (unexpectedElementMatcher.matches()) {
             // It is unspecified whether error/warning/fatalError methods are
             // called before or after startElement, so the xPath might be
             // updated already.
             String unexpectedElement = unexpectedElementMatcher.group(1);
             String xPathPostfix = "/" + unexpectedElement + "[1]";
-            
+
             if (!xPathString.endsWith(xPathPostfix)) {
               xPathString += xPathPostfix;
             }
-          }          
+          }
         }
       }
-      
+
       return new Reason(xPathString, type, e.getMessage());
     }
 
