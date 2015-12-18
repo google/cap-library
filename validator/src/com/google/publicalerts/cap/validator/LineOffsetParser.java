@@ -27,9 +27,11 @@ import org.xml.sax.Attributes;
 import org.xml.sax.InputSource;
 import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
 
 import com.google.common.collect.Maps;
+import com.google.publicalerts.cap.XmlUtil;
 import com.google.publicalerts.cap.XPath;
 
 /**
@@ -80,11 +82,11 @@ public class LineOffsetParser {
   public LineOffsets parse(String xml) throws IllegalArgumentException {
     SAXParserFactory factory = SAXParserFactory.newInstance();
     factory.setNamespaceAware(true);
-    factory.setValidating(true);
     Handler handler = new Handler();
     try {
-      factory.newSAXParser().parse(
-          new InputSource(new StringReader(xml)), handler);
+      XMLReader reader = XmlUtil.getXMLReader(factory);
+      reader.setContentHandler(handler);
+      reader.parse(new InputSource(new StringReader(xml)));
     } catch (SAXException e) {
       throw new IllegalArgumentException(e);
     } catch (IOException e) {
