@@ -121,6 +121,26 @@ public class CapFeedParserTest extends TestCase {
         ReasonType.OTHER));
   }
 
+  public void testParseFeedPreventsXee() throws Exception {
+    String feedStr = TestResources.load("xee.atom");
+    try {
+      parser.parseFeed(feedStr);
+      fail("Expected CapException");
+    } catch (CapException e) {
+      // expected
+    }
+  }
+
+  public void testParseAlertPreventsXee() throws Exception {
+    String alertStr = TestResources.load("xee.cap");
+    try {
+      parser.parseAlert(alertStr);
+      fail("Expected CapException");
+    } catch (CapException e) {
+      // expected
+    }
+  }
+
   /**
    * Tests the case of a valid Atom feed not containing any &lt;entry&gt;.
    * 
@@ -139,7 +159,7 @@ public class CapFeedParserTest extends TestCase {
       // expected
     }
   }
-  
+
   public void testParseInvalidRssFeed() throws Exception {
     assertReasons("invalid.rss",
         new Reason("/rss[1]/channel[1]/item[1]",

