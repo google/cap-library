@@ -1,13 +1,7 @@
 # Common Alerting Protocol Library [![Build Status](https://travis-ci.org/google/cap-library.svg?branch=master)](https://travis-ci.org/google/cap-library)
-Copyright 2014 Google Inc.
-
-http://github.com/google/cap-library/
-
-===========
 
 The CAP Library is a collection of code and tools to work with public alerting
-messages in the [Common Alerting Protocol]
-(http://en.wikipedia.org/wiki/Common_Alerting_Protocol) format.
+messages in the [Common Alerting Protocol](http://en.wikipedia.org/wiki/Common_Alerting_Protocol) format.
 
 Namely, a well-tested and easy-to-use Java library that supports
 * creation and parsing of feeds in the CAP format,
@@ -41,23 +35,32 @@ http://code.google.com/apis/protocolbuffers/ and http://code.google.com/apis/pro
 
 ## Development
 
-###Install ant
+### Install ant
+
 You can download and install Apache Ant from http://ant.apache.org/.
 
-###Run all tests
-```
-» APPENGINE_JAVA_SDK=/path/to/appengine-sdk ant test
+### Run all tests
+
+```sh
+APPENGINE_JAVA_SDK=/path/to/appengine-sdk ant test
 ```
 
-###Compile the library into a jar
-```
-» cd java
-» ant jar
+### Compile the library into a jar
+
+```sh
+cd java
+ant jar
 ```
 
-###Compile and run the validator
+### Compile and run the validator
 
+```sh
+cd validator
+APPENGINE_JAVA_SDK=/path/to/appengine-sdk ant runserver
 ```
-» cd validator
-» APPENGINE_JAVA_SDK=/path/to/appengine-sdk ant runserver
-```
+
+## Copyright
+
+Copyright 2014 Google Inc.
+
+http://github.com/google/cap-library/
