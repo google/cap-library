@@ -18,6 +18,7 @@
   <application>cap-validator-hrd</application>
   <version>13</version>
   <runtime>java8</runtime>
+  <url-stream-handler>urlfetch</url-stream-handler>
   <threadsafe>true</threadsafe>
 
   <system-properties>
