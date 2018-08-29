@@ -16,6 +16,8 @@
 
 package com.google.publicalerts.cap;
 
+import java.util.logging.Logger;
+
 import static com.google.publicalerts.cap.CapException.ReasonType.CIRCULAR_REFERENCE;
 import static com.google.publicalerts.cap.CapException.ReasonType.INVALID_ALTITUDE_CEILING_RANGE;
 import static com.google.publicalerts.cap.CapException.ReasonType.INVALID_AREA;
@@ -31,6 +33,8 @@ import static com.google.publicalerts.cap.CapException.ReasonType.RESTRICTION_SC
 import static com.google.publicalerts.cap.CapException.ReasonType.SAME_TEXT_DIFFERENT_LANGUAGE;
 import static com.google.publicalerts.cap.CapException.ReasonType.TEXT_CONTAINS_HTML_ENTITIES;
 import static com.google.publicalerts.cap.CapException.ReasonType.TEXT_CONTAINS_HTML_TAGS;
+import static com.google.publicalerts.cap.CapException.ReasonType.INVALID_POLYGON_SELF_INTERSECTION;
+
 
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.ImmutableSet;
@@ -38,6 +42,7 @@ import com.google.common.collect.Table;
 import com.google.protobuf.Descriptors.FieldDescriptor;
 import com.google.protobuf.Message;
 import com.google.protobuf.MessageOrBuilder;
+import java.awt.geom.Line2D;
 
 import java.net.URI;
 import java.util.Date;
@@ -52,6 +57,8 @@ import java.util.regex.Pattern;
  * @author shakusa@google.com (Steve Hakusa)
  */
 public class CapValidator {
+  private static final Logger log =
+      Logger.getLogger(CapValidator.class.getName());
 
   public static final String CAP10_XMLNS = "http://www.incident.com/cap/1.0";
   public static final String CAP11_XMLNS = "urn:oasis:names:tc:emergency:cap:1.1";
@@ -265,6 +272,10 @@ public class CapValidator {
     if (!polygon.getPoint(0).equals(polygon.getPoint(polygon.getPointCount() - 1))) {
       reasons.add(xPath.toString(), INVALID_POLYGON);
     }
+
+    if (hasIntersection(polygon)) {
+      reasons.add(xPath.toString(), INVALID_POLYGON_SELF_INTERSECTION);
+    }
     
     xPath.pop();
     return reasons.build();
@@ -408,5 +419,55 @@ public class CapValidator {
     
     xPath.pop();
     return reasons.build();
+  }
+
+  // This method checks for self intersections in a polygon, under these assumptions:
+  // 1. The polygon doesn't cover the North/South pole.
+  // 2. Using lat-lon coordinates as cartesian coordinates and mapping onto a 2d plane is a
+  // sufficent approximation.
+  // 3. The last point of the polygon is identical to the first point.
+  private boolean hasIntersection(PolygonOrBuilder polygon) {
+    // Naive O(n^2) algorithm. If performance becomes an issue, consider using Bentley–Ottmann
+    // algorithm, which is O(n*logn)
+    for (int i = 0; i < polygon.getPointCount() - 2; i++) {
+      for (int j = i + 2; j < polygon.getPointCount() - 1; j++) {
+        // The first and last lines share the same point, so their intersection is ok.
+        if (i == 0 && j == polygon.getPointCount() - 2) {
+          continue;
+        }
+        Point p0 = polygon.getPoint(i);
+        Point p1 = polygon.getPoint(i + 1);
+        Point p2 = polygon.getPoint(j);
+        Point p3 = polygon.getPoint(j + 1);
+        Line2D line1 =
+            new Line2D.Double(
+                p0.getLatitude(),
+                toLegalLongitude(p0.getLongitude()),
+                p1.getLatitude(),
+                toLegalLongitude(p1.getLongitude()));
+        Line2D line2 =
+            new Line2D.Double(
+                p2.getLatitude(),
+                toLegalLongitude(p2.getLongitude()),
+                p3.getLatitude(),
+                toLegalLongitude(p3.getLongitude()));
+
+        if (line2.intersectsLine(line1)) {
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  // returns longitude in the range of [-180, 180]
+  private Double toLegalLongitude(Double longitude) {
+    if (longitude > 180) {
+      return longitude - 360;
+    }
+    if (longitude < -180) {
+      return longitude + 360;
+    }
+    return longitude;
   }
 }

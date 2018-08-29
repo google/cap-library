@@ -121,6 +121,9 @@ public class CapException extends Exception {
         "Invalid <polygon> \"{0}\". Expect a minimum of four [WGS 84] "
             + "coordinates like: \"12.3,-4.2 12.3,-4.3 12.4,-4.3 12.3,-4.2\", "
             + "where the first and last coordinates are equal."),
+    INVALID_POLYGON_SELF_INTERSECTION(
+        Reason.Level.ERROR,
+        "Invalid <polygon> \"{0}\". The polygon edges must not intersect."),
     INVALID_REFERENCES(
         Reason.Level.ERROR,
         "Invalid <references>: \"{0}\". Must be a non-empty, space-separated "
