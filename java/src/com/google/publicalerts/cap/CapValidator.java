@@ -429,16 +429,36 @@ public class CapValidator {
   private boolean hasIntersection(PolygonOrBuilder polygon) {
     // Naive O(n^2) algorithm. If performance becomes an issue, consider using Bentley–Ottmann
     // algorithm, which is O(n*logn)
-    for (int i = 0; i < polygon.getPointCount() - 2; i++) {
+    
+    // if the first point is duplicated, skip to the last duplicate.
+    int start;
+    for(start = 0; start < polygon.getPointCount(); start++) {
+      if (!polygon.getPoint(start).equals(polygon.getPoint(start + 1))) {
+        break;
+      }
+    }
+
+    for (int i = start; i < polygon.getPointCount() - 2; i++) {
       for (int j = i + 2; j < polygon.getPointCount() - 1; j++) {
         // The first and last lines share the same point, so their intersection is ok.
-        if (i == 0 && j == polygon.getPointCount() - 2) {
+        if (i == start && j == polygon.getPointCount() - 2) {
           continue;
         }
         Point p0 = polygon.getPoint(i);
         Point p1 = polygon.getPoint(i + 1);
         Point p2 = polygon.getPoint(j);
         Point p3 = polygon.getPoint(j + 1);
+
+        // Duplicate point - ignore the intersection of the two lines from this point.
+        if (p1.equals(p2)) {
+          continue;
+        }
+
+        // Duplicate point - in that case line1 or line2 isn't a line, but a single point.
+        if (p0.equals(p1) || p2.equals(p3)) {
+          continue;
+        }
+
         Line2D line1 =
             new Line2D.Double(
                 p0.getLatitude(),
@@ -453,6 +473,7 @@ public class CapValidator {
                 toLegalLongitude(p3.getLongitude()));
 
         if (line2.intersectsLine(line1)) {
+          log.info("Found intersecting lines. Line1:" + p0 + p1 + "Line2:" + p2 + p3);
           return true;
         }
       }
