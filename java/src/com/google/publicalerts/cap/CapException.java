@@ -123,7 +123,7 @@ public class CapException extends Exception {
             + "where the first and last coordinates are equal."),
     INVALID_POLYGON_SELF_INTERSECTION(
         Reason.Level.ERROR,
-        "Invalid <polygon> \"{0}\". The polygon edges must not intersect."),
+        "Invalid <polygon>. The polygon edges must not intersect. {0}"),
     INVALID_REFERENCES(
         Reason.Level.ERROR,
         "Invalid <references>: \"{0}\". Must be a non-empty, space-separated "

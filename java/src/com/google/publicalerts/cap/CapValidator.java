@@ -273,8 +273,9 @@ public class CapValidator {
       reasons.add(xPath.toString(), INVALID_POLYGON);
     }
 
-    if (hasIntersection(polygon)) {
-      reasons.add(xPath.toString(), INVALID_POLYGON_SELF_INTERSECTION);
+    String intersectionDescription = getIntersectionDescription(polygon);
+    if (intersectionDescription != null) {
+      reasons.add(xPath.toString(), INVALID_POLYGON_SELF_INTERSECTION, intersectionDescription);
     }
     
     xPath.pop();
@@ -426,22 +427,32 @@ public class CapValidator {
   // 2. Using lat-lon coordinates as cartesian coordinates and mapping onto a 2d plane is a
   // sufficent approximation.
   // 3. The last point of the polygon is identical to the first point.
-  private boolean hasIntersection(PolygonOrBuilder polygon) {
+  //
+  // Returns null if no intersections were found, returns a description of an intersection else.
+  private String getIntersectionDescription(PolygonOrBuilder polygon) {
     // Naive O(n^2) algorithm. If performance becomes an issue, consider using Bentley–Ottmann
     // algorithm, which is O(n*logn)
     
     // if the first point is duplicated, skip to the last duplicate.
     int start;
-    for(start = 0; start < polygon.getPointCount(); start++) {
+    for(start = 0; start < polygon.getPointCount() - 1; start++) {
       if (!polygon.getPoint(start).equals(polygon.getPoint(start + 1))) {
         break;
       }
     }
 
-    for (int i = start; i < polygon.getPointCount() - 2; i++) {
-      for (int j = i + 2; j < polygon.getPointCount() - 1; j++) {
+    // if the last point is duplicate, skip to the first duplicate
+    int lastIndex;
+    for (lastIndex = polygon.getPointCount() - 1; lastIndex > 0; lastIndex--) {
+      if (!polygon.getPoint(lastIndex).equals(polygon.getPoint(lastIndex - 1))) {
+        break;
+      }
+    }
+
+    for (int i = start; i < lastIndex - 1; i++) {
+      for (int j = i + 2; j < lastIndex; j++) {
         // The first and last lines share the same point, so their intersection is ok.
-        if (i == start && j == polygon.getPointCount() - 2) {
+        if (i == start && j == lastIndex - 1) {
           continue;
         }
         Point p0 = polygon.getPoint(i);
@@ -473,12 +484,16 @@ public class CapValidator {
                 toLegalLongitude(p3.getLongitude()));
 
         if (line2.intersectsLine(line1)) {
-          log.info("Found intersecting lines. Line1:" + p0 + p1 + "Line2:" + p2 + p3);
-          return true;
+          return "Detected intersection in the following lines:\n" 
+              + String.format("line1: %s,%s  -->  %s,%s\n", p0.getLatitude(), p0.getLongitude(),
+                  p1.getLatitude(), p1.getLongitude()) 
+              + String.format("line2: %s,%s  -->  %s,%s",
+                  p2.getLatitude(), p2.getLongitude(),
+                  p3.getLatitude(), p3.getLongitude());
         }
       }
     }
-    return false;
+    return null;
   }
 
   // returns longitude in the range of [-180, 180]
