@@ -263,7 +263,7 @@ public class CapFeedParserTest extends TestCase {
     assertTrue(reasons.build().containsWithLevelOrHigher(Level.ERROR));
   }
 
-  public void testGetCapUrl_atom() {
+  public void testGetCapUrl_atom() throws Exception {
     SyndEntry entry = new SyndEntryImpl();
 
     // For atom, both "link" and "links" is set
@@ -310,12 +310,25 @@ public class CapFeedParserTest extends TestCase {
     assertEquals(link1.getHref(), parser.getCapUrl(entry));
   }
 
-  public void testGetCapUrl_rss() {
+  public void testGetCapUrl_rss() throws Exception {
     SyndEntry entry = new SyndEntryImpl();
     assertNull(parser.getCapUrl(entry));
 
     entry.setLink("http://example.org/cap?id=123");
     assertEquals(entry.getLink(), parser.getCapUrl(entry));
+
+    // illegal protocol
+    entry.setLink("file:///");
+    try {
+      assertNull(parser.getCapUrl(entry));
+      fail("Expected FeedException");
+    } catch (FeedException e) {
+      // expected
+    }
+
+    // malformed url
+    entry.setLink("htpp://abc");
+    assertNull(parser.getCapUrl(entry));
   }
 
   private void assertReasons(String feedFile,  Reason... expectedReasons)

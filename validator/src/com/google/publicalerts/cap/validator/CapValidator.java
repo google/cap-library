@@ -154,10 +154,18 @@ public class CapValidator {
               prefixReasonForContent(e.getReasons(), i, feed));
         } catch (NotCapException e) {
           // No CAP in the <content> field, maybe there's a link to an alert?
+          String capUrl;
+          try {
+            capUrl = capFeedParser.getCapUrl(entry);
+          } catch (FeedException fe) {
+            result.addValidationMessageForLink("", Level.ERROR, "", fe.getMessage());
+            continue;
+          }
+          
           Alert alert = handleThinEntry(entry, result);
-          checkProfiles(alert, result, profiles, i, capFeedParser.getCapUrl(entry), feed);
+          checkProfiles(alert, result, profiles, i, capUrl, feed);
           result.recordTiming(
-              String.valueOf(capFeedParser.getCapUrl(entry)) + "load/parse");
+              String.valueOf(capUrl) + "load/parse");
         }
       }
 
@@ -201,9 +209,15 @@ public class CapValidator {
   }
 
   private Alert handleThinEntry(SyndEntry entry, ValidationResult result) {
-    String capUrl = capFeedParser.getCapUrl(entry);
-    if (capUrl == null) {
-      // Feed parser already added an error
+    String capUrl;
+    try {
+      capUrl = capFeedParser.getCapUrl(entry);
+      if (capUrl == null) {
+        // Feed parser already added an error
+        return null;
+      }
+    } catch (FeedException e) {
+      result.addValidationMessageForLink("", Level.ERROR, "", e.getMessage());
       return null;
     }
 

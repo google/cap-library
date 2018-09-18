@@ -16,6 +16,8 @@
 
 package com.google.publicalerts.cap.feed;
 
+import java.net.URL;
+import java.lang.Thread;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
@@ -479,7 +481,20 @@ public class CapFeedParser {
    * @param entry the entry to extract a URL from
    * @return the URL, or null if no suitable URL is found
    */
-  public String getCapUrl(SyndEntry entry) {
+  public String getCapUrl(SyndEntry entry) throws FeedException {
+    String link = internalGetCapUrl(entry);
+    try {
+      URL url = new URL(link);
+      if (!url.getProtocol().equals("http") && !url.getProtocol().equals("https")) {
+        throw new FeedException("Invalid URL protocol in link attribute: " + url.getProtocol());
+      }
+    } catch (java.net.MalformedURLException e) {
+      return null;
+    }
+    return link;
+  }
+
+  private String internalGetCapUrl(SyndEntry entry) {
     @SuppressWarnings("unchecked") // SyndEntry.getLinks returns raw unparameterized list
     List<SyndLink> links = entry.getLinks();
 
@@ -506,6 +521,7 @@ public class CapFeedParser {
     }
 
     if (noTypeSyndLink != null) {
+      log.warning("@@@@@@@@@@@ noTypeSyndLink" + noTypeSyndLink.getHref());
       return noTypeSyndLink.getHref();
     }
 
