@@ -76,6 +76,9 @@ public class CapValidator {
     // Is the input a URL?
     try {
       URL feedUrl = new URL(input);
+      if (!feedUrl.getProtocol().equals("http") && !feedUrl.getProtocol().equals("https")) {
+        throw new FeedException("Invalid URL protocol attribute: " + feedUrl.getProtocol());
+      }
       log.info("URLRequest");
       input = loadUrl(feedUrl.toString());
       result = new ValidationResult(input);
@@ -83,6 +86,9 @@ public class CapValidator {
       // Input is not a URL... continue
       // TODO(shakusa) Maybe some heuristics here if it's almost a URL to show
       // a URL-based error instead of a confusing XML one?
+    } catch (FeedException e) {
+      result.addValidationMessage(1, Level.ERROR, "",
+          e.getMessage());
     } catch (IOException e) {
       // There was a problem loading the feed from a URL
       log.info("URLRequest: Error");
