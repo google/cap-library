@@ -49,7 +49,7 @@ if (validationResult != null) {
     if (alertsJs != null) {
 %>
 <div id=map style="margin: 1em; padding: 1ex;"></div>
-<script src="https://maps.google.com/maps/api/js?sensor=false"></script>
+<script src="https://maps.google.com/maps/api/js?key=AIzaSyDn7gzUSLUyf4pPrRnrxp6U0ovnSTNtd7c&sensor=false"></script>
 <script>var alerts = <%= alertsJs %>;</script>
 <script src="/map.js"></script>
 <%
