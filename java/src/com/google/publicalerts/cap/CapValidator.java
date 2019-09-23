@@ -233,7 +233,7 @@ public class CapValidator {
           reasons.add(xPath.toString(), SAME_TEXT_DIFFERENT_LANGUAGE, fieldName);
         }
       } else {
-        humanReadableText.put(humanReadableField, fieldValue, fieldName);
+        humanReadableText.put(humanReadableField, fieldValue, language);
       }
       
       xPath.pop();
